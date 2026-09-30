@@ -34,7 +34,10 @@ def main():
     from pipeline.submodules.generate_directions import generate_directions
     from pipeline.submodules.select_direction import get_refusal_scores, select_direction
     from .inputs import save
-    snapshot=snapshot_download(MODEL,revision=REVISION)
+    # Transformers uses the converted safetensors, not Meta's separate original/*.pth copy.
+    snapshot=snapshot_download(MODEL,revision=REVISION,
+        allow_patterns=['*.json','*.safetensors','*.model','*.txt','*.tiktoken'],
+        ignore_patterns=['original/*'])
     cfg=Config(model_alias='meta-llama-3-8b-instruct',model_path=snapshot)
     functions=extract_functions(repo/'pipeline/run_pipeline.py',['load_and_sample_datasets','filter_data'],
         dict(torch=torch,random=random,load_dataset_split=load_dataset_split,get_refusal_scores=get_refusal_scores))

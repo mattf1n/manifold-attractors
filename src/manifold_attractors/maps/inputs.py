@@ -20,7 +20,9 @@ def save(path, obj):
 
 def snapshot(key, revision):
     from huggingface_hub import snapshot_download
-    return snapshot_download(MODELS[key], revision=revision)
+    return snapshot_download(MODELS[key], revision=revision,
+        allow_patterns=['*.json','*.safetensors','*.model','*.txt','*.tiktoken'],
+        ignore_patterns=['original/*'])
 
 def public_corpus(kind, language):
     """Rebuild the two DISTINCT centroid corpora; fail on changed speed corpus."""
