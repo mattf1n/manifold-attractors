@@ -1,0 +1,275 @@
+{
+  "paper_commit": "ed8b89bc8344db678eb5e360a1893937d3b94a1f",
+  "run_source_commit": "81d9da448998547be86814e844ed0582d9fbe826",
+  "scope": "Fresh model experiments; reconstructed typography; not a blanket exact-reproduction claim",
+  "artworks": [
+    {
+      "name": "dead_fish_sequence",
+      "style": "iclr",
+      "comparison": "exact-image-and-placement",
+      "source_digest": null,
+      "generation_records": {},
+      "pdf_sha256": "727e1e886c6a6dfd60b2bcbdf842e347d4d1a305c44a8382825c831ada8ef337",
+      "png_sha256": "5a28f8f78249e21d7278972da2566c491eccb4c0bff50b3ca25ce3e0d431a06e",
+      "record": "runs/shared/render-dead_fish_sequence.json"
+    },
+    {
+      "name": "great_circle_norm_grid",
+      "style": "iclr",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "data-great_circle_norm_grid-llama3": "ecde07f0bf0e15deab3d890be8d7a013b08b5b4656458d402050f140c6d9c1c2",
+        "data-great_circle_norm_grid-olmo3": "4b68846bdf216a55afba49e0374b1b0513a5faf9a0ee021cecc97e50238ec331",
+        "data-great_circle_norm_grid-qwen3": "63ca0c950495b5dc1ea72d28f9ac2d5c7ffbc693f625577ae36758ce0a614b0e"
+      },
+      "pdf_sha256": "df55ca88500b4c8e9eaa7f36b5a803870c33174dbde471d13c44464a1c9c40f9",
+      "png_sha256": "ff6a076c500fd1fcc8b766010dd4dc6085718802dddbbf0abac2cb9f5cd11840",
+      "record": "runs/iclr/render-great_circle_norm_grid.json"
+    },
+    {
+      "name": "triple_area_heatmaps",
+      "style": "iclr",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "prepare-triple_area_heatmaps": "37212d3aceb9eec9568204c1a7fad64de87705b5cc69e12eb36066395766546e",
+        "data-triple_area_heatmaps": "77deef048e4027a0034b088070728db8e4cf198dafa783b09060bb96f42736bc"
+      },
+      "pdf_sha256": "3c173e610ff8e6a5ce61b36b8555a5d09304fe22601d96769043f3d0b0605d3d",
+      "png_sha256": "81c930e56f1e40a276d66ff74409dbd001bc333e9261ff03741fa03f174a7537",
+      "record": "runs/iclr/render-triple_area_heatmaps.json"
+    },
+    {
+      "name": "bubble_coords",
+      "style": "iclr",
+      "comparison": "exact-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "data-bubble_coords": "509f95995df2a9415bc28d45225851f40257ada6a87b85e2c07acb6b2288a01c"
+      },
+      "pdf_sha256": "0c8d110936c48e273ac54af7856aa3d39368c8bf2b0d0d4ba0471f33a74fa079",
+      "png_sha256": "d09c1cb4bcea6e38eeb1d5eec6ee7d9b3d80078e437e6b6c15b8cc455b138ef5",
+      "record": "runs/iclr/render-bubble_coords.json"
+    },
+    {
+      "name": "refusal_steering_heatmaps",
+      "style": "iclr",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "data-refusal_direction": "e85af745f0e6d6f4bcff7349d708b72e717bd2081d5912629b8cec53ef8c09cb",
+        "data-refusal_steering_heatmaps": "4b18feb9d13cf22221ced5d40c90437fa94fd0054f9d48b4af703f01c714a045"
+      },
+      "pdf_sha256": "a22027dc9b5af46bd97e7bdaa96056e987ca813474695341739d2463ff8640f3",
+      "png_sha256": "e88c5511300fe2a90604f31e6e26aa5863b87db9bfbec3eaa6fc3c3209ce2c2c",
+      "record": "runs/iclr/render-refusal_steering_heatmaps.json"
+    },
+    {
+      "name": "language_area_heatmaps",
+      "style": "iclr",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "prepare-language_area_heatmaps": "de827e757131c383ac6a4ec0a1fdfaf081b2d01dbf24ad16ba593241d96a3076",
+        "data-language_area_heatmaps": "aca7c9333b0a5fa506c40710b588b0967eade561b88e2cca3fbc970e1c12d485"
+      },
+      "pdf_sha256": "d604332dabd656f5410112c8f194ac9c8544abffe2288c0c7084db0f775aa79e",
+      "png_sha256": "0a08629d625ec0816a84d5bc5877a26f3e792443f46f4e06091d316ab212d1d5",
+      "record": "runs/iclr/render-language_area_heatmaps.json"
+    },
+    {
+      "name": "language_steering_speed",
+      "style": "iclr",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "prepare-language_steering_speed": "1d65701049f7aa476ffe02883497490739c089541b4e5a27f7a2ab2fa0caa46a",
+        "data-language_steering_speed": "f741dd86f2af477a852f1094711cca4a26c9effe074613767c34bdd718052834"
+      },
+      "pdf_sha256": "faa403a475d52ce8ef16a0c8b4398e08cca80ad76a67421fe778e49b1e359dab",
+      "png_sha256": "77d466421fe81f17eef7311c9b6bf454aeabf268038f3bdc2a226f131119436f",
+      "record": "runs/iclr/render-language_steering_speed.json"
+    },
+    {
+      "name": "great_circle_norm_grid_context",
+      "style": "iclr",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "data-great_circle_norm_grid-llama3": "ecde07f0bf0e15deab3d890be8d7a013b08b5b4656458d402050f140c6d9c1c2",
+        "data-great_circle_norm_grid_context-llama3": "892b4277c3e04d2d56aa8b35018fb3815ad8553244e70078ac1cf7ccc786afc1",
+        "data-great_circle_norm_grid-olmo3": "4b68846bdf216a55afba49e0374b1b0513a5faf9a0ee021cecc97e50238ec331",
+        "data-great_circle_norm_grid_context-olmo3": "39a934a12140e691ef052e27df10f6982b05c164dee2d6df2654bf35534f5eae",
+        "data-great_circle_norm_grid-qwen3": "63ca0c950495b5dc1ea72d28f9ac2d5c7ffbc693f625577ae36758ce0a614b0e",
+        "data-great_circle_norm_grid_context-qwen3": "6747dbe7288beea4402cfac10fedfbd496bcf0f430aadb43309c74063d815ca7"
+      },
+      "pdf_sha256": "1385e37f9a40e77e9bfc8441a5806be4efec39b17b893106ff2bc225ba45ca3b",
+      "png_sha256": "6df9dca21c83dee979012961031a75b069196248a54ea14358811d42706d71a5",
+      "record": "runs/iclr/render-great_circle_norm_grid_context.json"
+    },
+    {
+      "name": "intro",
+      "style": "iclr",
+      "comparison": "no-historical-reference",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {},
+      "pdf_sha256": "be4b1134b813661af95dad13aa698e41f83426da91b0fb939347ef6333c1285c",
+      "png_sha256": "cf11a00521aed58272a1cb5caa9db608d4fed521ccad9990a3d5aab62b336cb0",
+      "record": "runs/iclr/render-intro.json"
+    },
+    {
+      "name": "sphere_probe",
+      "style": "iclr",
+      "comparison": "no-historical-reference",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {},
+      "pdf_sha256": "8469ddbb671e252f88d259d7ad9ac422d14c577585c2588d7bb176533900c5c2",
+      "png_sha256": "abeed87741d138f21c32bf31b3bf54ff44172af976cc1157655a858fbe98daa5",
+      "record": "runs/iclr/render-sphere_probe.json"
+    },
+    {
+      "name": "dead_fish_sequence",
+      "style": "goodfire",
+      "comparison": "exact-image-and-placement",
+      "source_digest": null,
+      "generation_records": {},
+      "pdf_sha256": "727e1e886c6a6dfd60b2bcbdf842e347d4d1a305c44a8382825c831ada8ef337",
+      "png_sha256": "5a28f8f78249e21d7278972da2566c491eccb4c0bff50b3ca25ce3e0d431a06e",
+      "record": "runs/shared/render-dead_fish_sequence.json"
+    },
+    {
+      "name": "great_circle_norm_grid",
+      "style": "goodfire",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "data-great_circle_norm_grid-llama3": "ecde07f0bf0e15deab3d890be8d7a013b08b5b4656458d402050f140c6d9c1c2",
+        "data-great_circle_norm_grid-olmo3": "4b68846bdf216a55afba49e0374b1b0513a5faf9a0ee021cecc97e50238ec331",
+        "data-great_circle_norm_grid-qwen3": "63ca0c950495b5dc1ea72d28f9ac2d5c7ffbc693f625577ae36758ce0a614b0e"
+      },
+      "pdf_sha256": "96a67d4dd4cbf6e21a40c15415937e4bbc8b2cb92a5661b6d1bc8bc467b3a48d",
+      "png_sha256": "cbb9c926e394c4a0c15d232b73f370687dc044b67fd28b19cbe55f3ca829f46a",
+      "record": "runs/goodfire/render-great_circle_norm_grid.json"
+    },
+    {
+      "name": "triple_area_heatmaps",
+      "style": "goodfire",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "prepare-triple_area_heatmaps": "37212d3aceb9eec9568204c1a7fad64de87705b5cc69e12eb36066395766546e",
+        "data-triple_area_heatmaps": "77deef048e4027a0034b088070728db8e4cf198dafa783b09060bb96f42736bc"
+      },
+      "pdf_sha256": "e37a13416859813c139a4fe59b72036bce276c4c81191f12f475d5839b8d4243",
+      "png_sha256": "71cdc1146095d174708b7ef5743ca901e41685f77a1d97487ffb66c54512fb89",
+      "record": "runs/goodfire/render-triple_area_heatmaps.json"
+    },
+    {
+      "name": "bubble_coords",
+      "style": "goodfire",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "data-bubble_coords": "509f95995df2a9415bc28d45225851f40257ada6a87b85e2c07acb6b2288a01c"
+      },
+      "pdf_sha256": "d8aaf9e470d9bd7df10340e9c7255a94ec6c63f4013b2251cd7e8683aa639cae",
+      "png_sha256": "36e2945b3f5f409f1a3f375ba0f60491f18d6bd01462d89815778064dfda1266",
+      "record": "runs/goodfire/render-bubble_coords.json"
+    },
+    {
+      "name": "refusal_steering_heatmaps",
+      "style": "goodfire",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "data-refusal_direction": "e85af745f0e6d6f4bcff7349d708b72e717bd2081d5912629b8cec53ef8c09cb",
+        "data-refusal_steering_heatmaps": "4b18feb9d13cf22221ced5d40c90437fa94fd0054f9d48b4af703f01c714a045"
+      },
+      "pdf_sha256": "391b626dbeb1108b5d48c6e349a30bc04bf3f4aa87fbf7e2a87e786e0dabbaa6",
+      "png_sha256": "e2063fa83b838803ec26d6eed5c646a3c3158ca2069050cd76342f156ac891ff",
+      "record": "runs/goodfire/render-refusal_steering_heatmaps.json"
+    },
+    {
+      "name": "language_area_heatmaps",
+      "style": "goodfire",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "prepare-language_area_heatmaps": "de827e757131c383ac6a4ec0a1fdfaf081b2d01dbf24ad16ba593241d96a3076",
+        "data-language_area_heatmaps": "aca7c9333b0a5fa506c40710b588b0967eade561b88e2cca3fbc970e1c12d485"
+      },
+      "pdf_sha256": "e693a233f41f2e620867cce6af96b9187296e1820b12cf4ce295dd7a9b5e7cfd",
+      "png_sha256": "b16c2de471cfe25eae74a2b22f3e1160946ca32b62f619dd87536dfc702cc83b",
+      "record": "runs/goodfire/render-language_area_heatmaps.json"
+    },
+    {
+      "name": "language_steering_speed",
+      "style": "goodfire",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "prepare-language_steering_speed": "1d65701049f7aa476ffe02883497490739c089541b4e5a27f7a2ab2fa0caa46a",
+        "data-language_steering_speed": "f741dd86f2af477a852f1094711cca4a26c9effe074613767c34bdd718052834"
+      },
+      "pdf_sha256": "0a34b80e16616551c912800895d1b7efe488b3df110a2adfb0cc4ac057f81da5",
+      "png_sha256": "39d77d656a33f755da7aba0295ada451b7e3157afbc19c862539bbf8eb2eb105",
+      "record": "runs/goodfire/render-language_steering_speed.json"
+    },
+    {
+      "name": "great_circle_norm_grid_context",
+      "style": "goodfire",
+      "comparison": "different-pixels",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {
+        "data-great_circle_norm_grid-llama3": "ecde07f0bf0e15deab3d890be8d7a013b08b5b4656458d402050f140c6d9c1c2",
+        "data-great_circle_norm_grid_context-llama3": "892b4277c3e04d2d56aa8b35018fb3815ad8553244e70078ac1cf7ccc786afc1",
+        "data-great_circle_norm_grid-olmo3": "4b68846bdf216a55afba49e0374b1b0513a5faf9a0ee021cecc97e50238ec331",
+        "data-great_circle_norm_grid_context-olmo3": "39a934a12140e691ef052e27df10f6982b05c164dee2d6df2654bf35534f5eae",
+        "data-great_circle_norm_grid-qwen3": "63ca0c950495b5dc1ea72d28f9ac2d5c7ffbc693f625577ae36758ce0a614b0e",
+        "data-great_circle_norm_grid_context-qwen3": "6747dbe7288beea4402cfac10fedfbd496bcf0f430aadb43309c74063d815ca7"
+      },
+      "pdf_sha256": "0bbc65c44f77d5eb4653041f93153969561073acebcd8bfd246ba87bfec9a34c",
+      "png_sha256": "7044cbd94442b84d510f756ba614cfcf9c81f804f3bf2d5bfc5ea3a8526ead1f",
+      "record": "runs/goodfire/render-great_circle_norm_grid_context.json"
+    },
+    {
+      "name": "intro",
+      "style": "goodfire",
+      "comparison": "no-historical-reference",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {},
+      "pdf_sha256": "705097726358be2293db0b2941a8dd83cc63e31088bc958ab21eb011ec45a7ae",
+      "png_sha256": "b20df69822d7a043ae0db7f0810f175827308a3d252b8ea3b5c647c1734a3e56",
+      "record": "runs/goodfire/render-intro.json"
+    },
+    {
+      "name": "sphere_probe",
+      "style": "goodfire",
+      "comparison": "no-historical-reference",
+      "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
+      "generation_records": {},
+      "pdf_sha256": "278f908635113a7b464628b8f33271704c176349bcd18e4ba54b8e072dd181d9",
+      "png_sha256": "ddf25311fef901148a462f7dfc9eff4a2228a95214a61f9965b5cc2688bb3f7e",
+      "record": "runs/goodfire/render-sphere_probe.json"
+    }
+  ],
+  "pending": [
+    "iclr/great_circle_synthetic_grid",
+    "iclr/norm_growth_trajectory_starts",
+    "iclr/synthetic_profile_trajectory",
+    "iclr/great_circle_pair_speed_grid",
+    "iclr/norm_growth_trajectory_starts_appendix",
+    "iclr/great_circle_speed_grid",
+    "iclr/great_circle_synthetic_speed_grid",
+    "iclr/great_circle_pair_speed_grid_appendix",
+    "goodfire/great_circle_synthetic_grid",
+    "goodfire/norm_growth_trajectory_starts",
+    "goodfire/synthetic_profile_trajectory",
+    "goodfire/great_circle_pair_speed_grid",
+    "goodfire/norm_growth_trajectory_starts_appendix",
+    "goodfire/great_circle_speed_grid",
+    "goodfire/great_circle_synthetic_speed_grid",
+    "goodfire/great_circle_pair_speed_grid_appendix"
+  ]
+}

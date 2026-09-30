@@ -12,8 +12,9 @@ none are distributed here. The only binary asset is the literal source fish GIF.
 The tracked renderers require four `styles/*.tex` files absent from both the
 tracked paper tree/history and the supplied `paper-archive-20260930-214925`
 archive. The included replacements are **reconstructions**, not recovered
-originals: ICLR typography comes from `iclr.tex`; Goodfire's Cabin/Noto Sans
-and caption math come from `goodfire.cls` and `goodfire.tex`.
+originals: ICLR typography comes from `iclr.tex`; Goodfire body typography
+comes from `goodfire.cls`/`goodfire.tex`, while scientific math and mono font
+routing now follow the original PDF resources documented in `AUDIT.md`.
 Scene geometry, samples, colors, layout constants, and drawing operations are
 retained. **Exact font metrics / pixel-identical scientific figures cannot be
 certified until the original styles are recovered and compared.** No silent
@@ -34,13 +35,76 @@ incompatible sets of exact plotting pins. Running all of them in one environment
 would lose that original distinction. The PEP 723 headers remain as provenance;
 `python -m` does not itself install those dependencies.
 
-Install a full TeX Live distribution with `lualatex` on `PATH`, including NewTX,
-fontspec, Cabin, Noto Sans, Inconsolata, mathastext, siunitx, standalone, adjustbox,
-PGFPlots and the TikZ hobby library. Language-token labels also require:
+### Rootless pinned TeX and PDF rasterizer
 
-- ICLR: `Tempora-Regular.otf`, `Tempora-Bold.otf`, `cmunrm.otf`, `cmunbx.otf`,
-  `gbsn00lp.ttf`, `bsmi00lp.ttf` (TeX Live fonts).
-- Goodfire: fontconfig-visible `Noto Sans`, `Noto Sans CJK SC`, `Noto Sans CJK TC`.
+On Linux x86_64, with `curl`, `perl`, `tar`, `xz`, `unzip`, `sha256sum`, and
+`fc-cache` available:
+
+```bash
+bash scripts/setup-tex.sh
+source "$HOME/.local/texlive/2025/env.sh"
+# micromamba is a user-space conda installer; no sudo is used.
+micromamba create -y -p "$HOME/.local/share/manifold-rasterizer" \
+  --file scripts/tex-rasterizer-linux-64.lock
+export PATH="$HOME/.local/share/manifold-rasterizer/bin:$PATH"
+uv run --locked --isolated --extra render python scripts/smoke-tex.py
+```
+
+The setup script accepts an optional installation prefix. It installs only into
+that prefix and `~/.local/share/fonts/manifold-attractors`, never system paths or
+shell startup files. Source `env.sh` explicitly in batch jobs too. It records
+`packages.tsv` (TeX package revisions) and `font-engine.sha256` under the prefix.
+The rasterizer lock contains exact conda URLs/checksums for **Poppler 25.07.0**
+and its dependencies. This pins a **new comparison rasterizer**, not the unknown
+historical PNG converter. Matplotlib's PGF PNG export needs `pdftocairo` on PATH.
+
+TeX packages come from the frozen **TeX Live 2025 tlnet-final** repository; its
+installer and package-database SHA256s are checked. Its signing key has expired;
+the pinned database digest is intentional. TL2025-final ships **LuaHBTeX 1.22**,
+so the script overlays the SHA256-checked **1.21.0** binary from the 2025-03-09
+archive, then rebuilds `lualatex.fmt`. **Do not run `tlmgr update --all`**: that
+would undo the engine pin. Re-run setup to restore it. This reproducible hybrid
+matches the observed engine version, but the original TeX package-update snapshot
+is unknown; it is not claimed to recover that workstation exactly.
+
+Installed font constraints from original scientific PDF resources:
+
+| Font | Installed source/version |
+|---|---|
+| Cabin | TL2025 `Cabin-Regular.otf`, **3.001** |
+| Goodfire math | upstream `NotoSansMath-v3.000`, googlefonts hinted TTF, **3.000; ttfautohint(v1.8.4.7-5d5b)** |
+| Mono labels | TL2025 `lmmono8-regular.otf`, **2.004** |
+| ICLR text/math | TL2025 NewTX / TeXGyreTermesX **2.004**, NewTXMI, txsys |
+| ICLR Chinese | `arphic-ttf`: Bousung **2.11**, ShanHeiSun **2.10** |
+| Goodfire Chinese | Noto CJK Sans **2.004**, SC/TC regular, upstream commit `523d033d6cb47f4a80c58a35753646f5c3608a78` |
+| Other token scripts | TL2025 Tempora, CM Unicode, and Noto Sans **2.005** |
+
+The Noto CJK version is a pinned candidate, **not verified as the original**:
+its original subsets retain copyright but not the complete version. External
+font downloads have SHA256 checks in setup. Noto Sans Math TTF SHA256 is
+`fe380412e05c2cca4b712644c58ed38ed7b1e3153bc483a8b38725fa487b8830`.
+Fonts retain their upstream licenses; none are copied into this repository.
+
+### Reconstruction changes and strict smoke
+
+The missing four originals remain unrecovered; targeted archive/style-path and
+paper-history checks found no new originals. `figure-math.tex` now uses
+`unicode-math`/Noto Sans Math instead of the previously guessed Cabin/mathastext
+routing. `figure-fonts.tex` selects LMMono8 for scientific mono labels instead
+of Inconsolata. These changes follow **embedded-font evidence**, not guessed
+pixel equality. Inline Goodfire diagrams still use manuscript-body mathastext,
+not the scientific Noto math setup. Goodfire's reconstructed body preamble
+restores article's `bx` bold series: fontspec's `b` otherwise caused explicit
+`LGR/lmr/b/{n,it}` substitution warnings in the sphere diagram.
+
+Both profile preambles set `\\tracinglostchars=3`: missing glyphs are fatal.
+The smoke script retains `.tex`, `.stdout`, and `.log` files and **fails on
+font-substitution warnings**, rather than accepting a PDF merely because TeX
+returned zero. It builds fish/field media, both inline artworks in both styles,
+Latin/math/mono/Greek/Cyrillic/SC/TC probes, and real Matplotlib PGF PDF/PNG plots.
+Its `evidence.json` lists embedded PDF fonts and producer versions. Default
+outputs: `runs/tex-smoke/`; override with `--output PATH`. It runs no models and
+uses no archived numerical results. A passing smoke is not an equality test.
 
 Define these shell helpers once:
 
@@ -76,6 +140,30 @@ the current directory. `--style` (where present) means a Matplotlib rc file,
 not the ICLR/Goodfire selector. Every PDF renderer accepts `--figure`; historical
 `--output` and fish `--source` options remain accepted aliases. Fish additionally
 accepts `--data` for its GIF. Two-basin `--data` names its **output** table.
+
+## Render verified completed results and publish the README
+
+After numerical stages have produced their execution records, the following
+renders ready figures without restarting expensive computation. Missing stages
+are reported as pending; `--require-all` turns pending figures into an error.
+The script checks every available numerical output against its recorded hash.
+
+```bash
+source "$HOME/.local/texlive/2025/env.sh"
+export PATH="$HOME/.local/share/manifold-rasterizer/bin:$PATH"
+# Run inside the generation checkout, once per profile.
+uv run python scripts/render_results.py --style iclr --allow-reconstructed-styles
+uv run python scripts/render_results.py --style goodfire --allow-reconstructed-styles
+# Run inside the publication checkout; only recorded, hash-matching outputs copy.
+uv run python scripts/publish_results.py --run /path/to/generation-checkout
+```
+
+`publish_results.py` embeds actual new PNGs and PDF links in a marked README
+section and writes `docs/figures/validation.json`. It preserves per-artwork
+strict pixel comparison status and explicitly labels missing inline references.
+It never substitutes the historical paper artwork for a failed reproduction.
+The `--require-all` option is available here too. Source media and old reference
+hashes are inputs; the published galleries are **outputs**, not runtime caches.
 
 ## Exact manuscript recipes
 
@@ -261,8 +349,25 @@ published experimental timestamps.
 - Standalone TeX source generation succeeded for both diagrams and both styles.
 - No paper/project absolute paths or imports remain in render code.
 
-Test outputs were written outside the repository. LuaLaTeX was unavailable on the
-migration host, so scientific PDF and TikZ compilation/font comparisons remain
-**unverified**. No generated data or PDFs are included as a substitute for those
-tests. Basic checks that do not require TeX can be repeated with the commands
-above for the field, fish, `--help`, and `inline_tikz --tex-only`.
+The bullets above describe the initial migration checks. On 2026-09-30 the
+rootless setup and strict smoke above additionally passed, both in the default
+installation and a **fresh second TeX prefix**, using the locked render extra:
+
+- LuaHBTeX **1.21.0 / TeX Live 2025** confirmed; PDF producers report LuaTeX-1.21.0.
+- Fish PDF/PNG and all **four inline TikZ PDFs** compiled and rasterized.
+- Both multilingual font probes and both real Matplotlib PGF PDF/PNG smoke plots
+  passed; retained TeX logs contain no missing glyphs or font-substitution warnings.
+- Goodfire probe embeds Cabin, NotoSansMath, LMMono8, NotoSans and both Noto CJK
+  families. ICLR probe embeds TeXGyreTermesX, NewTXMI/txsys, LMMono8, Tempora,
+  CMUSerif, Bousung and ShanHeiSun. Bold probe text also exercises the bold faces.
+- Nine decoded PNG outputs matched pixel-for-pixel between the two TeX installs
+  in the initial smoke; this checks installation repeatability, not history.
+- The package suite after these changes passed **40 tests**.
+- Field table SHA256:
+  `990906b548647b1a8bfba8be80c9ff36fc6afa463df332673030d48979ecab90` (1,304 vectors).
+
+Local evidence is in Git-ignored `runs/tex-smoke/` and `runs/tex-smoke-clean/`;
+setup logs are under `runs/tex-smoke/`. No generated PDFs/data are committed.
+Full numerical scientific figures and historical pixel equality were **not**
+validated by this typography task. Original preambles and inline reference
+artworks are still missing, so the exactness gate must remain in place.

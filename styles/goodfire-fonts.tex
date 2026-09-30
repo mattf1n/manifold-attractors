@@ -11,3 +11,8 @@
 \renewcommand{\familydefault}{\rmdefault}
 \usepackage{amsmath,amssymb,bm}
 \usepackage{fontspec}
+% Preserve article's bx bold series for body mathastext/CB Greek.
+% fontspec changes it to b, which otherwise causes LGR/lmr/b substitution.
+\renewcommand{\bfdefault}{bx}
+% Missing glyphs are errors, including in standalone inline artwork.
+\tracinglostchars=3
