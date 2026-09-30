@@ -1,0 +1,18 @@
+{
+  "paper_commit": "ed8b89bc8344db678eb5e360a1893937d3b94a1f",
+  "note": "Reference table-file hashes only, not experiment inputs or numeric results.",
+  "tables": [
+    {
+      "name": "norm_growth_classifier",
+      "tex_sha256": "9318c69f6586fb4760273da4866c8c8a990ab0d38f96e485ebf4acf000e24347"
+    },
+    {
+      "name": "pair_barrier_validation",
+      "tex_sha256": "941703cded14392d2d96dbd2778f1d42d9c0b2ce3fa45e023cf993b70936e64f"
+    },
+    {
+      "name": "adaptive_steering",
+      "tex_sha256": "93379f576d48629c32b179761362aa86dafb60a069c1f42e2a46f11d8db96f3b"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "kind": "Frozen source-text selections only; no activations, predictions or tuned parameters",
+  "splits": {
+    "wiki_cal": {
+      "file": "wiki_cal.json.gz",
+      "sha256": "3890d98503954b63e86b384cf910494367bbe90e53983a2321e30b84d810fb90",
+      "source_manifest_sha256": "9ba873b4f681e1026b018923d9ab869b3b9faa37d67c2dbaf5f8a7fa575c0baf",
+      "records": 1000,
+      "fields": [
+        "article_group",
+        "document_id",
+        "full_text_sha256",
+        "identity_status",
+        "input_ids",
+        "parquet_row",
+        "position",
+        "row_group",
+        "row_in_group",
+        "sample_id",
+        "shard",
+        "split",
+        "stream_row",
+        "text",
+        "text_sha256",
+        "title",
+        "url",
+        "wikidata_qid"
+      ]
+    },
+    "wiki_test": {
+      "file": "wiki_test.json.gz",
+      "sha256": "5e2539417ec02cfe28766499101158bcf9877943fce48b230fd37e478c11787e",
+      "source_manifest_sha256": "ee975a942776dc0076615965edcf4dafdbe859ff4e4e32a195f304ad59313b2c",
+      "records": 10000,
+      "fields": [
+        "article_group",
+        "document_id",
+        "full_text_sha256",
+        "identity_status",
+        "input_ids",
+        "parquet_row",
+        "position",
+        "row_group",
+        "row_in_group",
+        "sample_id",
+        "shard",
+        "split",
+        "stream_row",
+        "text",
+        "text_sha256",
+        "title",
+        "url",
+        "wikidata_qid"
+      ]
+    },
+    "fineweb_test": {
+      "file": "fineweb_test.json.gz",
+      "sha256": "09d769e545abe16c185fb23f88b64d9a9980fa7fafe33af2920ac32228b9e015",
+      "source_manifest_sha256": "578d6babf63b147b4a0b01260c3bdcbcdc571f5ef7d4dfab49b450bec94de7b9",
+      "records": 10000,
+      "fields": [
+        "article_group",
+        "document_id",
+        "full_text_sha256",
+        "identity_status",
+        "input_ids",
+        "parquet_row",
+        "position",
+        "row_group",
+        "row_in_group",
+        "sample_id",
+        "shard",
+        "split",
+        "stream_row",
+        "text",
+        "text_sha256",
+        "title",
+        "url",
+        "wikidata_qid"
+      ]
+    }
+  },
+  "method_sources_sha256": {
+    "language_strength_grid.py": "57b9a3f49cf14f234cda262bb7cc03635aa42356f3dc261eea451f46d57144ab",
+    "language_straight_minimum.py": "dc5759dd77abe6c338c00a70a87acb5a848a1c5f0ce9f47d4c03207b998692c1",
+    "language_strength_large.py": "3ee0a27e992888a387f266992018daa2004ee7c2add4f6a4912d38903965dc27",
+    "language_probability_mass.py": "712e5b05d84218951f86e778609079b796a29ffe50e9f8ca69c3a94840345228",
+    "language_confirmatory_geometry.py": "a572d9cff6650120bc74f5e1e504b991b2f7548fee6eb13d02fc39c01cb4959f",
+    "language_confirmatory_fixed.py": "6f92137e8c406d5f0b5171a6a3e122ed358ad7417421e814d181c587dac511d3",
+    "language_confirmatory.py": "2b8f868c75cf47c42a87349922d38e9b535bf4adaab029da8927f5be4d8baf6a",
+    "language_linear_oracle.py": "83ec8bbfc753ed74e94677f8698770ac13980bf8992164035344e11b49a6eba7",
+    "exploration/concept_manifold_barriers/language_regions.py": "8fe9de169ea4f9c960cc8eb41be6d4aeee7c0a2c6aa41404424ee35f940870e2",
+    ".claude/worktrees/steering-geometry/steering_common.py": "4523c75a0a51a6a69e0b87ffcee17e50b9f2fc8ddf1f7e63eb25c7e033b14902"
+  },
+  "centroid_source": {
+    "dataset": "wikimedia/wikipedia",
+    "configs": [
+      "20231101.en",
+      "20231101.zh"
+    ],
+    "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+    "selection": "first 200 stripped texts with at least 200 characters, cropped to first 1200; no area-corpus deduplication",
+    "text_hashes": "manifold_attractors/maps/inputs/speed_corpus_hashes.json",
+    "canonical_texts_verified": true,
+    "batch": 4,
+    "max_tokens": 128,
+    "hidden_state_index": 15,
+    "accumulator": "float64 sum of float32 hidden states; all attention_mask=1 tokens including special tokens"
+  }
+}

@@ -74,6 +74,28 @@ def test_resume_checks_source_and_output_hashes(tmp_path, monkeypatch):
     assert len(calls) == 3
 
 
+def test_ready_stage_verifies_dependencies_without_rerunning(tmp_path, monkeypatch):
+    import subprocess
+    from types import SimpleNamespace
+    from manifold_attractors.pipeline import run_ready_stage, sha256
+    (tmp_path/'data').mkdir(); (tmp_path/'runs/shared').mkdir(parents=True)
+    source = tmp_path/'data/input.txt'; source.write_text('fresh upstream result')
+    (tmp_path/'runs/shared/upstream.json').write_text(json.dumps({'outputs': {'data/input.txt': sha256(source)}}))
+    tasks = {'upstream': {'module': 'never.run', 'outputs': ['data/input.txt']},
+             'new': {'module': 'new.stage', 'deps': ['upstream'], 'outputs': ['data/result.txt']}}
+    calls = []
+    def fake_run(cmd, **kwargs):
+        calls.append(cmd); (tmp_path/'data/result.txt').write_text('scored')
+        return SimpleNamespace(returncode=0)
+    monkeypatch.setattr(subprocess, 'run', fake_run)
+    run_ready_stage(tasks, 'new', root=tmp_path)
+    assert len(calls) == 1 and 'new.stage' in calls[0]
+    source.write_text('tampered')
+    with pytest.raises(RuntimeError, match='changed/missing'):
+        run_ready_stage(tasks, 'new', root=tmp_path)
+    assert len(calls) == 1
+
+
 def test_manifest_is_complete():
     tasks = load_tasks()
     assert tasks

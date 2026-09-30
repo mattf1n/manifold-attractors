@@ -2,13 +2,9 @@ version = 1
 revision = 3
 requires-python = "==3.13.*"
 resolution-markers = [
-    "sys_platform == 'win32' and extra != 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble'",
-    "sys_platform == 'emscripten' and extra != 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble'",
-    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra != 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble'",
-    "sys_platform == 'win32' and extra == 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
-    "sys_platform == 'emscripten' and extra == 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
-    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra == 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
-    "extra != 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
+    "sys_platform == 'win32'",
+    "sys_platform == 'emscripten'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 conflicts = [[
     { package = "manifold-attractors", extra = "compute" },
@@ -16,6 +12,12 @@ conflicts = [[
 ], [
     { package = "manifold-attractors", extra = "render" },
     { package = "manifold-attractors", extra = "render-bubble" },
+], [
+    { package = "manifold-attractors", extra = "compute" },
+    { package = "manifold-attractors", extra = "table" },
+], [
+    { package = "manifold-attractors", extra = "render-bubble" },
+    { package = "manifold-attractors", extra = "table" },
 ]]
 
 [[package]]
@@ -206,8 +208,8 @@ name = "contourpy"
 version = "1.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-19-manifold-attractors-compute' or extra == 'extra-19-manifold-attractors-render' or extra != 'extra-19-manifold-attractors-render-bubble'" },
-    { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-19-manifold-attractors-render-bubble'" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-19-manifold-attractors-compute' or extra == 'extra-19-manifold-attractors-render' or extra != 'extra-19-manifold-attractors-render-bubble' or (extra == 'extra-19-manifold-attractors-render-bubble' and extra == 'extra-19-manifold-attractors-table')" },
+    { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-19-manifold-attractors-render-bubble' or (extra == 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-table')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/83/5a/a55177dd22553a277388e8a1b3220e92de91bacb28356cdc73caa240121d/contourpy-1.4.0.tar.gz", hash = "sha256:20156f5a1ac4f8ce02656e39a61e82164a3d359796dc8026f75b062783d500e1", size = 13323726, upload-time = "2026-09-11T19:05:05.808Z" }
 wheels = [
@@ -306,7 +308,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "dill" },
     { name = "filelock" },
-    { name = "fsspec", extra = ["http"], marker = "extra == 'extra-19-manifold-attractors-compute' or (extra == 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble')" },
+    { name = "fsspec", extra = ["http"], marker = "extra == 'extra-19-manifold-attractors-compute' or (extra == 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble') or (extra == 'extra-19-manifold-attractors-render-bubble' and extra == 'extra-19-manifold-attractors-table')" },
     { name = "httpx" },
     { name = "huggingface-hub" },
     { name = "multiprocess" },
@@ -575,6 +577,11 @@ render-bubble = [
     { name = "pyarrow", version = "25.0.1", source = { registry = "https://pypi.org/simple" } },
     { name = "scipy" },
 ]
+table = [
+    { name = "jinja2" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" } },
+    { name = "pandas", version = "3.0.6", source = { registry = "https://pypi.org/simple" } },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -586,13 +593,16 @@ requires-dist = [
     { name = "accelerate", marker = "extra == 'compute'", specifier = ">=1.0" },
     { name = "datasets", marker = "extra == 'compute'", specifier = ">=4" },
     { name = "huggingface-hub", marker = "extra == 'compute'", specifier = ">=1.0" },
+    { name = "jinja2", marker = "extra == 'table'", specifier = "==3.1.6" },
     { name = "matplotlib", marker = "extra == 'render'", specifier = "==3.10.9" },
     { name = "matplotlib", marker = "extra == 'render-bubble'", specifier = "==3.11.2" },
     { name = "numpy", marker = "extra == 'compute'", specifier = "==2.2.6" },
     { name = "numpy", marker = "extra == 'render'", specifier = "==2.2.6" },
     { name = "numpy", marker = "extra == 'render-bubble'", specifier = "==2.5.3" },
+    { name = "numpy", marker = "extra == 'table'", specifier = "==2.2.6" },
     { name = "pandas", marker = "extra == 'compute'", specifier = "==3.0.3" },
     { name = "pandas", marker = "extra == 'render-bubble'", specifier = "==3.0.6" },
+    { name = "pandas", marker = "extra == 'table'", specifier = "==3.0.6" },
     { name = "pillow", specifier = "==12.3.0" },
     { name = "pyarrow", marker = "extra == 'compute'", specifier = "==24.0.0" },
     { name = "pyarrow", marker = "extra == 'render-bubble'", specifier = "==25.0.1" },
@@ -602,7 +612,7 @@ requires-dist = [
     { name = "torch", marker = "extra == 'compute'", specifier = "==2.11.0" },
     { name = "transformers", marker = "extra == 'compute'", specifier = "==5.8.0" },
 ]
-provides-extras = ["compute", "render", "render-bubble"]
+provides-extras = ["compute", "render", "table", "render-bubble"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8" }]
@@ -654,10 +664,9 @@ name = "matplotlib"
 version = "3.10.9"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform == 'win32' and extra == 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
-    "sys_platform == 'emscripten' and extra == 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
-    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra == 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
-    "extra != 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
+    "sys_platform == 'win32'",
+    "sys_platform == 'emscripten'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 dependencies = [
     { name = "contourpy" },
@@ -799,10 +808,9 @@ name = "numpy"
 version = "2.2.6"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "sys_platform == 'win32' and extra == 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
-    "sys_platform == 'emscripten' and extra == 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
-    "sys_platform != 'emscripten' and sys_platform != 'win32' and extra == 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
-    "extra != 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble'",
+    "sys_platform == 'win32'",
+    "sys_platform == 'emscripten'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/76/21/7d2a95e4bba9dc13d043ee156a356c0a8f0c6309dff6b21b4d71a073b8a8/numpy-2.2.6.tar.gz", hash = "sha256:e29554e2bef54a90aa5cc07da6ce955accb83f21ab5de01a62c8478897b264fd", size = 20276440, upload-time = "2025-05-17T22:38:04.611Z" }
 wheels = [
@@ -1065,7 +1073,8 @@ resolution-markers = [
     "sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 dependencies = [
-    { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" } },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "(extra == 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-render-bubble') or (extra == 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-table') or (extra != 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-render') or (extra != 'extra-19-manifold-attractors-compute' and extra != 'extra-19-manifold-attractors-render-bubble') or (extra != 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble' and extra == 'extra-19-manifold-attractors-table')" },
+    { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-19-manifold-attractors-render-bubble' or (extra == 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-table')" },
     { name = "python-dateutil" },
     { name = "tzdata", marker = "sys_platform == 'emscripten' or sys_platform == 'win32'" },
 ]
@@ -1237,7 +1246,7 @@ name = "pytest"
 version = "9.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-render-bubble') or (extra == 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble')" },
+    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-render-bubble') or (extra == 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-table') or (extra == 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble') or (extra == 'extra-19-manifold-attractors-render-bubble' and extra == 'extra-19-manifold-attractors-table')" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
@@ -1359,8 +1368,8 @@ name = "scipy"
 version = "1.18.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-19-manifold-attractors-compute' or (extra == 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble')" },
-    { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-19-manifold-attractors-render-bubble'" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-19-manifold-attractors-compute' or (extra == 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble') or (extra == 'extra-19-manifold-attractors-render-bubble' and extra == 'extra-19-manifold-attractors-table')" },
+    { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-19-manifold-attractors-render-bubble' or (extra == 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-table')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/7e/74/66de6258867beb2ef08f35f9f2ac017a52cacd5081714d239ff1a442d458/scipy-1.18.1.tar.gz", hash = "sha256:52c4b7422442aba924d03ad4019852b08a92e64ea187b933135687bfe2747307", size = 30781235, upload-time = "2026-08-21T23:28:50.599Z" }
 wheels = [
@@ -1447,7 +1456,7 @@ version = "2.11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cuda-bindings", marker = "sys_platform == 'linux'" },
-    { name = "cuda-toolkit", extra = ["cublas", "cudart", "cufft", "cufile", "cupti", "curand", "cusolver", "cusparse", "nvjitlink", "nvrtc", "nvtx"], marker = "(sys_platform == 'linux' and extra == 'extra-19-manifold-attractors-compute') or (extra == 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-render-bubble') or (extra == 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble')" },
+    { name = "cuda-toolkit", extra = ["cublas", "cudart", "cufft", "cufile", "cupti", "curand", "cusolver", "cusparse", "nvjitlink", "nvrtc", "nvtx"], marker = "(sys_platform == 'linux' and extra == 'extra-19-manifold-attractors-compute') or (extra == 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-render-bubble') or (extra == 'extra-19-manifold-attractors-compute' and extra == 'extra-19-manifold-attractors-table') or (extra == 'extra-19-manifold-attractors-render' and extra == 'extra-19-manifold-attractors-render-bubble') or (extra == 'extra-19-manifold-attractors-render-bubble' and extra == 'extra-19-manifold-attractors-table')" },
     { name = "filelock" },
     { name = "fsspec" },
     { name = "jinja2" },

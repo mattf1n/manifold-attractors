@@ -83,6 +83,11 @@ class MapsTest(unittest.TestCase):
     def test_tiny_llama_fixed_and_conditional_replay(self):
         import torch
         from transformers import LlamaConfig,LlamaForCausalLM
+        from transformers.models.llama import modeling_llama
+        # The FP64 audit patches a module-level HF hook; do not leak it into
+        # subsequent native-FP32 tests in the same interpreter.
+        original_attention = modeling_llama.eager_attention_forward
+        self.addCleanup(setattr, modeling_llama, 'eager_attention_forward', original_attention)
         from .fixed_probe import FixedProbe
         from .probes import ContextProbe
         config=LlamaConfig(vocab_size=16,hidden_size=8,intermediate_size=16,num_hidden_layers=4,

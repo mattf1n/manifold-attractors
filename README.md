@@ -1,8 +1,9 @@
 # Manifold attractors: figure reproduction
 
 Standalone source package for paper commit
-`ed8b89bc8344db678eb5e360a1893937d3b94a1f`: all **16 included PDFs and two inline
-TikZ artworks**, main text and appendix, in ICLR and Goodfire styles.
+`ed8b89bc8344db678eb5e360a1893937d3b94a1f`: all **16 included PDFs, two inline
+TikZ artworks, and three active tables**, main text and appendix. Figures support
+ICLR and Goodfire styles; table values are shared.
 No dependency on the original project/paper checkout, archived experiment data,
 or precomputed activations. Only required numerical kernels and renderers are
 retained. Public weights/corpora are downloaded; numerical intermediates are
@@ -38,8 +39,9 @@ make test                                 # CPU/tiny-model integration and unit 
 After activating the TeX and rasterizer environment from `RENDER.md`:
 
 ```sh
-uv run --extra compute reproduce run --resume
-uv run --extra compute reproduce run --style goodfire --resume
+uv run --extra compute reproduce run paper --resume   # figures + tables
+uv run --extra compute reproduce run figures --style goodfire --resume
+uv run --extra compute reproduce run tables --resume  # tables alone
 uv run reproduce check                    # optional STRICT pixel-reference comparison
 ```
 
@@ -60,7 +62,7 @@ submitted automatically.
 
 ## Reproducibility contract
 
-- `configs/{core,maps,render}.json` is the explicit task DAG.
+- `configs/{core,maps,render,classifier_table,steering_table,render_tables}.json` is the explicit task DAG.
   `plan` prints actual commands; no hidden call to the old project is needed.
 - Models and available corpora are revision-pinned; input hashes and frozen
   token records guard against silently changing examples. Human-reviewed labels
@@ -76,8 +78,13 @@ submitted automatically.
   declared output hashes. Scientific data are shared between styles. Generator
   checkpoints retain their own numerical-contract checks. Use an empty `data/`
   for a genuinely fresh full run; no generated data are shipped in Git.
-- Task logs/timing/provenance live in `runs/`; generated outputs in `data/` and
-  `fig/`; downloaded author source in `external/`. These are all Git-ignored.
+- `reproduce stage TASK` executes only a named new stage after verifying every
+  completed prerequisite's recorded output hashes. This supports adding table
+  scoring to freshly computed native pools without overwriting figure inputs;
+  it does not certify that upstream code matches a subsequently edited version.
+- Task logs/timing/provenance live in `runs/`; generated outputs in `data/`,
+  `fig/`, and `tab/`; downloaded author source in `external/`. These are Git-ignored.
+  Deliberately published figure/table outputs live under `docs/`.
 
 The optional strict `check` compares canonical decoded PNG pixels for the 15 scientific figures and
 embedded image pixels/page geometry for the simple fish PDF. Original file
@@ -106,15 +113,17 @@ images with no missing-glyph or font-substitution warnings. These checks do not
 substitute for the full-size numerical and per-artwork comparisons below.
 
 Protocol details and limitations: [CORE.md](CORE.md), [MAPS.md](MAPS.md),
-[RENDER.md](RENDER.md), [AUDIT.md](AUDIT.md). Tables, legacy diagnostic plots,
-and full-manuscript pagination are deliberately out of scope.
+[RENDER.md](RENDER.md), [TABLES.md](TABLES.md), [AUDIT.md](AUDIT.md).
+Unused/commented diagnostic tables and plots, and full-manuscript pagination,
+remain out of scope. The three active tables are included; their full fresh
+experiments must complete before results are published.
 
 <!-- reproduced-figures:start -->
 ## Reproduced figures
 
 These are **newly generated results**, not copies of the paper figures. Numerical experiments use the standalone package; typography uses explicitly reconstructed styles.
 
-Published **20/36** style-specific artworks; **3** pass the optional exact image check. **Pixel identity is not required**: small hardware-rounding and typographic differences are acceptable when scientifically inconsequential. Token selection, numerical results and conclusions must remain faithful. The per-artwork report distinguishes scientific validation from pixel identity; inline artworks lack historical image references.
+Published **22/36** style-specific artworks; **6** pass the optional exact image check. **Pixel identity is not required**: small hardware-rounding and typographic differences are acceptable when scientifically inconsequential. Token selection, numerical results and conclusions must remain faithful. The per-artwork report distinguishes scientific validation from pixel identity; inline artworks lack historical image references.
 
 [Per-artwork hashes and validation](docs/figures/validation.json). [Protocols and limitations](AUDIT.md).
 
@@ -135,9 +144,15 @@ Scientific validation: **source reproduced**. No historical reference — unveri
 
 ### Great circle norm grid
 
-Scientific validation: **correcting sampling regression**. Reference pixels differ. [PDF](docs/figures/iclr/great_circle_norm_grid.pdf)
+Scientific validation: **exact numerics**. Exact reference pixels. [PDF](docs/figures/iclr/great_circle_norm_grid.pdf)
 
 ![Great circle norm grid](docs/figures/iclr/great_circle_norm_grid.png)
+
+### Great circle synthetic grid
+
+Scientific validation: **exact numerics**. Exact reference pixels. [PDF](docs/figures/iclr/great_circle_synthetic_grid.pdf)
+
+![Great circle synthetic grid](docs/figures/iclr/great_circle_synthetic_grid.png)
 
 ### Triple area heatmaps
 
@@ -153,25 +168,25 @@ Scientific validation: **exact numerics**. Exact reference pixels. [PDF](docs/fi
 
 ### Refusal steering heatmaps
 
-Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/iclr/refusal_steering_heatmaps.pdf)
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/iclr/refusal_steering_heatmaps.pdf)
 
 ![Refusal steering heatmaps](docs/figures/iclr/refusal_steering_heatmaps.png)
 
 ### Language area heatmaps
 
-Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/iclr/language_area_heatmaps.pdf)
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/iclr/language_area_heatmaps.pdf)
 
 ![Language area heatmaps](docs/figures/iclr/language_area_heatmaps.png)
 
 ### Language steering speed
 
-Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/iclr/language_steering_speed.pdf)
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/iclr/language_steering_speed.pdf)
 
 ![Language steering speed](docs/figures/iclr/language_steering_speed.png)
 
 ### Great circle norm grid context
 
-Scientific validation: **correcting sampling regression**. Reference pixels differ. [PDF](docs/figures/iclr/great_circle_norm_grid_context.pdf)
+Scientific validation: **exact numerics**. Exact reference pixels. [PDF](docs/figures/iclr/great_circle_norm_grid_context.pdf)
 
 ![Great circle norm grid context](docs/figures/iclr/great_circle_norm_grid_context.png)
 
@@ -196,9 +211,15 @@ Scientific validation: **source reproduced**. No historical reference — unveri
 
 ### Great circle norm grid
 
-Scientific validation: **correcting sampling regression**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_norm_grid.pdf)
+Scientific validation: **exact numerics**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_norm_grid.pdf)
 
 ![Great circle norm grid](docs/figures/goodfire/great_circle_norm_grid.png)
+
+### Great circle synthetic grid
+
+Scientific validation: **exact numerics**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_synthetic_grid.pdf)
+
+![Great circle synthetic grid](docs/figures/goodfire/great_circle_synthetic_grid.png)
 
 ### Triple area heatmaps
 
@@ -214,25 +235,25 @@ Scientific validation: **exact numerics**. Reference pixels differ. [PDF](docs/f
 
 ### Refusal steering heatmaps
 
-Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/goodfire/refusal_steering_heatmaps.pdf)
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/goodfire/refusal_steering_heatmaps.pdf)
 
 ![Refusal steering heatmaps](docs/figures/goodfire/refusal_steering_heatmaps.png)
 
 ### Language area heatmaps
 
-Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/goodfire/language_area_heatmaps.pdf)
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/goodfire/language_area_heatmaps.pdf)
 
 ![Language area heatmaps](docs/figures/goodfire/language_area_heatmaps.png)
 
 ### Language steering speed
 
-Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/goodfire/language_steering_speed.pdf)
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/goodfire/language_steering_speed.pdf)
 
 ![Language steering speed](docs/figures/goodfire/language_steering_speed.png)
 
 ### Great circle norm grid context
 
-Scientific validation: **correcting sampling regression**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_norm_grid_context.pdf)
+Scientific validation: **exact numerics**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_norm_grid_context.pdf)
 
 ![Great circle norm grid context](docs/figures/goodfire/great_circle_norm_grid_context.png)
 
@@ -240,6 +261,28 @@ Fish component: [Exact embedded image and placement](docs/figures/goodfire/dead_
 
 </details>
 
-Still pending: `iclr/great_circle_synthetic_grid`, `iclr/norm_growth_trajectory_starts`, `iclr/synthetic_profile_trajectory`, `iclr/great_circle_pair_speed_grid`, `iclr/norm_growth_trajectory_starts_appendix`, `iclr/great_circle_speed_grid`, `iclr/great_circle_synthetic_speed_grid`, `iclr/great_circle_pair_speed_grid_appendix`, `goodfire/great_circle_synthetic_grid`, `goodfire/norm_growth_trajectory_starts`, `goodfire/synthetic_profile_trajectory`, `goodfire/great_circle_pair_speed_grid`, `goodfire/norm_growth_trajectory_starts_appendix`, `goodfire/great_circle_speed_grid`, `goodfire/great_circle_synthetic_speed_grid`, `goodfire/great_circle_pair_speed_grid_appendix`.
+Still pending: `iclr/norm_growth_trajectory_starts`, `iclr/synthetic_profile_trajectory`, `iclr/great_circle_pair_speed_grid`, `iclr/norm_growth_trajectory_starts_appendix`, `iclr/great_circle_speed_grid`, `iclr/great_circle_synthetic_speed_grid`, `iclr/great_circle_pair_speed_grid_appendix`, `goodfire/norm_growth_trajectory_starts`, `goodfire/synthetic_profile_trajectory`, `goodfire/great_circle_pair_speed_grid`, `goodfire/norm_growth_trajectory_starts_appendix`, `goodfire/great_circle_speed_grid`, `goodfire/great_circle_synthetic_speed_grid`, `goodfire/great_circle_pair_speed_grid_appendix`.
 
 <!-- reproduced-figures:end -->
+
+<!-- reproduced-tables:start -->
+## Reproduced tables
+
+These values come from fresh experiments, not the old paper tables. [Protocols](TABLES.md). [Validation](docs/tables/validation.json).
+
+### Norm growth classifier
+
+Matches the historical formatted table exactly. [LaTeX](docs/tables/norm_growth_classifier.tex) · [Numeric JSON](docs/tables/norm_growth_classifier.json)
+
+| Class | Model | 1 | 4 | 6 | 8 | 11 | 14 | 16 | 18 | 21 | 24 | 26 | 28 | 31 | 34 | 36 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Gaussian | Llama 3.1 8B | 0.851 | 0.963 | 0.915 | 0.897 | 0.789 | 0.818 | 0.963 | 0.983 | 0.981 | 0.899 | 0.869 | 0.759 | 0.555 | — | — |
+| Gaussian | OLMo 3 7B | 0.618 | 0.808 | 0.887 | 0.890 | 0.893 | 0.933 | 0.947 | 0.954 | 0.997 | 0.973 | 0.935 | 0.928 | 0.742 | — | — |
+| Gaussian | Qwen 3 8B | 0.765 | 0.621 | 0.824 | 0.865 | 0.923 | 0.833 | 0.690 | 0.740 | 0.830 | 0.923 | 0.965 | 0.955 | 0.836 | 0.669 | 0.478 |
+| Shuffled | Llama 3.1 8B | 0.927 | 0.999 | 0.991 | 0.956 | 0.980 | 0.999 | 1.000 | 0.998 | 1.000 | 0.980 | 0.950 | 0.928 | 0.835 | — | — |
+| Shuffled | OLMo 3 7B | 0.525 | 0.887 | 0.954 | 0.913 | 0.927 | 0.956 | 0.974 | 0.986 | 0.990 | 0.975 | 0.903 | 0.902 | 0.866 | — | — |
+| Shuffled | Qwen 3 8B | 0.997 | 0.906 | 0.969 | 0.908 | 0.943 | 0.953 | 0.871 | 0.957 | 0.995 | 0.998 | 0.995 | 0.981 | 0.944 | 0.786 | 0.503 |
+
+Pending: `pair_barrier_validation`, `adaptive_steering`.
+
+<!-- reproduced-tables:end -->

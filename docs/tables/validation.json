@@ -1,0 +1,42 @@
+{
+  "tables": [
+    {
+      "name": "norm_growth_classifier",
+      "tex_matches_reference": true,
+      "numerical_validation": {
+        "models": {
+          "llama3": {
+            "scores_exact": true,
+            "score_max_absolute_error": 0.0,
+            "all_layer_auc_max_absolute_error": 0.0,
+            "all_layer_auc_equal_3dp": true
+          },
+          "olmo3": {
+            "scores_exact": true,
+            "score_max_absolute_error": 0.0,
+            "all_layer_auc_max_absolute_error": 0.0,
+            "all_layer_auc_equal_3dp": true
+          },
+          "qwen3": {
+            "scores_exact": true,
+            "score_max_absolute_error": 0.0,
+            "all_layer_auc_max_absolute_error": 0.0,
+            "all_layer_auc_equal_3dp": true
+          }
+        },
+        "rendered_table_exact": true
+      },
+      "source_digest": "311e8d6dbd917dd29139d2032b5a8a0a8a971085c7a037469a51c9f7d620dd5c",
+      "generation_records": {},
+      "output_sha256": {
+        "norm_growth_classifier.tex": "9318c69f6586fb4760273da4866c8c8a990ab0d38f96e485ebf4acf000e24347",
+        "norm_growth_classifier.md": "01f4baf1bb24f2183debb3a3284df3134a7de296afc6f826321e7cb6504f8d64",
+        "norm_growth_classifier.json": "689ddcc1963df024d88a1e91bc18473522bb3851dfcf33bb90e0467eb0215844"
+      }
+    }
+  ],
+  "pending": [
+    "pair_barrier_validation",
+    "adaptive_steering"
+  ]
+}

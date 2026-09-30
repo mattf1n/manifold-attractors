@@ -1,0 +1,29 @@
+{
+  "description": "The three active manuscript tables; shared numeric/text outputs for both document styles.",
+  "tasks": [
+    {
+      "id": "render-table-norm_growth_classifier",
+      "module": "manifold_attractors.render.tables",
+      "environment": "table",
+      "args": ["norm_growth_classifier", "--data", "data/norm_growth_classifier_scores", "--output", "tab/norm_growth_classifier.tex"],
+      "outputs": ["tab/norm_growth_classifier.tex", "tab/norm_growth_classifier.md", "tab/norm_growth_classifier.json"],
+      "deps": ["data-norm_growth_classifier-llama3", "data-norm_growth_classifier-olmo3", "data-norm_growth_classifier-qwen3"]
+    },
+    {
+      "id": "render-table-pair_barrier_validation",
+      "module": "manifold_attractors.render.tables",
+      "environment": "table",
+      "args": ["pair_barrier_validation", "--data", "data/pair_barrier_validation/summary.json", "--output", "tab/pair_barrier_validation.tex"],
+      "outputs": ["tab/pair_barrier_validation.tex", "tab/pair_barrier_validation.md", "tab/pair_barrier_validation.json"],
+      "deps": ["data-pair_barrier_validation"]
+    },
+    {
+      "id": "render-table-adaptive_steering",
+      "module": "manifold_attractors.render.tables",
+      "environment": "table",
+      "args": ["adaptive_steering", "--data", "data/language_steering_confirmatory", "--output", "tab/adaptive_steering.tex"],
+      "outputs": ["tab/adaptive_steering.tex", "tab/adaptive_steering.md", "tab/adaptive_steering.json"],
+      "deps": ["data-adaptive_steering"]
+    }
+  ]
+}

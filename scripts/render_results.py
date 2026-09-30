@@ -19,18 +19,20 @@ from manifold_attractors.pipeline import ROOT, load_tasks, order_tasks, outputs,
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--style', choices=['iclr', 'goodfire'], default='iclr')
+    parser.add_argument('--scope', choices=['figures','tables','all'], default='figures')
     typography = parser.add_mutually_exclusive_group()
     typography.add_argument('--allow-reconstructed-styles', action='store_true', default=True)
     typography.add_argument('--require-original-styles', action='store_false', dest='allow_reconstructed_styles')
     parser.add_argument('--require-all', action='store_true')
     args = parser.parse_args()
     reference = json.loads((ROOT/'configs/reference.json').read_text())
-    if any(not item.get('resolved') for item in reference.get('exactness_blockers', [])) and not args.allow_reconstructed_styles:
+    if args.scope != 'tables' and any(not item.get('resolved') for item in reference.get('exactness_blockers', [])) and not args.allow_reconstructed_styles:
         parser.error('Original styles are unavailable; --allow-reconstructed-styles explicitly acknowledges unverified typography')
-    if not shutil.which('lualatex') or not shutil.which('pdftocairo'):
+    if args.scope != 'tables' and (not shutil.which('lualatex') or not shutil.which('pdftocairo')):
         parser.error('Activate TeX and the pinned rasterizer first; see RENDER.md')
     tasks = load_tasks()
-    wanted = [name for name in tasks if name.startswith('render-')]
+    wanted = [name for name in tasks if name.startswith('render-') and
+              (args.scope == 'all' or (name.startswith('render-table-') == (args.scope == 'tables')))]
     order = order_tasks(tasks, wanted)
     verified, unavailable = {}, {}
     for name in order:
@@ -46,11 +48,11 @@ def main():
                 raise RuntimeError(f'Generated output changed or missing: {path}')
         verified[name] = record
     env = dict(os.environ, FIGURE_STYLE=args.style, PYTHONHASHSEED='0', PYTHONPATH=str(ROOT/'src'))
-    directory = ROOT/'runs'/args.style
+    directory = ROOT/'runs'/('tables' if args.scope == 'tables' else args.style)
     directory.mkdir(parents=True, exist_ok=True)
     report = {'style': args.style, 'reconstructed_styles': args.allow_reconstructed_styles,
               'source_digest': code_digest(ROOT), 'runner_sha256': sha256(Path(__file__)),
-              'tex_version': subprocess.check_output(['lualatex', '--version'], text=True),
+              'tex_version': subprocess.check_output(['lualatex', '--version'], text=True) if args.scope != 'tables' else None,
               'rendered': [], 'pending': {}, 'failed': {}}
     for name in [n for n in order if n.startswith('render-')]:
         missing = [n for n in order_tasks(tasks, [name]) if n in unavailable]
@@ -89,7 +91,9 @@ def main():
                   'reconstructed_styles': args.allow_reconstructed_styles,
                   'generation_records': {n: verified[n]['fingerprint'] for n in order_tasks(tasks, [name]) if n in verified},
                   'outputs': {str(p.relative_to(ROOT)): sha256(p) for p in expected}}
-        (directory/f'{name}.json').write_text(json.dumps(record, indent=2)+'\n')
+        record_directory = ROOT/'runs/shared' if name.startswith('render-table-') else directory
+        record_directory.mkdir(parents=True, exist_ok=True)
+        (record_directory/f'{name}.json').write_text(json.dumps(record, indent=2)+'\n')
         report['rendered'].append(name)
         print('rendered:', name, flush=True)
     (directory/'render-report.json').write_text(json.dumps(report, indent=2)+'\n')

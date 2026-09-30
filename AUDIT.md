@@ -11,14 +11,18 @@ old strict gate.
 
 Full-size independent comparisons identified and distinguished three cases:
 
-- **Substantive sampling regression (being corrected):** natural norm figures
+- **Substantive sampling regression (corrected and verified):** natural norm figures
   historically sampled all nonspecial positions. A later source revision
   excluded position zero, changing 14/20 OLMo and 13/20 Qwen anchors even though
   no historical selected token was at zero. Replaying seed20260908 with the
   historical candidate rule recovers all60 original selections. The norm CLI
   and recipe now explicitly restore that rule; other speed/synthetic/pair
   protocols retain their separate positive-position policy. Fresh norm/context
-  forwards are rerun rather than substituting archived activations.
+  forwards were rerun rather than substituting archived activations. Every
+  numerical array now matches the historical reference exactly for all three
+  models, for both fixed-probe and matched-document-context norm figures.
+- **Selected synthetic norm grids:** every array also matches exactly for the
+  independently regenerated Llama21/OLMo21/Qwen27 panels.
 - **Inconsequential arithmetic drift:** six triple-area maps agree within
   relative1e-5 (observed maximum <3.514e-6). Historical native extraction used
   A100; the fresh run used H100. Only10 of251430 quantized source colors and

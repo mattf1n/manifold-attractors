@@ -29,6 +29,54 @@ def compare(entry, pdf, png, style):
         return 'exact-pixels' if pixel_digest(image) == expected else 'different-pixels'
 
 
+def publish_tables(run, root, require_all=False):
+    reference_path = root/'configs/reference_tables.json'
+    if not reference_path.exists():
+        return
+    references = json.loads(reference_path.read_text())['tables']
+    ready, pending = [], []
+    for item in references:
+        name = item['name']; stamp = run/'runs/shared'/f'render-table-{name}.json'
+        paths = [run/'tab'/f'{name}{suffix}' for suffix in ('.tex','.md','.json')]
+        if not stamp.exists() or not all(p.is_file() for p in paths):
+            pending.append(name); continue
+        record = json.loads(stamp.read_text())
+        if any(record['outputs'].get(str(p.relative_to(run))) != sha256(p) for p in paths):
+            raise RuntimeError(f'Refusing changed/unrecorded table: {name}')
+        ready.append((item, paths, record))
+    if require_all and pending:
+        raise RuntimeError('Tables pending: '+', '.join(pending))
+    destination = root/'docs/tables'; destination.mkdir(parents=True,exist_ok=True)
+    reports, section = [], ['<!-- reproduced-tables:start -->','## Reproduced tables','',
+        'These values come from fresh experiments, not the old paper tables. '
+        '[Protocols](TABLES.md). [Validation](docs/tables/validation.json).','']
+    for item, paths, record in ready:
+        name = item['name']
+        for path in paths: shutil.copyfile(path,destination/path.name)
+        exact = sha256(paths[0]) == item['tex_sha256']
+        evidence_path = run/'runs'/f'table-{name}-validation.json'
+        evidence = json.loads(evidence_path.read_text()) if evidence_path.exists() else None
+        reports.append({'name':name,'tex_matches_reference':exact,
+                        'numerical_validation':evidence,
+                        'source_digest':record.get('source_digest'),
+                        'generation_records':record.get('generation_records',{}),
+                        'output_sha256':{p.name:sha256(p) for p in paths}})
+        section += [f'### {name.replace("_"," ").capitalize()}','',
+            ('Matches the historical formatted table exactly.' if exact else
+             'Fresh results; historical formatted-table comparison differs and requires assessment.')
+            +f' [LaTeX](docs/tables/{name}.tex) · [Numeric JSON](docs/tables/{name}.json)','',
+            paths[1].read_text().strip(),'']
+    if pending:section += ['Pending: '+', '.join(f'`{name}`' for name in pending)+'.','']
+    section += ['<!-- reproduced-tables:end -->']
+    (destination/'validation.json').write_text(json.dumps({'tables':reports,'pending':pending},indent=2)+'\n')
+    readme=root/'README.md';text=readme.read_text();start,end=section[0],section[-1];block='\n'.join(section)
+    if start in text:
+        before,remainder=text.split(start,1);_,after=remainder.split(end,1);text=before+block+after
+    else:text=text.rstrip()+'\n\n'+block+'\n'
+    readme.write_text(text)
+    print(f'Published {len(ready)}/{len(references)} tables')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', type=Path, required=True)
@@ -122,6 +170,7 @@ def main():
         text = text.rstrip()+'\n\n'+section+'\n'
     readme.write_text(text)
     print(f'Published {len(records)}/36 artifacts; {exact} exact image checks; {len(pending)} pending')
+    publish_tables(run, ROOT, args.require_all)
 
 
 if __name__ == '__main__':

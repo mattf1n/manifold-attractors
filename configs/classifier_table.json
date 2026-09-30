@@ -1,0 +1,60 @@
+{
+  "description": "Fresh all-layer norm-growth classifier TABLE data for all three models. Read-only native pools from core.json DAG dependencies; scores never replace those pools. See TABLE_CLASSIFIER.md.",
+  "source_provenance": {
+    "generator": "paper_scripts/norm_growth_classifier.py: compute_layers score construction and validation only",
+    "generator_sha256": "48beba5dd3d49e0264ec07f96e3fbbd20e2d5fccfa4e4f5347df07f43de74b81",
+    "renderer": "paper/scripts/tab/norm_growth_classifier.py (inspected, not owned by this generator)",
+    "renderer_sha256": "7ae8859fcb8420eec0f62ac832cb034f5730d981e770cb565bcd1add146c3118",
+    "archive": "paper-archive-20260930-214925/untracked/data/norm_growth_classifier_layers (JSON audit evidence only, never runtime inputs)",
+    "archived_metadata_sha256": {
+      "llama3": "b702375b13df1099748c78471ed0d035bdfda5127fb71f92f1421aa198ca2626",
+      "olmo3": "7e6f3d324393558d4a7607b427557018ee8d359ffdb91b14bb3e0cdbc272d3b6",
+      "qwen3": "3877945f8963f285794650a94d3f7fee083bc2f702f136ae9a83525b068d07f4"
+    },
+    "historical_source_warning": "Llama/OLMo archived generator hash b5107c763ee342815cf6262326c97f4a1c735c6e6f878283ce1f8de22bc82dc1 differs from current source. Qwen archived hash matches current source. Scientific reproduction, not claimed byte-identical archival regeneration."
+  },
+  "protocol": {
+    "models": ["llama3", "olmo3", "qwen3"],
+    "all_layer_counts": [32, 32, 36],
+    "reference_samples": 256,
+    "samples_per_class": 128,
+    "fit_sampling_seed": 20260909,
+    "heldout_sampling_seed": 20260910,
+    "model_seeds": [20261910, 20262910, 20263910],
+    "synthetic_seeds_reset_at_each_layer": [20261911, 20262911, 20263911],
+    "classes": ["natural", "gaussian", "shuffled"],
+    "dtype": "float32",
+    "fit_dtype": "float64",
+    "covariance_ddof": 1,
+    "score": "raw single-block output norm / injected input norm, fixed position 1 after BOS/EOS; no final model normalization",
+    "positive_class": "natural",
+    "higher_score_means": "natural",
+    "auc": "all natural/synthetic pairs, half credit for ties; no fitting, sign selection, or threshold tuning",
+    "renderer_default_layers": [1, 4, 6, 8, 11, 14, 16, 18, 21, 24, 26, 28, 31, 34, 36],
+    "renderer_precision": 3,
+    "renderer_layers_per_panel": 15
+  },
+  "tasks": [
+    {
+      "id": "data-norm_growth_classifier-llama3",
+      "module": "manifold_attractors.experiments.norm_growth_classifier",
+      "args": ["--model", "llama3", "--data-root", "data", "--native-layers", "data/norm_growth_classifier_layers", "--output", "data/norm_growth_classifier_scores", "--batch", "128", "--threads", "4", "--device", "cuda"],
+      "outputs": ["data/norm_growth_classifier_scores/llama3.npz", "data/norm_growth_classifier_scores/llama3.json"],
+      "deps": ["data-native_layers-llama3"]
+    },
+    {
+      "id": "data-norm_growth_classifier-olmo3",
+      "module": "manifold_attractors.experiments.norm_growth_classifier",
+      "args": ["--model", "olmo3", "--data-root", "data", "--native-layers", "data/norm_growth_classifier_layers", "--output", "data/norm_growth_classifier_scores", "--batch", "128", "--threads", "4", "--device", "cuda"],
+      "outputs": ["data/norm_growth_classifier_scores/olmo3.npz", "data/norm_growth_classifier_scores/olmo3.json"],
+      "deps": ["data-native_layers-olmo3"]
+    },
+    {
+      "id": "data-norm_growth_classifier-qwen3",
+      "module": "manifold_attractors.experiments.norm_growth_classifier",
+      "args": ["--model", "qwen3", "--data-root", "data", "--native-layers", "data/norm_growth_classifier_layers", "--output", "data/norm_growth_classifier_scores", "--batch", "128", "--threads", "4", "--device", "cuda"],
+      "outputs": ["data/norm_growth_classifier_scores/qwen3.npz", "data/norm_growth_classifier_scores/qwen3.json"],
+      "deps": ["data-native_layers-qwen3"]
+    }
+  ]
+}

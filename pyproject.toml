@@ -19,6 +19,7 @@ compute = [
   "datasets>=4",
 ]
 render = ["numpy==2.2.6", "matplotlib==3.10.9"]
+table = ["numpy==2.2.6", "pandas==3.0.6", "jinja2==3.1.6"]
 render-bubble = [
   "numpy==2.5.3", "matplotlib==3.11.2", "pandas==3.0.6",
   "pyarrow==25.0.1", "scipy==1.18.1",
@@ -38,6 +39,8 @@ packages = ["src/manifold_attractors"]
 conflicts = [
   [{extra = "compute"}, {extra = "render-bubble"}],
   [{extra = "render"}, {extra = "render-bubble"}],
+  [{extra = "compute"}, {extra = "table"}],
+  [{extra = "render-bubble"}, {extra = "table"}],
 ]
 
 [dependency-groups]

@@ -68,7 +68,7 @@ def order_tasks(tasks: dict, targets: list[str]) -> list[str]:
 def command(task: dict, style: str) -> list[str]:
     environment = task.get("environment")
     if environment:
-        if environment not in {"render", "render-bubble"}:
+        if environment not in {"render", "render-bubble", "table"}:
             raise ValueError(f"Unknown isolated environment: {environment}")
         prefix = ["uv", "run", "--locked", "--isolated", "--no-default-groups",
                   "--extra", environment, "python"]
@@ -100,7 +100,8 @@ def fingerprint(task, style, digest, dep_records):
         "dependencies": dep_records}, sort_keys=True).encode()).hexdigest()
 
 
-def run_tasks(tasks, names, style, resume=False, root=ROOT, allow_reconstructed_styles=True):
+def run_tasks(tasks, names, style, resume=False, root=ROOT, allow_reconstructed_styles=True,
+              dependency_records=None):
     blocked = [(name, tasks[name]["blocked"]) for name in names if tasks[name].get("blocked")]
     if blocked:
         raise RuntimeError("Cannot regenerate selected targets:\n" + "\n".join(f"  {n}: {why}" for n, why in blocked))
@@ -120,7 +121,7 @@ def run_tasks(tasks, names, style, resume=False, root=ROOT, allow_reconstructed_
                CUBLAS_WORKSPACE_CONFIG=":4096:8", TOKENIZERS_PARALLELISM="false",
                PYTHONPATH=str(root / "src"))
     digest = code_digest(root)
-    records = {}
+    records = dict(dependency_records or {})
     for name in names:
         task = tasks[name]
         expected = outputs(task, style, root)
@@ -148,12 +149,31 @@ def run_tasks(tasks, names, style, resume=False, root=ROOT, allow_reconstructed_
         if missing:
             raise RuntimeError(f"{name} did not produce nonempty outputs: {missing}")
         records[name] = {str(p.relative_to(root)): sha256(p) for p in expected}
-        data = dict(task=name, command=cmd, fingerprint=key, outputs=records[name],
+        data = dict(task=name, command=cmd, fingerprint=key, source_digest=digest,
+                    dependency_outputs={d: records[d] for d in task.get('deps', [])}, outputs=records[name],
                     seconds=time.time() - start, python=sys.version, finished=time.time(),
                     allowed_reconstructed_styles=allow_reconstructed_styles)
         temporary = stamp.with_suffix(".tmp")
         temporary.write_text(json.dumps(data, indent=2) + "\n")
         temporary.replace(stamp)
+
+
+def run_ready_stage(tasks, name, style='iclr', root=ROOT, allow_reconstructed_styles=True):
+    """Execute one new stage without overwriting previously verified fresh inputs."""
+    records = {}
+    for dependency in order_tasks(tasks, [name])[:-1]:
+        task = tasks[dependency]
+        profile = style if any('{style}' in value for value in task.get('outputs', [])) else 'shared'
+        stamp = root/'runs'/profile/f'{dependency}.json'
+        if not stamp.exists():
+            raise RuntimeError(f'{name}: prerequisite not completed: {dependency}')
+        prior = json.loads(stamp.read_text())
+        for path in outputs(task, style, root):
+            if not path.is_file() or prior['outputs'].get(str(path.relative_to(root))) != sha256(path):
+                raise RuntimeError(f'{name}: prerequisite output changed/missing: {path}')
+        records[dependency] = prior['outputs']
+    run_tasks(tasks, [name], style, root=root, dependency_records=records,
+              allow_reconstructed_styles=allow_reconstructed_styles)
 
 
 def pixel_digest(image):
@@ -213,8 +233,9 @@ def check_reference(root=ROOT, style="iclr"):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["list", "plan", "run", "check"])
-    parser.add_argument("targets", nargs="*", help="Task ids or 'data'/'figures'; default: all published figures")
+    parser.add_argument("action", choices=["list", "plan", "run", "stage", "check"],
+                        help="stage runs named tasks only, after hash-verifying completed dependencies")
+    parser.add_argument("targets", nargs="*", help="Task ids or 'data'/'figures'/'tables'/'paper'; default: figures and tables")
     parser.add_argument("--style", choices=["iclr", "goodfire"], default="iclr")
     parser.add_argument("--resume", action="store_true", help="Reuse only fingerprinted, hash-verified task outputs")
     typography = parser.add_mutually_exclusive_group()
@@ -234,13 +255,23 @@ def main(argv=None):
                 print(name + (" [BLOCKED: " + task["blocked"] + "]" if task.get("blocked") else ""))
             return 0
         targets = []
-        for target in args.targets or ["figures"]:
-            if target in {"data", "figures"}:
-                prefix = "data-" if target == "data" else "render-"
-                targets.extend(name for name in tasks if name.startswith(prefix))
+        for target in args.targets or ["paper"]:
+            if target in {"data", "figures", "tables", "paper"}:
+                if target == "data": selected = [n for n in tasks if n.startswith("data-")]
+                elif target == "tables": selected = [n for n in tasks if n.startswith("render-table-")]
+                elif target == "figures": selected = [n for n in tasks if n.startswith("render-") and not n.startswith("render-table-")]
+                else: selected = [n for n in tasks if n.startswith("render-")]
+                targets.extend(selected)
             else:
                 targets.append(target)
         names = order_tasks(tasks, targets)
+        if args.action == "stage":
+            if not args.targets or any(t in {'data','figures','tables','paper'} for t in args.targets):
+                raise ValueError('stage requires explicit task IDs, not target groups')
+            for name in targets:
+                run_ready_stage(tasks, name, args.style,
+                                allow_reconstructed_styles=args.allow_reconstructed_styles)
+            return 0
         if args.action == "plan":
             import shlex
             for name in names:
