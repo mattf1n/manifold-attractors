@@ -89,8 +89,10 @@ from-scratch execution; keep the run provenance too.
 
 ## What was actually checked
 
-CPU mathematical and tiny-random-model integration tests exercise the core and
-advanced generators without pretrained weights or old result arrays. The source
+**38 tests pass**, including in a fresh Git clone with isolated locked
+environments and no original `data/` or `fig/` directories. CPU mathematical and
+tiny-random-model integration tests exercise the core and advanced generators
+without pretrained weights or old result arrays. The source
 GIF regenerates historical fish PDF pixels/placement exactly; the schematic's
 1,304-vector table matches its historical SHA256. A public Pile input was
 independently downloaded into an empty cache and matched its pinned hash; the
