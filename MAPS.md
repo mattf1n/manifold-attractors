@@ -180,7 +180,7 @@ historical `cache_lang_text.py` job script; it is not a runtime dependency.
 * English selected source indices104,61,8,14,124 (source-only English-prose
   eligibility, seed20260920). Current renderer omits index8. Chinese final
   indices409,397,357,449 (seed20261026, with later source-only replacement of338
-  by449). Exact native input IDs/positions are retained, along with eligibility
+  by357). Exact native input IDs/positions are retained, along with eligibility
   text. This is illustrative development data, not a held-out confirmatory test.
 * English computes the original EN-directed periodic circle then sign-reverses
   the sampled arrays exactly at export. Start1° grid, interleave half-step
