@@ -1,0 +1,17 @@
+% Artwork extracted verbatim from main.tex at ed8b89b, lines 153--168.
+  \begin{tikzpicture}
+    \draw (0,0) circle [radius=1];
+    \node[label=$\bm{0}$] at (0,0) {+};
+    \node[label=right:{$\vx=\gamma(\ang{0})$}] at (1,0) {$\times$};
+    \draw[->] (1,0) -- node[right] {$\vu$} (1,1);
+    \node[label=below:$\gamma(\ang{270})$] at (0,-1) (perturb) {};
+    \fill (perturb) circle[radius=1.5pt];
+
+    \begin{scope}[xshift=4.5cm]
+      \draw (-1,0) to[closed, curve through={(-1,1) (-0.5,0.5) (0,1) (0.5,0) (0,0)}] (-0.5,-1);
+      \node[label=right:$f(\vx)$] at (0.5,0) {$\times$};
+      \node at (-0.5,0) {+};
+      \node[label=below:{$\eta(\ang{270})=f(\gamma(\ang{270}))$}] at (-0.5,-1) (perturb) {};
+      \fill (perturb) circle[radius=1.5pt];
+    \end{scope}
+  \end{tikzpicture}

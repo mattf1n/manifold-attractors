@@ -1,0 +1,438 @@
+{
+  "policy": "Arrows indicate lexical translations/readings with language qualification where needed. Brackets are token-type, grammatical, or uncertainty annotations, NOT translations. Isolated ambiguous tokens are not expanded into invented words. ␣ denotes a space.",
+  "tokens": {
+    "220": {
+      "text": " ",
+      "token_piece": "Ġ",
+      "category": "whitespace",
+      "gloss": "space",
+      "display": "␣",
+      "notes": "Single space token.",
+      "script_class": "Other nonalphabetic"
+    },
+    "104626": {
+      "text": " �",
+      "token_piece": "Ġè©",
+      "category": "byte fragment",
+      "gloss": "",
+      "display": "␣[byte #104626]",
+      "notes": "Incomplete UTF-8 token; standalone decoding gives replacement character. No semantic translation.",
+      "script_class": "Chinese"
+    },
+    "120468": {
+      "text": " 常",
+      "token_piece": "Ġå¸¸",
+      "category": "CJK character",
+      "gloss": "common/often",
+      "display": "␣常 → common/often",
+      "notes": "Context-dependent: 常 may mean common, usual, or often.",
+      "script_class": "Chinese"
+    },
+    "101678": {
+      "text": " 大",
+      "token_piece": "Ġå¤§",
+      "category": "CJK character",
+      "gloss": "large",
+      "display": "␣大 → large",
+      "notes": "大: big/large; context dependent.",
+      "script_class": "Chinese"
+    },
+    "108477": {
+      "text": " �",
+      "token_piece": "Ġèª",
+      "category": "byte fragment",
+      "gloss": "",
+      "display": "␣[byte #108477]",
+      "notes": "Incomplete UTF-8 token; standalone decoding gives replacement character. No semantic translation.",
+      "script_class": "Chinese"
+    },
+    "107289": {
+      "text": " オ",
+      "token_piece": "ĠãĤª",
+      "category": "Japanese katakana",
+      "gloss": "",
+      "display": "␣オ [katakana o]",
+      "notes": "Japanese katakana representing the syllable /o/. This is a reading/romanization, not an English word translation.",
+      "script_class": "Other alphabet"
+    },
+    "122972": {
+      "text": " организм",
+      "token_piece": "ĠÐ¾ÑĢÐ³Ð°Ð½Ð¸Ð·Ð¼",
+      "category": "Russian word",
+      "gloss": "body / organism",
+      "display": "␣организм → body / organism",
+      "notes": "Russian организм means an organism or the physical body, depending on context. Both dictionary senses retained; no claim of a full translated sentence.",
+      "script_class": "Other alphabet"
+    },
+    "107787": {
+      "text": " би",
+      "token_piece": "ĠÐ±Ð¸",
+      "category": "ambiguous Cyrillic token",
+      "gloss": "",
+      "display": "␣би",
+      "notes": "The isolated Cyrillic sequence би does not establish a language or complete-word status. It may be a fragment; it can also occur as a word/form in other Cyrillic-script languages. No speculative translation assigned.",
+      "script_class": "Other alphabet"
+    },
+    "78152": {
+      "text": " physiology",
+      "token_piece": "Ġphysiology",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣physiology",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "13162": {
+      "text": " bodies",
+      "token_piece": "Ġbodies",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣bodies",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "111006": {
+      "text": "身体",
+      "token_piece": "èº«ä½ĵ",
+      "category": "CJK word",
+      "gloss": "body",
+      "display": "身体 → body",
+      "notes": "身体: body; also a Japanese word with this meaning.",
+      "script_class": "Chinese"
+    },
+    "2547": {
+      "text": " body",
+      "token_piece": "Ġbody",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣body",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "2324": {
+      "text": " life",
+      "token_piece": "Ġlife",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣life",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "13": {
+      "text": ".",
+      "token_piece": ".",
+      "category": "literal token",
+      "gloss": "",
+      "display": ".",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Neutral punctuation/symbols"
+    },
+    "11": {
+      "text": ",",
+      "token_piece": ",",
+      "category": "literal token",
+      "gloss": "",
+      "display": ",",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Neutral punctuation/symbols"
+    },
+    "9554": {
+      "text": "的",
+      "token_piece": "çļĦ",
+      "category": "Chinese grammatical particle",
+      "gloss": "",
+      "display": "的 [attributive particle]",
+      "notes": "Chinese structural particle marking attributive/modifying relationships, including possession. Grammatical annotation rather than a misleading one-word English translation.",
+      "script_class": "Chinese"
+    },
+    "7": {
+      "text": "(",
+      "token_piece": "(",
+      "category": "literal token",
+      "gloss": "",
+      "display": "(",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Neutral punctuation/symbols"
+    },
+    "25": {
+      "text": ":",
+      "token_piece": ":",
+      "category": "literal token",
+      "gloss": "",
+      "display": ":",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Neutral punctuation/symbols"
+    },
+    "32": {
+      "text": "A",
+      "token_piece": "A",
+      "category": "literal token",
+      "gloss": "",
+      "display": "A",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "320": {
+      "text": " (",
+      "token_piece": "Ġ(",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣(",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Neutral punctuation/symbols"
+    },
+    "369": {
+      "text": " for",
+      "token_piece": "Ġfor",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣for",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "10110": {
+      "text": "（",
+      "token_piece": "ï¼Ī",
+      "category": "fullwidth punctuation",
+      "gloss": "",
+      "display": "（",
+      "notes": "U+FF08 fullwidth left parenthesis, distinct from ASCII U+0028.",
+      "script_class": "Chinese"
+    },
+    "14": {
+      "text": "/",
+      "token_piece": "/",
+      "category": "literal token",
+      "gloss": "",
+      "display": "/",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Neutral punctuation/symbols"
+    },
+    "3554": {
+      "text": "/b",
+      "token_piece": "/b",
+      "category": "path fragment",
+      "gloss": "",
+      "display": "/b",
+      "notes": "Literal slash-b sequence; can be a path/markup fragment. Fragment status is an annotation, not an English translation.",
+      "script_class": "Latin"
+    },
+    "38562": {
+      "text": "/blog",
+      "token_piece": "/blog",
+      "category": "path fragment",
+      "gloss": "",
+      "display": "/blog",
+      "notes": "Literal path-like /blog token. Path is a structural annotation, not a translation.",
+      "script_class": "Latin"
+    },
+    "17905": {
+      "text": "上",
+      "token_piece": "ä¸Ĭ",
+      "category": "CJK character",
+      "gloss": "on/up",
+      "display": "上 → on/up",
+      "notes": "上: on/above/up; meaning depends on context.",
+      "script_class": "Chinese"
+    },
+    "8154": {
+      "text": "under",
+      "token_piece": "under",
+      "category": "literal token",
+      "gloss": "",
+      "display": "under",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "6186": {
+      "text": " January",
+      "token_piece": "ĠJanuary",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣January",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "33327": {
+      "text": "January",
+      "token_piece": "January",
+      "category": "literal token",
+      "gloss": "",
+      "display": "January",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "28623": {
+      "text": "March",
+      "token_piece": "March",
+      "category": "literal token",
+      "gloss": "",
+      "display": "March",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "29146": {
+      "text": "April",
+      "token_piece": "April",
+      "category": "literal token",
+      "gloss": "",
+      "display": "April",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "2803": {
+      "text": "Arg",
+      "token_piece": "Arg",
+      "category": "fragment/abbreviation",
+      "gloss": "",
+      "display": "Arg",
+      "notes": "Arg has several possible expansions and word-fragment uses. Do not invent an expansion from this isolated token.",
+      "script_class": "Latin"
+    },
+    "114940": {
+      "text": "裁",
+      "token_piece": "è£ģ",
+      "category": "CJK character",
+      "gloss": "adjudicate",
+      "display": "裁 → adjudicate",
+      "notes": "Contextual judicial sense: the source prefix ends with Supreme Court of Utah and identifies litigants in a legal opinion. Adjudicate is more likely here than the cutting/tailoring sense.",
+      "script_class": "Chinese"
+    },
+    "2366": {
+      "text": "202",
+      "token_piece": "202",
+      "category": "literal token",
+      "gloss": "",
+      "display": "202",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Other nonalphabetic"
+    },
+    "5005": {
+      "text": "Dec",
+      "token_piece": "Dec",
+      "category": "abbreviation/fragment",
+      "gloss": "",
+      "display": "Dec",
+      "notes": "Dec is an abbreviation/fragment, often a month abbreviation but not unambiguously so in an isolated token. No expansion forced.",
+      "script_class": "Latin"
+    },
+    "1915": {
+      "text": "Field",
+      "token_piece": "Field",
+      "category": "literal token",
+      "gloss": "",
+      "display": "Field",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "380": {
+      "text": "ist",
+      "token_piece": "ist",
+      "category": "German word / possible suffix",
+      "gloss": "is (German)",
+      "display": "ist",
+      "notes": "German ist is the third-person singular present of sein (is). The same character string can also occur as a suffix/fragment in other languages. The label states the German lexical reading, not automatic language identification.",
+      "script_class": "Latin"
+    },
+    "12676": {
+      "text": "365",
+      "token_piece": "365",
+      "category": "literal token",
+      "gloss": "",
+      "display": "365",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Other nonalphabetic"
+    },
+    "2191": {
+      "text": "ism",
+      "token_piece": "ism",
+      "category": "suffix fragment",
+      "gloss": "",
+      "display": "ism",
+      "notes": "Common English suffix -ism, also a possible standalone noun. Structural annotation, not a translation.",
+      "script_class": "Latin"
+    },
+    "64": {
+      "text": "a",
+      "token_piece": "a",
+      "category": "literal token",
+      "gloss": "",
+      "display": "a",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "279": {
+      "text": " the",
+      "token_piece": "Ġthe",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣the",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "264": {
+      "text": " a",
+      "token_piece": "Ġa",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣a",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "17039": {
+      "text": "新",
+      "token_piece": "æĸ°",
+      "category": "CJK character",
+      "gloss": "new",
+      "display": "新 → new",
+      "notes": "新: new.",
+      "script_class": "Chinese"
+    },
+    "15120": {
+      "text": "一",
+      "token_piece": "ä¸Ģ",
+      "category": "CJK character",
+      "gloss": "one",
+      "display": "一 → one",
+      "notes": "一: one.",
+      "script_class": "Chinese"
+    },
+    "3754": {
+      "text": " news",
+      "token_piece": "Ġnews",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣news",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "10189": {
+      "text": "news",
+      "token_piece": "news",
+      "category": "literal token",
+      "gloss": "",
+      "display": "news",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "14710": {
+      "text": "News",
+      "token_piece": "News",
+      "category": "literal token",
+      "gloss": "",
+      "display": "News",
+      "notes": "Existing English/punctuation/numeric token shown literally; no redundant translation.",
+      "script_class": "Latin"
+    },
+    "198": {
+      "text": "\n",
+      "token_piece": "Ċ",
+      "category": "control",
+      "gloss": "newline",
+      "display": "[newline]",
+      "notes": "Single newline token.",
+      "script_class": "Other nonalphabetic"
+    }
+  },
+  "revision_notes": "Corrected German ist=is; replaced misleading fragment/path/particle translation arrows with bracketed annotations; distinguished Japanese romanization; marked ambiguous Cyrillic and Chinese tokens; retained contextual Russian body/organism senses. User requested removal of obvious fragment/path/abbreviation/fullwidth annotations; these tokens are now displayed literally without added labels."
+}

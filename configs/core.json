@@ -1,0 +1,273 @@
+{
+  "description": "Exact core-figure recipe. Public model/dataset revisions are pinned in core.inputs; no archived generated data is an input. See CORE.md for protocols and hardware requirements.",
+  "source_provenance": {
+    "source_directory": "project/paper_scripts (development source only; never a runtime input)",
+    "sha256": {
+      "great_circle_norm_grid.py": "903184c17393329f19fea7bfe7760d721c3d08219c5a0aa410db3e6d6b3b9d51",
+      "great_circle_synthetic_grid.py": "8e599cdfd4c793b576e640b25d316313f86b4a330605a13bbbd3c738a232e93d",
+      "norm_growth_trajectory_starts.py": "2b0f52cc86e0876da17a2fc54929c8d4b105bd27646c769efc22c891a59d8142",
+      "great_circle_speed_grid.py": "9904d4107cf6af1bbf1e76ab071f5a28ecd98020f1ac8f632693c39ab91c5e6d",
+      "great_circle_synthetic_speed_grid.py": "a123b486e8ac8fe809144a7ba3c0b841deba5e4237ef478dbda47bf406e54b36",
+      "pair_barrier_validation.py": "777817d58431841485c603246a8f48ff844259eb3eb79fbd6e54a6b5e94a0b48",
+      "trajectory_activation_cache.py": "c695e224fa24255123549d27e83c75b509279cee1b96a3bfe2510e5474263db0",
+      "pair_barrier_geometry.py": "5547d9daaf13648895abfa60bf7a7356d6484dfaf1c8bf741ed710948aafa601",
+      "norm_growth_classifier.py": "48beba5dd3d49e0264ec07f96e3fbbd20e2d5fccfa4e4f5347df07f43de74b81",
+      "norm_growth_trajectory.py": "8acd867d472240617b21133562ab3f6c1746ed64540cd58a1444248335c56b9e"
+    },
+    "extracted_dependencies": {
+      "norm_growth_classifier.py": "Only heldout sampling and native-layer extraction; no classifier scoring code copied",
+      "norm_growth_trajectory.py": "Only original full-document start15 extraction arithmetic"
+    },
+    "archive": "paper-archive-20260930-214925/untracked/data (audit evidence only; never a runtime input)",
+    "historical_source_warning": "Current source hashes differ from archived generator hashes for norm, midpoint synthetic, synthetic speed, midpoint trajectory, and pair validation. Selected synthetic and natural-speed source hashes match. No claim of recovered byte-identical historical source or full-size regenerated figures.",
+    "archived_pair_geometry_sha256": "b3d4ff5bb58665d6b258a06fd1d33f077c9b9be35fda77605a37b5f210e56f91",
+    "verified_audits": [
+      "AST equality to current source: synthetic_states, vector_speed, extract_cached, all pair_barrier_geometry functions",
+      "Pinned public data/tokenizers reproduce all three models' 256 reference and 128 heldout record dictionaries exactly",
+      "Regenerated pair exclusions exactly match 424 archived document rows and text hashes",
+      "All synthetic state and construction arrays exactly reproduced from archived reference pools for three midpoint and three displayed selected-block datasets (validation only)",
+      "Current downhill kernel exactly reproduces all 1152 coarse and 1152 half-step archived pair scores from archived profiles (validation only)",
+      "Standalone CPU tests exercise all generators with a tiny randomly initialized HF model; no pretrained full-size GPU regeneration performed"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "data-great_circle_norm_grid-llama3",
+      "module": "manifold_attractors.experiments.great_circle_norm_grid",
+      "args": ["--model", "llama3", "--output", "data/great_circle_norm_grid", "--device", "cuda", "--seed", "20260908", "--samples", "20", "--max-tokens", "256", "--step", "1", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_norm_grid/llama3.npz", "data/great_circle_norm_grid/llama3.json"],
+      "deps": []
+    },
+    {
+      "id": "data-great_circle_norm_grid-olmo3",
+      "module": "manifold_attractors.experiments.great_circle_norm_grid",
+      "args": ["--model", "olmo3", "--output", "data/great_circle_norm_grid", "--device", "cuda", "--seed", "20260908", "--samples", "20", "--max-tokens", "256", "--step", "1", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_norm_grid/olmo3.npz", "data/great_circle_norm_grid/olmo3.json"],
+      "deps": []
+    },
+    {
+      "id": "data-great_circle_norm_grid-qwen3",
+      "module": "manifold_attractors.experiments.great_circle_norm_grid",
+      "args": ["--model", "qwen3", "--output", "data/great_circle_norm_grid", "--device", "cuda", "--seed", "20260908", "--samples", "20", "--max-tokens", "256", "--step", "1", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_norm_grid/qwen3.npz", "data/great_circle_norm_grid/qwen3.json"],
+      "deps": []
+    },
+    {
+      "id": "data-great_circle_norm_grid_context-llama3",
+      "module": "manifold_attractors.experiments.great_circle_norm_grid_context",
+      "args": ["--model", "llama3", "--source-cache", "data/great_circle_norm_grid", "--output", "data/great_circle_norm_grid_context", "--device", "cuda", "--seed", "20260908", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_norm_grid_context/llama3.npz", "data/great_circle_norm_grid_context/llama3.json"],
+      "deps": ["data-great_circle_norm_grid-llama3"]
+    },
+    {
+      "id": "data-great_circle_norm_grid_context-olmo3",
+      "module": "manifold_attractors.experiments.great_circle_norm_grid_context",
+      "args": ["--model", "olmo3", "--source-cache", "data/great_circle_norm_grid", "--output", "data/great_circle_norm_grid_context", "--device", "cuda", "--seed", "20260908", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_norm_grid_context/olmo3.npz", "data/great_circle_norm_grid_context/olmo3.json"],
+      "deps": ["data-great_circle_norm_grid-olmo3"]
+    },
+    {
+      "id": "data-great_circle_norm_grid_context-qwen3",
+      "module": "manifold_attractors.experiments.great_circle_norm_grid_context",
+      "args": ["--model", "qwen3", "--source-cache", "data/great_circle_norm_grid", "--output", "data/great_circle_norm_grid_context", "--device", "cuda", "--seed", "20260908", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_norm_grid_context/qwen3.npz", "data/great_circle_norm_grid_context/qwen3.json"],
+      "deps": ["data-great_circle_norm_grid-qwen3"]
+    },
+    {
+      "id": "data-great_circle_synthetic_grid-llama3",
+      "module": "manifold_attractors.experiments.great_circle_synthetic_grid",
+      "args": ["--model", "llama3", "--output", "data/great_circle_synthetic_grid", "--device", "cpu", "--seed", "20260909", "--reference", "256", "--samples", "20", "--max-tokens", "256", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_synthetic_grid/llama3.npz", "data/great_circle_synthetic_grid/llama3.json"],
+      "deps": []
+    },
+    {
+      "id": "data-great_circle_synthetic_grid-olmo3",
+      "module": "manifold_attractors.experiments.great_circle_synthetic_grid",
+      "args": ["--model", "olmo3", "--output", "data/great_circle_synthetic_grid", "--device", "cpu", "--seed", "20260909", "--reference", "256", "--samples", "20", "--max-tokens", "256", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_synthetic_grid/olmo3.npz", "data/great_circle_synthetic_grid/olmo3.json"],
+      "deps": []
+    },
+    {
+      "id": "data-great_circle_synthetic_grid-qwen3",
+      "module": "manifold_attractors.experiments.great_circle_synthetic_grid",
+      "args": ["--model", "qwen3", "--output", "data/great_circle_synthetic_grid", "--device", "cpu", "--seed", "20260909", "--reference", "256", "--samples", "20", "--max-tokens", "256", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_synthetic_grid/qwen3.npz", "data/great_circle_synthetic_grid/qwen3.json"],
+      "deps": []
+    },
+    {
+      "id": "data-native_layers-llama3",
+      "module": "manifold_attractors.experiments.prepare_native",
+      "args": ["--model", "llama3", "--data-root", "data", "--output", "data/norm_growth_classifier_layers", "--device", "cuda", "--threads", "4"],
+      "outputs": ["data/norm_growth_classifier_layers/llama3.npz", "data/norm_growth_classifier_layers/llama3.json", "data/norm_growth_classifier/llama3.json"],
+      "deps": ["data-great_circle_synthetic_grid-llama3"]
+    },
+    {
+      "id": "data-native_layers-olmo3",
+      "module": "manifold_attractors.experiments.prepare_native",
+      "args": ["--model", "olmo3", "--data-root", "data", "--output", "data/norm_growth_classifier_layers", "--device", "cuda", "--threads", "4"],
+      "outputs": ["data/norm_growth_classifier_layers/olmo3.npz", "data/norm_growth_classifier_layers/olmo3.json", "data/norm_growth_classifier/olmo3.json"],
+      "deps": ["data-great_circle_synthetic_grid-olmo3"]
+    },
+    {
+      "id": "data-native_layers-qwen3",
+      "module": "manifold_attractors.experiments.prepare_native",
+      "args": ["--model", "qwen3", "--data-root", "data", "--output", "data/norm_growth_classifier_layers", "--device", "cuda", "--threads", "4"],
+      "outputs": ["data/norm_growth_classifier_layers/qwen3.npz", "data/norm_growth_classifier_layers/qwen3.json", "data/norm_growth_classifier/qwen3.json"],
+      "deps": ["data-great_circle_synthetic_grid-qwen3"]
+    },
+    {
+      "id": "data-great_circle_synthetic_grid_selected-llama3",
+      "module": "manifold_attractors.experiments.great_circle_synthetic_grid",
+      "args": ["--model", "llama3", "--block", "21", "--reference-cache", "data/norm_growth_classifier_layers", "--output", "data/great_circle_synthetic_grid_llama21", "--device", "cuda", "--seed", "20260909", "--reference", "256", "--samples", "20", "--max-tokens", "256", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_synthetic_grid_llama21/llama3.npz", "data/great_circle_synthetic_grid_llama21/llama3.json"],
+      "deps": ["data-native_layers-llama3"]
+    },
+    {
+      "id": "data-great_circle_synthetic_grid_selected-olmo3",
+      "module": "manifold_attractors.experiments.great_circle_synthetic_grid",
+      "args": ["--model", "olmo3", "--block", "21", "--reference-cache", "data/norm_growth_classifier_layers", "--output", "data/great_circle_synthetic_grid_best_layers", "--device", "cuda", "--seed", "20260909", "--reference", "256", "--samples", "20", "--max-tokens", "256", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_synthetic_grid_best_layers/olmo3.npz", "data/great_circle_synthetic_grid_best_layers/olmo3.json"],
+      "deps": ["data-native_layers-olmo3"]
+    },
+    {
+      "id": "data-great_circle_synthetic_grid_selected-qwen3",
+      "module": "manifold_attractors.experiments.great_circle_synthetic_grid",
+      "args": ["--model", "qwen3", "--block", "27", "--reference-cache", "data/norm_growth_classifier_layers", "--output", "data/great_circle_synthetic_grid_best_layers", "--device", "cuda", "--seed", "20260909", "--reference", "256", "--samples", "20", "--max-tokens", "256", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_synthetic_grid_best_layers/qwen3.npz", "data/great_circle_synthetic_grid_best_layers/qwen3.json"],
+      "deps": ["data-native_layers-qwen3"]
+    },
+    {
+      "id": "data-great_circle_speed_grid-llama3",
+      "module": "manifold_attractors.experiments.great_circle_speed_grid",
+      "args": ["--model", "llama3", "--output", "data/great_circle_speed_grid", "--device", "cpu", "--seed", "20260910", "--samples", "20", "--max-tokens", "256", "--batch", "128", "--threads", "8"],
+      "outputs": ["data/great_circle_speed_grid/llama3.npz", "data/great_circle_speed_grid/llama3.json"],
+      "deps": []
+    },
+    {
+      "id": "data-great_circle_speed_grid-olmo3",
+      "module": "manifold_attractors.experiments.great_circle_speed_grid",
+      "args": ["--model", "olmo3", "--output", "data/great_circle_speed_grid", "--device", "cpu", "--seed", "20260910", "--samples", "20", "--max-tokens", "256", "--batch", "128", "--threads", "8"],
+      "outputs": ["data/great_circle_speed_grid/olmo3.npz", "data/great_circle_speed_grid/olmo3.json"],
+      "deps": []
+    },
+    {
+      "id": "data-great_circle_speed_grid-qwen3",
+      "module": "manifold_attractors.experiments.great_circle_speed_grid",
+      "args": ["--model", "qwen3", "--output", "data/great_circle_speed_grid", "--device", "cpu", "--seed", "20260910", "--samples", "20", "--max-tokens", "256", "--batch", "128", "--threads", "8"],
+      "outputs": ["data/great_circle_speed_grid/qwen3.npz", "data/great_circle_speed_grid/qwen3.json"],
+      "deps": []
+    },
+    {
+      "id": "data-great_circle_synthetic_speed_grid-llama3",
+      "module": "manifold_attractors.experiments.great_circle_synthetic_speed_grid",
+      "args": ["--model", "llama3", "--source", "data/great_circle_synthetic_grid", "--output", "data/great_circle_synthetic_speed_grid", "--device", "cuda", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_synthetic_speed_grid/llama3.npz", "data/great_circle_synthetic_speed_grid/llama3.json"],
+      "deps": ["data-great_circle_synthetic_grid-llama3"]
+    },
+    {
+      "id": "data-great_circle_synthetic_speed_grid-olmo3",
+      "module": "manifold_attractors.experiments.great_circle_synthetic_speed_grid",
+      "args": ["--model", "olmo3", "--source", "data/great_circle_synthetic_grid", "--output", "data/great_circle_synthetic_speed_grid", "--device", "cuda", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_synthetic_speed_grid/olmo3.npz", "data/great_circle_synthetic_speed_grid/olmo3.json"],
+      "deps": ["data-great_circle_synthetic_grid-olmo3"]
+    },
+    {
+      "id": "data-great_circle_synthetic_speed_grid-qwen3",
+      "module": "manifold_attractors.experiments.great_circle_synthetic_speed_grid",
+      "args": ["--model", "qwen3", "--source", "data/great_circle_synthetic_grid", "--output", "data/great_circle_synthetic_speed_grid", "--device", "cuda", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/great_circle_synthetic_speed_grid/qwen3.npz", "data/great_circle_synthetic_speed_grid/qwen3.json"],
+      "deps": ["data-great_circle_synthetic_grid-qwen3"]
+    },
+    {
+      "id": "data-norm_growth_trajectory_starts_midpoint-llama3",
+      "module": "manifold_attractors.experiments.norm_growth_trajectory_starts",
+      "args": ["--model", "llama3", "--data-root", "data", "--output", "data/norm_growth_trajectory_starts", "--device", "cpu", "--seed", "20260912", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/norm_growth_trajectory_starts/llama3.npz", "data/norm_growth_trajectory_starts/llama3.json"],
+      "deps": ["data-native_layers-llama3"]
+    },
+    {
+      "id": "data-norm_growth_trajectory_starts_midpoint-olmo3",
+      "module": "manifold_attractors.experiments.norm_growth_trajectory_starts",
+      "args": ["--model", "olmo3", "--data-root", "data", "--output", "data/norm_growth_trajectory_starts", "--device", "cpu", "--seed", "20260912", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/norm_growth_trajectory_starts/olmo3.npz", "data/norm_growth_trajectory_starts/olmo3.json"],
+      "deps": ["data-native_layers-olmo3"]
+    },
+    {
+      "id": "data-norm_growth_trajectory_starts_midpoint-qwen3",
+      "module": "manifold_attractors.experiments.norm_growth_trajectory_starts",
+      "args": ["--model", "qwen3", "--data-root", "data", "--output", "data/norm_growth_trajectory_starts", "--device", "cpu", "--seed", "20260912", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/norm_growth_trajectory_starts/qwen3.npz", "data/norm_growth_trajectory_starts/qwen3.json"],
+      "deps": ["data-native_layers-qwen3"]
+    },
+    {
+      "id": "data-norm_growth_trajectory_starts_all_layers-llama3",
+      "module": "manifold_attractors.experiments.norm_growth_trajectory_starts",
+      "args": ["--model", "llama3", "--all-layers", "--data-root", "data", "--native-layers", "data/norm_growth_classifier_layers", "--output", "data/norm_growth_trajectory_starts_all_layers", "--device", "cuda", "--seed", "20260912", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/norm_growth_trajectory_starts_all_layers/llama3.npz", "data/norm_growth_trajectory_starts_all_layers/llama3.json"],
+      "deps": ["data-native_layers-llama3", "data-norm_growth_trajectory_starts_midpoint-llama3"]
+    },
+    {
+      "id": "data-norm_growth_trajectory_starts_all_layers-olmo3",
+      "module": "manifold_attractors.experiments.norm_growth_trajectory_starts",
+      "args": ["--model", "olmo3", "--all-layers", "--data-root", "data", "--native-layers", "data/norm_growth_classifier_layers", "--output", "data/norm_growth_trajectory_starts_all_layers", "--device", "cuda", "--seed", "20260912", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/norm_growth_trajectory_starts_all_layers/olmo3.npz", "data/norm_growth_trajectory_starts_all_layers/olmo3.json"],
+      "deps": ["data-native_layers-olmo3", "data-norm_growth_trajectory_starts_midpoint-olmo3"]
+    },
+    {
+      "id": "data-norm_growth_trajectory_starts_all_layers-qwen3",
+      "module": "manifold_attractors.experiments.norm_growth_trajectory_starts",
+      "args": ["--model", "qwen3", "--all-layers", "--data-root", "data", "--native-layers", "data/norm_growth_classifier_layers", "--output", "data/norm_growth_trajectory_starts_all_layers", "--device", "cuda", "--seed", "20260912", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/norm_growth_trajectory_starts_all_layers/qwen3.npz", "data/norm_growth_trajectory_starts_all_layers/qwen3.json"],
+      "deps": ["data-native_layers-qwen3", "data-norm_growth_trajectory_starts_midpoint-qwen3"]
+    },
+    {
+      "id": "data-pair_barrier_validation_float32-llama3",
+      "module": "manifold_attractors.experiments.pair_barrier_validation",
+      "args": ["--validate-model", "llama3", "--data-root", "data", "--output", "data/pair_barrier_validation_gpu", "--precision", "float32", "--device", "cuda", "--pairs", "128", "--seed", "20260915", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/pair_barrier_validation_gpu/llama3.npz", "data/pair_barrier_validation_gpu/llama3.json", "data/pair_barrier_validation_gpu/checkpoints/llama3/prepared.npz", "data/pair_barrier_validation_gpu/checkpoints/llama3/prepared.json"],
+      "deps": ["data-great_circle_synthetic_grid-llama3"]
+    },
+    {
+      "id": "data-pair_barrier_validation_float32-olmo3",
+      "module": "manifold_attractors.experiments.pair_barrier_validation",
+      "args": ["--validate-model", "olmo3", "--data-root", "data", "--output", "data/pair_barrier_validation_gpu", "--precision", "float32", "--device", "cuda", "--pairs", "128", "--seed", "20260915", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/pair_barrier_validation_gpu/olmo3.npz", "data/pair_barrier_validation_gpu/olmo3.json", "data/pair_barrier_validation_gpu/checkpoints/olmo3/prepared.npz", "data/pair_barrier_validation_gpu/checkpoints/olmo3/prepared.json"],
+      "deps": ["data-great_circle_synthetic_grid-olmo3"]
+    },
+    {
+      "id": "data-pair_barrier_validation_float32-qwen3",
+      "module": "manifold_attractors.experiments.pair_barrier_validation",
+      "args": ["--validate-model", "qwen3", "--data-root", "data", "--output", "data/pair_barrier_validation_gpu", "--precision", "float32", "--device", "cuda", "--pairs", "128", "--seed", "20260915", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/pair_barrier_validation_gpu/qwen3.npz", "data/pair_barrier_validation_gpu/qwen3.json", "data/pair_barrier_validation_gpu/checkpoints/qwen3/prepared.npz", "data/pair_barrier_validation_gpu/checkpoints/qwen3/prepared.json"],
+      "deps": ["data-great_circle_synthetic_grid-qwen3"]
+    },
+    {
+      "id": "data-pair_barrier_validation_float64-llama3",
+      "module": "manifold_attractors.experiments.pair_barrier_validation",
+      "args": ["--validate-model", "llama3", "--data-root", "data", "--output", "data/pair_barrier_validation_float64", "--audit-validation", "data/pair_barrier_validation_gpu", "--precision", "float64", "--device", "cuda", "--pairs", "128", "--seed", "20260915", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/pair_barrier_validation_float64/llama3.npz", "data/pair_barrier_validation_float64/llama3.json"],
+      "deps": ["data-great_circle_synthetic_grid-llama3", "data-pair_barrier_validation_float32-llama3"]
+    },
+    {
+      "id": "data-pair_barrier_validation_float64-olmo3",
+      "module": "manifold_attractors.experiments.pair_barrier_validation",
+      "args": ["--validate-model", "olmo3", "--data-root", "data", "--output", "data/pair_barrier_validation_float64", "--audit-validation", "data/pair_barrier_validation_gpu", "--precision", "float64", "--device", "cuda", "--pairs", "128", "--seed", "20260915", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/pair_barrier_validation_float64/olmo3.npz", "data/pair_barrier_validation_float64/olmo3.json"],
+      "deps": ["data-great_circle_synthetic_grid-olmo3", "data-pair_barrier_validation_float32-olmo3"]
+    },
+    {
+      "id": "data-pair_barrier_validation_float64-qwen3",
+      "module": "manifold_attractors.experiments.pair_barrier_validation",
+      "args": ["--validate-model", "qwen3", "--data-root", "data", "--output", "data/pair_barrier_validation_float64", "--audit-validation", "data/pair_barrier_validation_gpu", "--precision", "float64", "--device", "cuda", "--pairs", "128", "--seed", "20260915", "--batch", "128", "--threads", "4"],
+      "outputs": ["data/pair_barrier_validation_float64/qwen3.npz", "data/pair_barrier_validation_float64/qwen3.json"],
+      "deps": ["data-great_circle_synthetic_grid-qwen3", "data-pair_barrier_validation_float32-qwen3"]
+    },
+    {
+      "id": "data-pair_barrier_validation",
+      "module": "manifold_attractors.experiments.pair_barrier_validation",
+      "args": ["--collect-validation", "--output", "data/pair_barrier_validation_float64", "--paper-export", "data/pair_barrier_validation"],
+      "outputs": ["data/pair_barrier_validation/llama3.npz", "data/pair_barrier_validation/llama3.json", "data/pair_barrier_validation/olmo3.npz", "data/pair_barrier_validation/olmo3.json", "data/pair_barrier_validation/qwen3.npz", "data/pair_barrier_validation/qwen3.json", "data/pair_barrier_validation/summary.json"],
+      "deps": ["data-pair_barrier_validation_float64-llama3", "data-pair_barrier_validation_float64-olmo3", "data-pair_barrier_validation_float64-qwen3"]
+    }
+  ]
+}

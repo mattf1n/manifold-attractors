@@ -1,0 +1,27 @@
+axes.facecolor:     f0f0f0
+axes.linewidth:     0
+axes.spines.top:    False
+axes.spines.right:  False
+axes.spines.left:   False
+axes.spines.bottom: False
+grid.color:         white
+grid.linewidth:         0.5
+xtick.bottom:       False
+ytick.left:         False
+xtick.labelbottom:  False
+ytick.labelleft:    False
+text.usetex:        True
+font.family:        serif
+axes.titlesize:     9
+legend.frameon:     False
+legend.fontsize:    7
+lines.linewidth: 0.5
+scatter.edgecolors: black
+image.cmap:         magma
+savefig.bbox:       standard
+savefig.pad_inches: 0
+savefig.dpi:        600
+figure.figsize:     5.5, 3.0    # Default canvas; figure_style applies the selected profile width
+backend:            pgf
+pgf.texsystem:      lualatex
+pgf.rcfonts:        False

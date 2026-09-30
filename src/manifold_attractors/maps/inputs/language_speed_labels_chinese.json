@@ -1,0 +1,531 @@
+{
+  "policy": "Contextual glosses for non-Latin minimum labels; compound completions explicitly qualified. Latin tokens remain literal, untranslated. Script classes come exclusively from the frozen HAN_PREFIX vocabulary partition.",
+  "context_gloss_policy": "Word-aligned interlinear glosses; grammatical abbreviations in small caps, lexical glosses in lowercase except proper names, free translations in single quotes. Highlight exactly the extracted source token and its aligned gloss unit. Source contexts remain truncated at the extracted token; tokenization boundaries are not treated as morphological boundaries.",
+  "tokens": {
+    "11477": {
+      "text": "-day",
+      "token_piece": "-day",
+      "category": "literal token",
+      "gloss": "",
+      "display": "-day",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "31640": {
+      "text": "代",
+      "token_piece": "ä»£",
+      "category": "Chinese compound completion",
+      "gloss": "era",
+      "display": "代 → era",
+      "script_class": "Chinese",
+      "notes": "代 is era/generation; modern is the meaning of the compound 現代, not this morpheme alone."
+    },
+    "83799": {
+      "text": "形",
+      "token_piece": "å½¢",
+      "category": "Chinese character",
+      "gloss": "form",
+      "display": "形 → form",
+      "script_class": "Chinese",
+      "notes": "Form/shape; after現, may begin現形 or a related compound; precise continuation is not determined."
+    },
+    "115707": {
+      "text": "形式",
+      "token_piece": "å½¢å¼ı",
+      "category": "Chinese word",
+      "gloss": "form",
+      "display": "形式 → form",
+      "script_class": "Chinese",
+      "notes": "形式 means form or format."
+    },
+    "630": {
+      "text": "form",
+      "token_piece": "form",
+      "category": "literal token",
+      "gloss": "",
+      "display": "form",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "455": {
+      "text": "up",
+      "token_piece": "up",
+      "category": "literal token",
+      "gloss": "",
+      "display": "up",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "198": {
+      "text": "\n",
+      "token_piece": "Ċ",
+      "category": "literal token",
+      "gloss": "",
+      "display": "[newline]",
+      "script_class": "Other nonalphabetic",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "32": {
+      "text": "A",
+      "token_piece": "A",
+      "category": "literal token",
+      "gloss": "",
+      "display": "A",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "16": {
+      "text": "1",
+      "token_piece": "1",
+      "category": "literal token",
+      "gloss": "",
+      "display": "1",
+      "script_class": "Other nonalphabetic",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "15": {
+      "text": "0",
+      "token_piece": "0",
+      "category": "literal token",
+      "gloss": "",
+      "display": "0",
+      "script_class": "Other nonalphabetic",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "220": {
+      "text": " ",
+      "token_piece": "Ġ",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣",
+      "script_class": "Other nonalphabetic",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "42579": {
+      "text": " �",
+      "token_piece": "Ġå®",
+      "category": "UTF8 byte fragment",
+      "gloss": "",
+      "display": "␣[byte #42579]",
+      "script_class": "Chinese",
+      "notes": "Incomplete UTF8 prefix classifiedChinese by the authoritative vocabulary partition; no semantic gloss invented."
+    },
+    "105729": {
+      "text": " イ",
+      "token_piece": "ĠãĤ¤",
+      "category": "Japanese katakana",
+      "gloss": "",
+      "display": "␣イ [katakana i]",
+      "script_class": "Other alphabet",
+      "notes": "Japanese phonetic symbol /i/; reading annotation, not an invented English word translation."
+    },
+    "106340": {
+      "text": "實",
+      "token_piece": "å¯¦",
+      "category": "Chinese compound completion",
+      "gloss": "reality (現實)",
+      "display": "實 → reality (現實)",
+      "script_class": "Chinese",
+      "notes": "After現, 實 can complete現實, meaning reality; contextual compound reading."
+    },
+    "1122": {
+      "text": "ian",
+      "token_piece": "ian",
+      "category": "literal token",
+      "gloss": "",
+      "display": "ian",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "380": {
+      "text": "ist",
+      "token_piece": "ist",
+      "category": "literal token",
+      "gloss": "",
+      "display": "ist",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "11": {
+      "text": ",",
+      "token_piece": ",",
+      "category": "literal token",
+      "gloss": "",
+      "display": ",",
+      "script_class": "Neutral punctuation/symbols",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "323": {
+      "text": " and",
+      "token_piece": "Ġand",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣and",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "46729": {
+      "text": "家",
+      "token_piece": "å®¶",
+      "category": "Chinese professional suffix",
+      "gloss": "specialist",
+      "display": "家 → specialist",
+      "script_class": "Chinese",
+      "notes": "After数学, 家 forms数学家 (mathematician); here it is the professional/person suffix, not home/family."
+    },
+    "529": {
+      "text": "’",
+      "token_piece": "âĢĻ",
+      "category": "literal token",
+      "gloss": "",
+      "display": "’",
+      "script_class": "Neutral punctuation/symbols",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "9554": {
+      "text": "的",
+      "token_piece": "çļĦ",
+      "category": "Chinese grammatical particle",
+      "gloss": "attributive particle",
+      "display": "的 [attributive]",
+      "script_class": "Chinese",
+      "notes": "Marks modification/possession; grammatical annotation rather than a lexical translation."
+    },
+    "25": {
+      "text": ":",
+      "token_piece": ":",
+      "category": "literal token",
+      "gloss": "",
+      "display": ":",
+      "script_class": "Neutral punctuation/symbols",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "1": {
+      "text": "\"",
+      "token_piece": "\"",
+      "category": "literal token",
+      "gloss": "",
+      "display": "\"",
+      "script_class": "Neutral punctuation/symbols",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "449": {
+      "text": " with",
+      "token_piece": "Ġwith",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣with",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "17966": {
+      "text": " principle",
+      "token_piece": "Ġprinciple",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣principle",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "53229": {
+      "text": "原",
+      "token_piece": "åİŁ",
+      "category": "Chinese word beginning",
+      "gloss": "principle (原則)",
+      "display": "原 → principle",
+      "script_class": "Chinese",
+      "notes": "After一個中國, the plausible generated continuation原則 means principle. 原 alone is a word beginning; this is a contextual reading, not an assertion that the source continues原則 (the source actually continues的前提下)."
+    },
+    "34139": {
+      "text": "Song",
+      "token_piece": "Song",
+      "category": "literal token",
+      "gloss": "",
+      "display": "Song",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "291": {
+      "text": "ed",
+      "token_piece": "ed",
+      "category": "literal token",
+      "gloss": "",
+      "display": "ed",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "279": {
+      "text": " the",
+      "token_piece": "Ġthe",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣the",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "105657": {
+      "text": " 西",
+      "token_piece": "Ġè¥¿",
+      "category": "Chinese character",
+      "gloss": "west",
+      "display": "␣西 → west",
+      "script_class": "Chinese",
+      "notes": "West; may instead begin a proper name, so no longer expansion inferred."
+    },
+    "110568": {
+      "text": " 五",
+      "token_piece": "ĠäºĶ",
+      "category": "Chinese numeral",
+      "gloss": "five",
+      "display": "␣五 → five",
+      "script_class": "Chinese",
+      "notes": "五 means five."
+    },
+    "121626": {
+      "text": " 将",
+      "token_piece": "Ġå°Ĩ",
+      "category": "Chinese character",
+      "gloss": "will / general",
+      "display": "␣将 → will / general",
+      "script_class": "Chinese",
+      "notes": "将 is context-dependent: modal/temporal will/about-to or general. No full continuation generated, so ambiguity retained."
+    },
+    "328": {
+      "text": " S",
+      "token_piece": "ĠS",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣S",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "32170": {
+      "text": " dyn",
+      "token_piece": "Ġdyn",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣dyn",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "13479": {
+      "text": " Sat",
+      "token_piece": "ĠSat",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣Sat",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "21425": {
+      "text": " rival",
+      "token_piece": "Ġrival",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣rival",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "20774": {
+      "text": " Kh",
+      "token_piece": "ĠKh",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣Kh",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "35287": {
+      "text": "了",
+      "token_piece": "äºĨ",
+      "category": "Chinese aspect particle",
+      "gloss": "PFV",
+      "display": "了 → PFV",
+      "script_class": "Chinese",
+      "notes": "After擊敗 (defeat), 了 can mark a completed event. Grammatical gloss, not a standalone lexical translation; the actual source proceeds directly to雅典.",
+      "grammatical_gloss": "pfv"
+    },
+    "46091": {
+      "text": "三",
+      "token_piece": "ä¸ī",
+      "category": "Chinese numeral",
+      "gloss": "three",
+      "display": "三 → three",
+      "script_class": "Chinese",
+      "notes": "三 means three."
+    },
+    "832": {
+      "text": " one",
+      "token_piece": "Ġone",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣one",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "110325": {
+      "text": " 特",
+      "token_piece": "Ġçī¹",
+      "category": "Chinese character",
+      "gloss": "special",
+      "display": "␣特 → special",
+      "script_class": "Chinese",
+      "notes": "Special/particular; may begin a longer expression, which is not inferred."
+    },
+    "107736": {
+      "text": " групп",
+      "token_piece": "ĠÐ³ÑĢÑĥÐ¿Ð¿",
+      "category": "Russian word form",
+      "gloss": "groups",
+      "display": "␣групп → groups",
+      "script_class": "Other alphabet",
+      "notes": "Russian групп is the genitive plural ofгруппа (group); biological groups is the contextual reading."
+    },
+    "3827": {
+      "text": " tax",
+      "token_piece": "Ġtax",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣tax",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "1912": {
+      "text": " group",
+      "token_piece": "Ġgroup",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣group",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "2536": {
+      "text": " non",
+      "token_piece": "Ġnon",
+      "category": "literal token",
+      "gloss": "",
+      "display": "␣non",
+      "script_class": "Latin",
+      "notes": "Raw token retained; semantic labels reviewed after source-only selection."
+    },
+    "30537": {
+      "text": "第",
+      "token_piece": "ç¬¬",
+      "category": "Chinese grammatical prefix",
+      "gloss": "ordinal prefix",
+      "display": "第 [ordinal]",
+      "script_class": "Chinese",
+      "notes": "Prefix forming ordinal numbers; grammatical annotation, not an invented numeral."
+    },
+    "17620": {
+      "text": "分",
+      "token_piece": "åĪĨ",
+      "category": "Chinese morpheme",
+      "gloss": "division/part",
+      "display": "分 → division/part",
+      "script_class": "Chinese",
+      "notes": "Biological grouping context: 分 expresses division/part and may begin a word such as分類 (classification) or分支 (branch). Only the single token was generated, so no particular longer continuation is asserted."
+    }
+  },
+  "interlinear_contexts": {
+    "409": {
+      "units": [
+        {
+          "source": "…",
+          "gloss": ""
+        },
+        {
+          "source": "拉丁",
+          "gloss": "Latin"
+        },
+        {
+          "source": "字母",
+          "gloss": "letter"
+        },
+        {
+          "source": "為",
+          "gloss": "for"
+        },
+        {
+          "source": "現",
+          "gloss": "present",
+          "highlight": "現"
+        }
+      ],
+      "translation": "… Latin letters for modern"
+    },
+    "397": {
+      "units": [
+        {
+          "source": "…",
+          "gloss": ""
+        },
+        {
+          "source": "高斯",
+          "gloss": "Gauss"
+        },
+        {
+          "source": "德国",
+          "gloss": "Germany"
+        },
+        {
+          "source": "数学",
+          "gloss": "mathematics",
+          "highlight": "数学"
+        }
+      ],
+      "translation": "… Gauss, German math"
+    },
+    "357": {
+      "units": [
+        {
+          "source": "…",
+          "gloss": ""
+        },
+        {
+          "source": "是",
+          "gloss": "COP",
+          "grammatical": true
+        },
+        {
+          "source": "生物",
+          "gloss": "organism"
+        },
+        {
+          "source": "的",
+          "gloss": "GEN",
+          "grammatical": true,
+          "highlight": "的"
+        }
+      ],
+      "translation": "… are of organisms"
+    },
+    "449": {
+      "units": [
+        {
+          "source": "…",
+          "gloss": ""
+        },
+        {
+          "source": "喀羅尼亞",
+          "gloss": "Chaeronea"
+        },
+        {
+          "source": "戰役",
+          "gloss": "battle"
+        },
+        {
+          "source": "擊敗",
+          "gloss": "defeat",
+          "highlight": "敗"
+        }
+      ],
+      "translation": "… defeated at Chaeronea"
+    }
+  },
+  "grammatical_abbreviations": {
+    "COP": "copula",
+    "GEN": "genitive",
+    "PFV": "perfective"
+  }
+}

@@ -1,0 +1,289 @@
+{
+  "description": "Fresh advanced-figure computation. Raw source texts/IDs and fixed selections only; no archived generated activations. See MAPS.md for exact algorithms, access, and provenance limits.",
+  "external_requirements": [
+    "HF_TOKEN with gated Meta Llama model access",
+    "Public HF model and Wikipedia downloads",
+    "git and uv available; wrapper fetches pinned author source and isolated historical Python3.10 requirements"
+  ],
+  "exactness_limitations": [
+    "Bubble original FineWeb document IDs, dataset revision and sentence selection code were not retained; included raw sentence list permits fresh computation, not independent corpus reconstruction.",
+    "Bubble original model revision was not recorded; default is the pinned Llama3.1 snapshot used elsewhere.",
+    "Language speed regions are freshly computed; original editorial source labels are applied by token ID with a hard error for unknown tokens or mismatched contexts.",
+    "Full-scale GPU output agreement is unverified."
+  ],
+  "tasks": [
+    {
+      "id": "prepare-triple_area_heatmaps",
+      "module": "manifold_attractors.maps.area",
+      "args": [
+        "triple",
+        "prepare",
+        "--output",
+        "data/triple_area_heatmaps_6blocks",
+        "--device",
+        "cuda"
+      ],
+      "outputs": [
+        "data/triple_area_heatmaps_6blocks/inputs.npz",
+        "data/triple_area_heatmaps_6blocks/inputs.json"
+      ],
+      "deps": []
+    },
+    {
+      "id": "data-triple_area_heatmaps",
+      "module": "manifold_attractors.maps.area",
+      "args": [
+        "triple",
+        "compute",
+        "--output",
+        "data/triple_area_heatmaps_6blocks",
+        "--device",
+        "cuda",
+        "--blocks",
+        "6"
+      ],
+      "outputs": [
+        "data/triple_area_heatmaps_6blocks/map-00.npz",
+        "data/triple_area_heatmaps_6blocks/map-00.json",
+        "data/triple_area_heatmaps_6blocks/map-01.npz",
+        "data/triple_area_heatmaps_6blocks/map-01.json",
+        "data/triple_area_heatmaps_6blocks/map-02.npz",
+        "data/triple_area_heatmaps_6blocks/map-02.json",
+        "data/triple_area_heatmaps_6blocks/map-03.npz",
+        "data/triple_area_heatmaps_6blocks/map-03.json",
+        "data/triple_area_heatmaps_6blocks/map-04.npz",
+        "data/triple_area_heatmaps_6blocks/map-04.json",
+        "data/triple_area_heatmaps_6blocks/map-05.npz",
+        "data/triple_area_heatmaps_6blocks/map-05.json",
+        "data/triple_area_heatmaps_6blocks/configuration.json"
+      ],
+      "deps": [
+        "prepare-triple_area_heatmaps"
+      ]
+    },
+    {
+      "id": "prepare-language_area_heatmaps",
+      "module": "manifold_attractors.maps.area",
+      "args": [
+        "area",
+        "prepare",
+        "--output",
+        "data/language_area_heatmaps",
+        "--device",
+        "cuda"
+      ],
+      "outputs": [
+        "data/language_area_heatmaps/inputs.npz",
+        "data/language_area_heatmaps/inputs.json",
+        "data/language_area_heatmaps/corpus.json"
+      ],
+      "deps": []
+    },
+    {
+      "id": "data-language_area_heatmaps",
+      "module": "manifold_attractors.maps.area",
+      "args": [
+        "area",
+        "compute",
+        "--output",
+        "data/language_area_heatmaps",
+        "--device",
+        "cuda"
+      ],
+      "outputs": [
+        "data/language_area_heatmaps/map-00.npz",
+        "data/language_area_heatmaps/map-00.json",
+        "data/language_area_heatmaps/map-01.npz",
+        "data/language_area_heatmaps/map-01.json",
+        "data/language_area_heatmaps/map-02.npz",
+        "data/language_area_heatmaps/map-02.json",
+        "data/language_area_heatmaps/map-03.npz",
+        "data/language_area_heatmaps/map-03.json",
+        "data/language_area_heatmaps/map-04.npz",
+        "data/language_area_heatmaps/map-04.json",
+        "data/language_area_heatmaps/map-05.npz",
+        "data/language_area_heatmaps/map-05.json",
+        "data/language_area_heatmaps/configuration.json"
+      ],
+      "deps": [
+        "prepare-language_area_heatmaps"
+      ]
+    },
+    {
+      "id": "prepare-language_steering_speed",
+      "module": "manifold_attractors.maps.language_speed",
+      "args": [
+        "prepare",
+        "--output",
+        "data/language_steering_speed",
+        "--device",
+        "cuda"
+      ],
+      "outputs": [
+        "data/language_steering_speed/inputs.npz",
+        "data/language_steering_speed/inputs.json",
+        "data/language_steering_speed/corpus.json"
+      ],
+      "deps": []
+    },
+    {
+      "id": "data-language_steering_speed",
+      "module": "manifold_attractors.maps.language_speed",
+      "args": [
+        "compute",
+        "--output",
+        "data/language_steering_speed",
+        "--device",
+        "cuda"
+      ],
+      "outputs": [
+        "data/language_steering_speed/llama3.npz",
+        "data/language_steering_speed/regions.json",
+        "data/language_steering_speed/glosses.json",
+        "data/language_steering_speed/selection.json",
+        "data/language_steering_speed/validation.json",
+        "data/language_steering_speed/llama3_chinese.npz",
+        "data/language_steering_speed/regions_chinese.json",
+        "data/language_steering_speed/glosses_chinese.json",
+        "data/language_steering_speed/selection_chinese.json",
+        "data/language_steering_speed/validation_chinese.json",
+        "data/language_steering_speed/chinese_curve_00.npz",
+        "data/language_steering_speed/chinese_curve_01.npz",
+        "data/language_steering_speed/chinese_curve_02.npz",
+        "data/language_steering_speed/chinese_curve_03.npz",
+        "data/language_steering_speed/provenance.json"
+      ],
+      "deps": [
+        "prepare-language_steering_speed"
+      ]
+    },
+    {
+      "id": "data-synthetic_profile_trajectory",
+      "module": "manifold_attractors.maps.synthetic_profile_trajectory",
+      "args": [
+        "--reference",
+        "data/norm_growth_classifier_layers/llama3.npz",
+        "--output",
+        "data/synthetic_profile_trajectory",
+        "--end-block",
+        "28",
+        "--seed",
+        "20260909",
+        "--device",
+        "cuda",
+        "--threads",
+        "4",
+        "--batch",
+        "128"
+      ],
+      "outputs": [
+        "data/synthetic_profile_trajectory/llama3.npz",
+        "data/synthetic_profile_trajectory/llama3.json",
+        "data/synthetic_profile_trajectory/gaussian.npz",
+        "data/synthetic_profile_trajectory/gaussian.json",
+        "data/synthetic_profile_trajectory/shuffled.npz",
+        "data/synthetic_profile_trajectory/shuffled.json"
+      ],
+      "deps": [
+        "data-native_layers-llama3"
+      ]
+    },
+    {
+      "id": "data-bubble_coords",
+      "module": "manifold_attractors.maps.bubble_run",
+      "args": [
+        "--output",
+        "data"
+      ],
+      "outputs": [
+        "data/bubble_coords.parquet",
+        "data/bubble_coords_extra.parquet",
+        "data/bubble_sources.json",
+        "data/bubble_coords_extra.selection.json",
+        "data/bubble_validation.json"
+      ],
+      "deps": []
+    },
+    {
+      "id": "data-refusal_direction",
+      "module": "manifold_attractors.maps.refusal_extract",
+      "args": [
+        "--author-repo",
+        "external/refusal_direction",
+        "--output",
+        "data/refusal_direction"
+      ],
+      "outputs": [
+        "data/refusal_direction/direction.pt",
+        "data/refusal_direction/direction.json",
+        "data/refusal_direction/sources.json"
+      ],
+      "deps": []
+    },
+    {
+      "id": "data-refusal_steering_heatmaps",
+      "module": "manifold_attractors.maps.refusal",
+      "args": [
+        "--direction-dir",
+        "data/refusal_direction",
+        "--output",
+        "data/refusal_steering_heatmaps"
+      ],
+      "outputs": [
+        "data/refusal_steering_heatmaps/benign_unsteered_00.npz",
+        "data/refusal_steering_heatmaps/benign_unsteered_00.json",
+        "data/refusal_steering_heatmaps/benign_unsteered_01.npz",
+        "data/refusal_steering_heatmaps/benign_unsteered_01.json",
+        "data/refusal_steering_heatmaps/benign_unsteered_02.npz",
+        "data/refusal_steering_heatmaps/benign_unsteered_02.json",
+        "data/refusal_steering_heatmaps/benign_unsteered_03.npz",
+        "data/refusal_steering_heatmaps/benign_unsteered_03.json",
+        "data/refusal_steering_heatmaps/benign_unsteered_04.npz",
+        "data/refusal_steering_heatmaps/benign_unsteered_04.json",
+        "data/refusal_steering_heatmaps/benign_unsteered_05.npz",
+        "data/refusal_steering_heatmaps/benign_unsteered_05.json",
+        "data/refusal_steering_heatmaps/benign_unsteered_06.npz",
+        "data/refusal_steering_heatmaps/benign_unsteered_06.json",
+        "data/refusal_steering_heatmaps/benign_unsteered_07.npz",
+        "data/refusal_steering_heatmaps/benign_unsteered_07.json",
+        "data/refusal_steering_heatmaps/harmful_unsteered_00.npz",
+        "data/refusal_steering_heatmaps/harmful_unsteered_00.json",
+        "data/refusal_steering_heatmaps/harmful_unsteered_01.npz",
+        "data/refusal_steering_heatmaps/harmful_unsteered_01.json",
+        "data/refusal_steering_heatmaps/harmful_unsteered_02.npz",
+        "data/refusal_steering_heatmaps/harmful_unsteered_02.json",
+        "data/refusal_steering_heatmaps/harmful_unsteered_03.npz",
+        "data/refusal_steering_heatmaps/harmful_unsteered_03.json",
+        "data/refusal_steering_heatmaps/harmful_unsteered_04.npz",
+        "data/refusal_steering_heatmaps/harmful_unsteered_04.json",
+        "data/refusal_steering_heatmaps/harmful_unsteered_05.npz",
+        "data/refusal_steering_heatmaps/harmful_unsteered_05.json",
+        "data/refusal_steering_heatmaps/harmful_unsteered_06.npz",
+        "data/refusal_steering_heatmaps/harmful_unsteered_06.json",
+        "data/refusal_steering_heatmaps/harmful_unsteered_07.npz",
+        "data/refusal_steering_heatmaps/harmful_unsteered_07.json",
+        "data/refusal_steering_heatmaps/benign_newline_steered_00.npz",
+        "data/refusal_steering_heatmaps/benign_newline_steered_00.json",
+        "data/refusal_steering_heatmaps/benign_newline_steered_01.npz",
+        "data/refusal_steering_heatmaps/benign_newline_steered_01.json",
+        "data/refusal_steering_heatmaps/benign_newline_steered_02.npz",
+        "data/refusal_steering_heatmaps/benign_newline_steered_02.json",
+        "data/refusal_steering_heatmaps/benign_newline_steered_03.npz",
+        "data/refusal_steering_heatmaps/benign_newline_steered_03.json",
+        "data/refusal_steering_heatmaps/benign_newline_steered_04.npz",
+        "data/refusal_steering_heatmaps/benign_newline_steered_04.json",
+        "data/refusal_steering_heatmaps/benign_newline_steered_05.npz",
+        "data/refusal_steering_heatmaps/benign_newline_steered_05.json",
+        "data/refusal_steering_heatmaps/benign_newline_steered_06.npz",
+        "data/refusal_steering_heatmaps/benign_newline_steered_06.json",
+        "data/refusal_steering_heatmaps/benign_newline_steered_07.npz",
+        "data/refusal_steering_heatmaps/benign_newline_steered_07.json",
+        "data/refusal_steering_heatmaps/selection.json",
+        "data/refusal_steering_heatmaps/steering_profile.json"
+      ],
+      "deps": [
+        "data-refusal_direction"
+      ]
+    }
+  ]
+}

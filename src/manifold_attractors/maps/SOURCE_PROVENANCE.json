@@ -1,0 +1,40 @@
+{
+  "original_repository_head": "5979e33e36aebe80a19387f0cf03cd50ecf6ba11",
+  "source_sha256": {
+    "paper_scripts/concept_manifold_speed_profiles.py": "77a246f700459a07034b3b046e180cfda5469c05e705a93411a0ed8b6d54df40",
+    "exploration/language_steering_report_figure.py": "b8e15237c0221ee19e2303e6548ba737507aab4ea1830a49cbd07a5e3c28459b",
+    "exploration/language_steering_mollweide.py": "2907c74fc0125975daed60c6dc30e0d292c6c018d8981dcb14cfc6459eee4b0c",
+    "exploration/llama_olmo_language_order.py": "c8b0587f01950fdc28fddafb7ab3f5db5e6931ebc26df86f549394738f312018",
+    "exploration/language_steering_greek_extension.py": "6b632b0855b0f444d755fd289387f7ee78de7d74fc883dd8eb1d27497a61dc9a",
+    "exploration/language_chinese_figure.py": "0645d990934acc0a2f57b4b650b3ff8ec5b019d5332ab38b4b79c9e74bacfb52",
+    "exploration/concept_manifold_barriers/language_regions.py": "8fe9de169ea4f9c960cc8eb41be6d4aeee7c0a2c6aa41404424ee35f940870e2",
+    "paper_scripts/export_language_steering_speed.py": "7c37680a980525642ea2cbcebf1bf87ad115972837dbcb48ec19bc9649aa5c27",
+    "exploration/refusal_paper_replication.py": "c5ca549c7fe5345123719c1a474867a1fd9a1f510a382ecd6e39d829613101b3",
+    "exploration/refusal_live_demo.py": "bc5ac3940e426dde718021f2be75fe892dfe785a72b36d79b033db1fa12f214c",
+    "exploration/context_heatmap_series.py": "ab81e3a6e59832fea01b8ff466ab9e2edfc109e16e31e946b92a825a1bc32f53",
+    "exploration/context_heatmaps.py": "c8eb480f890c26fbd3fe1211417c4d3f09842cfd31c78c474c23801def2f6237",
+    "exploration/refusal_instruct_context.py": "9975d6263530268c9f0965c68b9a336498be2a2467bd86bf7a4f12b786603b04",
+    "exploration/synthetic_profile_trajectory.py": "51ff17c3639a282060455f2a40615a4d69adc7130985aa8d91ded9834deef9ae",
+    "paper_scripts/bubble_coords_extra.py": "9122888171833f303a5efd2b38b313aa445b9b15c515a292ee12537a2781cd89",
+    "pullback_solve.py": "20fed0ff26ebf2493408f73263615bd841c5aed5bec8bf18c96691c135cf329a",
+    "grid_geom.py": "b8a6ca46082d3cac3725c3e67f37a06c3698c58cbd95fb204a7ffb1db6e7e993"
+  },
+  "recovered_bubble_source": "cc2a8ac:paper_scripts/gen_bubble_coords.py",
+  "recovered_bubble_sha256": "c80dddde6850d162d27f7856b339c75f963b556020f9aaba9ceac52615a0c778",
+  "input_note": "Raw source texts/token IDs/configuration metadata and hand-authored figure label/context annotations are retained. No original generated arrays, activations, maps, vectors or speed curves are included.",
+  "editorial_sources": {
+    "language_speed_labels.json": "paper-data/language_steering_speed/glosses.json (complete editorial document; no numerical statistics)",
+    "language_speed_labels_chinese.json": "paper-data/language_steering_speed/glosses_chinese.json (current quartet409/397/357/449; no numerical statistics)"
+  },
+  "input_sha256": {
+    "area_corpus_protocol.json": "f2e7371e6b71604fe27ab87989ca46407e412d2e8937cde84d6f201736d792ea",
+    "bubble_sentences.json": "2e306babd4e1ce1428f082a2e6f88e9206b9c74221207e1be309f1749d633098",
+    "language_area.json": "df2ac17afbe3987e03feecda96b251670e6344cf9248ea17c86f573077208402",
+    "language_speed.json": "7e7d582bfa13debd34256fefacf5cad8a6c75c25ade62cb8039a445f7dc07687",
+    "language_speed_chinese.json": "840354d948c9fefe591432199ba974d7879a4b1bb235eac0bb8a0e80b48b1488",
+    "language_speed_labels.json": "0ce3a75e07896093209a262657f19d3304cb17813e62536d70da60ae4768861e",
+    "language_speed_labels_chinese.json": "53ded4659ce279264b3f46e4e0a1ad1288131cb6e3f895d15d5f6efbdacd6fe1",
+    "speed_corpus_hashes.json": "bacfb64cac4b70af1f9b1c0e36494abdd26517339aa254f14285f920154dbba4",
+    "triple.json": "4dd9cd727c40be667ea1169c73275d6c04d3dd870bc04a2b40cfff7486c87dd5"
+  }
+}

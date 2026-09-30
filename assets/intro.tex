@@ -1,0 +1,34 @@
+% Artwork extracted from main.tex at ed8b89b, lines 11--42.
+% Only input filenames are parameterized by the standalone wrapper.
+  \includegraphics[width=.49\linewidth,valign=T]{\FishSequence}%
+  \hfill
+  \begin{tikzpicture}[baseline=(current bounding box.north)]
+    \definecolor{axisbackground}{RGB}{240,240,240}
+    \begin{axis}[
+        width=.49\linewidth,
+        height=.245\linewidth,
+        scale only axis,
+        axis equal image,
+        xmin=-2.8, xmax=2.8,
+        ymin=-1.4, ymax=1.4,
+        enlargelimits=false,
+        axis background/.style={fill=axisbackground},
+        colormap/viridis high res,
+        point meta min=0, point meta max=0.75,
+        hide axis,
+    ]
+      % Vector components are precomputed by two_basin_field.py.
+      \addplot[
+        point meta=\thisrow{speed},
+        black,
+        quiver={
+          % colored,
+          u={\thisrow{u}},
+          v={\thisrow{v}},
+          scale arrows=0.177,
+        },
+        -{Latex[scale=0.5]},
+      ] table[x=x, y=y] {\BasinField};
+      \path (rel axis cs:0,0) rectangle (rel axis cs:1,1);
+    \end{axis}
+  \end{tikzpicture}

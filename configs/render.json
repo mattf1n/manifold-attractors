@@ -1,0 +1,156 @@
+{
+  "paper_commit": "ed8b89bc8344db678eb5e360a1893937d3b94a1f",
+  "note": "Scientific render logic preserved; original font style files missing and reconstructed. See RENDER.md for exact per-renderer dependency pins and verification limitations.",
+  "tasks": [
+    {
+      "id": "render-dead_fish_sequence",
+      "module": "manifold_attractors.render.dead_fish_sequence",
+      "args": ["--data", "assets/A-Dead-Fish-Swims.gif", "--figure", "fig/shared/dead_fish_sequence.pdf"],
+      "outputs": ["fig/shared/dead_fish_sequence.pdf", "fig/shared/dead_fish_sequence.png", "fig/shared/dead_fish_sequence.render.json"],
+      "deps": []
+    },
+    {
+      "id": "render-two_basin_field",
+      "module": "manifold_attractors.render.two_basin_field",
+      "args": ["--output", "data/two_basin_field.dat"],
+      "outputs": ["data/two_basin_field.dat"],
+      "deps": []
+    },
+    {
+      "id": "render-intro",
+      "module": "manifold_attractors.render.inline_tikz",
+      "environment": "render",
+      "args": ["intro", "--data", "data/two_basin_field.dat", "--fish", "fig/shared/dead_fish_sequence.pdf", "--figure", "fig/{style}/intro.pdf"],
+      "outputs": ["fig/{style}/intro.pdf", "fig/{style}/intro.tex"],
+      "deps": ["render-dead_fish_sequence", "render-two_basin_field"]
+    },
+    {
+      "id": "render-sphere_probe",
+      "module": "manifold_attractors.render.inline_tikz",
+      "environment": "render",
+      "args": ["sphere_probe", "--figure", "fig/{style}/sphere_probe.pdf"],
+      "outputs": ["fig/{style}/sphere_probe.pdf", "fig/{style}/sphere_probe.tex"],
+      "deps": []
+    },
+    {
+      "id": "render-great_circle_norm_grid",
+      "module": "manifold_attractors.render.great_circle_norm_grid",
+      "environment": "render",
+      "args": ["--data", "data/great_circle_norm_grid", "--figure", "fig/{style}/great_circle_norm_grid.pdf"],
+      "outputs": ["fig/{style}/great_circle_norm_grid.pdf", "fig/{style}/great_circle_norm_grid.png", "fig/{style}/great_circle_norm_grid.render.json"],
+      "deps": ["data-great_circle_norm_grid-llama3", "data-great_circle_norm_grid-olmo3", "data-great_circle_norm_grid-qwen3"]
+    },
+    {
+      "id": "render-great_circle_synthetic_grid",
+      "module": "manifold_attractors.render.great_circle_synthetic_grid",
+      "environment": "render",
+      "args": ["--data", "data/great_circle_synthetic_grid_best_layers", "--llama-data", "data/great_circle_synthetic_grid_llama21/llama3.npz", "--figure", "fig/{style}/great_circle_synthetic_grid.pdf"],
+      "outputs": ["fig/{style}/great_circle_synthetic_grid.pdf", "fig/{style}/great_circle_synthetic_grid.png", "fig/{style}/great_circle_synthetic_grid.render.json"],
+      "deps": ["data-great_circle_synthetic_grid_selected-llama3", "data-great_circle_synthetic_grid_selected-olmo3", "data-great_circle_synthetic_grid_selected-qwen3"]
+    },
+    {
+      "id": "render-norm_growth_trajectory_starts",
+      "module": "manifold_attractors.render.norm_growth_trajectory_starts",
+      "environment": "render",
+      "args": ["--data", "data/norm_growth_trajectory_starts_all_layers", "--starts", "all", "--height", "1.25", "--models", "llama3", "--figure", "fig/{style}/norm_growth_trajectory_starts.pdf"],
+      "outputs": ["fig/{style}/norm_growth_trajectory_starts.pdf", "fig/{style}/norm_growth_trajectory_starts.png", "fig/{style}/norm_growth_trajectory_starts.render.json"],
+      "deps": ["data-norm_growth_trajectory_starts_all_layers-llama3"]
+    },
+    {
+      "id": "render-synthetic_profile_trajectory",
+      "module": "manifold_attractors.render.synthetic_profile_trajectory",
+      "environment": "render",
+      "args": ["--data", "data/synthetic_profile_trajectory", "--figure", "fig/{style}/synthetic_profile_trajectory.pdf"],
+      "outputs": ["fig/{style}/synthetic_profile_trajectory.pdf", "fig/{style}/synthetic_profile_trajectory.png"],
+      "deps": ["data-synthetic_profile_trajectory"]
+    },
+    {
+      "id": "render-great_circle_pair_speed_grid",
+      "module": "manifold_attractors.render.great_circle_pair_speed_grid",
+      "environment": "render",
+      "args": ["--data", "data/pair_barrier_validation", "--models", "llama3", "--half-width", "--figure", "fig/{style}/great_circle_pair_speed_grid.pdf"],
+      "outputs": ["fig/{style}/great_circle_pair_speed_grid.pdf", "fig/{style}/great_circle_pair_speed_grid.png", "fig/{style}/great_circle_pair_speed_grid.render.json"],
+      "deps": ["data-pair_barrier_validation"]
+    },
+    {
+      "id": "render-triple_area_heatmaps",
+      "module": "manifold_attractors.render.triple_area_heatmaps",
+      "environment": "render",
+      "args": ["--data", "data/triple_area_heatmaps_6blocks", "--figure", "fig/{style}/triple_area_heatmaps.pdf"],
+      "outputs": ["fig/{style}/triple_area_heatmaps.pdf", "fig/{style}/triple_area_heatmaps.png"],
+      "deps": ["data-triple_area_heatmaps"]
+    },
+    {
+      "id": "render-bubble_coords",
+      "module": "manifold_attractors.render.bubble_coords",
+      "environment": "render-bubble",
+      "args": ["--data", "data/bubble_coords.parquet", "--extra-data", "data/bubble_coords_extra.parquet", "--figure", "fig/{style}/bubble_coords.pdf"],
+      "outputs": ["fig/{style}/bubble_coords.pdf", "fig/{style}/bubble_coords.png"],
+      "deps": ["data-bubble_coords"]
+    },
+    {
+      "id": "render-refusal_steering_heatmaps",
+      "module": "manifold_attractors.render.refusal_steering_heatmaps",
+      "environment": "render",
+      "args": ["--data", "data/refusal_steering_heatmaps", "--figure", "fig/{style}/refusal_steering_heatmaps.pdf"],
+      "outputs": ["fig/{style}/refusal_steering_heatmaps.pdf", "fig/{style}/refusal_steering_heatmaps.png"],
+      "deps": ["data-refusal_steering_heatmaps"]
+    },
+    {
+      "id": "render-language_area_heatmaps",
+      "module": "manifold_attractors.render.language_area_heatmaps",
+      "environment": "render",
+      "args": ["--data", "data/language_area_heatmaps", "--figure", "fig/{style}/language_area_heatmaps.pdf"],
+      "outputs": ["fig/{style}/language_area_heatmaps.pdf", "fig/{style}/language_area_heatmaps.png"],
+      "deps": ["data-language_area_heatmaps"]
+    },
+    {
+      "id": "render-language_steering_speed",
+      "module": "manifold_attractors.render.language_steering_speed",
+      "environment": "render",
+      "args": ["--data", "data/language_steering_speed", "--figure", "fig/{style}/language_steering_speed.pdf"],
+      "outputs": ["fig/{style}/language_steering_speed.pdf", "fig/{style}/language_steering_speed.png"],
+      "deps": ["data-language_steering_speed"]
+    },
+    {
+      "id": "render-great_circle_norm_grid_context",
+      "module": "manifold_attractors.render.great_circle_norm_grid",
+      "environment": "render",
+      "args": ["--data", "data/great_circle_norm_grid_context", "--figure", "fig/{style}/great_circle_norm_grid_context.pdf"],
+      "outputs": ["fig/{style}/great_circle_norm_grid_context.pdf", "fig/{style}/great_circle_norm_grid_context.png", "fig/{style}/great_circle_norm_grid_context.render.json"],
+      "deps": ["data-great_circle_norm_grid_context-llama3", "data-great_circle_norm_grid_context-olmo3", "data-great_circle_norm_grid_context-qwen3"]
+    },
+    {
+      "id": "render-norm_growth_trajectory_starts_appendix",
+      "module": "manifold_attractors.render.norm_growth_trajectory_starts",
+      "environment": "render",
+      "args": ["--data", "data/norm_growth_trajectory_starts_all_layers", "--starts", "all", "--height", "2.2", "--models", "olmo3", "qwen3", "--figure", "fig/{style}/norm_growth_trajectory_starts_appendix.pdf"],
+      "outputs": ["fig/{style}/norm_growth_trajectory_starts_appendix.pdf", "fig/{style}/norm_growth_trajectory_starts_appendix.png", "fig/{style}/norm_growth_trajectory_starts_appendix.render.json"],
+      "deps": ["data-norm_growth_trajectory_starts_all_layers-olmo3", "data-norm_growth_trajectory_starts_all_layers-qwen3"]
+    },
+    {
+      "id": "render-great_circle_speed_grid",
+      "module": "manifold_attractors.render.great_circle_speed_grid",
+      "environment": "render",
+      "args": ["--data", "data/great_circle_speed_grid", "--figure", "fig/{style}/great_circle_speed_grid.pdf"],
+      "outputs": ["fig/{style}/great_circle_speed_grid.pdf", "fig/{style}/great_circle_speed_grid.png", "fig/{style}/great_circle_speed_grid.render.json"],
+      "deps": ["data-great_circle_speed_grid-llama3", "data-great_circle_speed_grid-olmo3", "data-great_circle_speed_grid-qwen3"]
+    },
+    {
+      "id": "render-great_circle_synthetic_speed_grid",
+      "module": "manifold_attractors.render.great_circle_synthetic_speed_grid",
+      "environment": "render",
+      "args": ["--data", "data/great_circle_synthetic_speed_grid", "--figure", "fig/{style}/great_circle_synthetic_speed_grid.pdf"],
+      "outputs": ["fig/{style}/great_circle_synthetic_speed_grid.pdf", "fig/{style}/great_circle_synthetic_speed_grid.png", "fig/{style}/great_circle_synthetic_speed_grid.render.json"],
+      "deps": ["data-great_circle_synthetic_speed_grid-llama3", "data-great_circle_synthetic_speed_grid-olmo3", "data-great_circle_synthetic_speed_grid-qwen3"]
+    },
+    {
+      "id": "render-great_circle_pair_speed_grid_appendix",
+      "module": "manifold_attractors.render.great_circle_pair_speed_grid",
+      "environment": "render",
+      "args": ["--data", "data/pair_barrier_validation", "--independent-y", "--models", "olmo3", "qwen3", "--figure", "fig/{style}/great_circle_pair_speed_grid_appendix.pdf"],
+      "outputs": ["fig/{style}/great_circle_pair_speed_grid_appendix.pdf", "fig/{style}/great_circle_pair_speed_grid_appendix.png", "fig/{style}/great_circle_pair_speed_grid_appendix.render.json"],
+      "deps": ["data-pair_barrier_validation"]
+    }
+  ]
+}

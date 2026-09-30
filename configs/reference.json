@@ -1,0 +1,293 @@
+{
+  "paper_commit": "ed8b89bc8344db678eb5e360a1893937d3b94a1f",
+  "note": "Reference hashes only; no experimental data or rendered figures bundled. PDF hashes are provenance, not deterministic regeneration criteria. PNG matching is stricter than scientific numerical equivalence.",
+  "figures": [
+    {
+      "name": "dead_fish_sequence",
+      "manuscript": "main.tex",
+      "png_sha256": {},
+      "pdf_sha256": {
+        "shared": "2e20f50ef4c5479971fee1740e600a2ebaecba3169d625d7b797c072b6ce1cb5"
+      },
+      "pixel_sha256": {},
+      "shared_pdf_image": {
+        "pixel_sha256": "868b2c45f245d559b0fb833dffe946017d750dc9a32ae65c5d04b0e2cf93ac97",
+        "mediabox": [
+          0.0,
+          0.0,
+          396.0,
+          198.0
+        ],
+        "content_sha256": "79f5a7f9d9e817599718568edef1b4140aefd50fa2cf1d55cbc9680da06cbf23"
+      }
+    },
+    {
+      "name": "great_circle_norm_grid",
+      "manuscript": "main.tex",
+      "png_sha256": {
+        "iclr": "5f144910b7ddb87b4c2553d1eef232df68efdaaa4ac52353513e69e149e05829",
+        "goodfire": "9d4e2a9fb36c54d28a3c67f9ebd8699c2d8ce4433d2413ab736f549603fc9e5c"
+      },
+      "pdf_sha256": {
+        "iclr": "6e08c9de903db84cf2d043ee11675ef2998f73b7921df584a8acfc7c688c16a5",
+        "goodfire": "55d19e8f84af2431db2de37bb5b026fe3eda3b77d8d0c82dcb41b9b950ed8300"
+      },
+      "pixel_sha256": {
+        "iclr": "54e6387d3558a39d849aa377f9a24965f4c3c5f0a1df1610df2b70f5db9c3587",
+        "goodfire": "250876a2715b1f09453f4dffb97eb72cc2c14bdb404e547b3f507988086bd28c"
+      }
+    },
+    {
+      "name": "great_circle_synthetic_grid",
+      "manuscript": "main.tex",
+      "png_sha256": {
+        "iclr": "b424b67ad37e5878638b0f168491c1955868fce11bccc3b8f0b707c67fd74aa1",
+        "goodfire": "a80028595ba985b53b53cfa628d65e2d35cee05dd9542cf6925000020ff60b15"
+      },
+      "pdf_sha256": {
+        "iclr": "dcf1280f761c1b2048663c66d0ee9869c2b44d93e9e93c0073b0477c8fa8c4ae",
+        "goodfire": "4b4b828b623de3c05d10fca1c9c0f3afa3263f5a49c0cf54c3828db57ca3ba12"
+      },
+      "pixel_sha256": {
+        "iclr": "96e22277d8bb563e2d47e06bac690b430528e52ed1a7d86086fe25634fc7d812",
+        "goodfire": "b6db90e6fb262828516d625505c51e084e3a81be8f6eb11cfccdd98fed158d15"
+      }
+    },
+    {
+      "name": "norm_growth_trajectory_starts",
+      "manuscript": "main.tex",
+      "png_sha256": {
+        "iclr": "4a731f68c40c37b2f2b246dc87d906c978b3be876a01cf8315a302d27b7c9cc8",
+        "goodfire": "10b74de582f8e2ec61e10c185051e0cc9a008416e2182b73aa3b7519b39d819d"
+      },
+      "pdf_sha256": {
+        "iclr": "a32a7618284be79f327cd0806a01321bf759f2d3deb41b22184d0cd48076fe1d",
+        "goodfire": "aa8717a49d9967c978578c8590cdecd3fc6d87daf4164a46bdbec288f63a52fd"
+      },
+      "pixel_sha256": {
+        "iclr": "7f3d3acae86094af73fb02dc5494efa01b2e8faef049a240f56ef51bd8e2f51c",
+        "goodfire": "59848793030d490249e27d4fcc3bfa9445b12717cf4898ee324e1d43438eb5f5"
+      }
+    },
+    {
+      "name": "synthetic_profile_trajectory",
+      "manuscript": "main.tex",
+      "png_sha256": {
+        "iclr": "ffbf3d4bec6ec45cd98c7b393ad4f5dd80e9b2ccaf6b0710882497452944496e",
+        "goodfire": "55b28012ef6efad67ab7f9ea0d7cbc2b2aae6a3a78a4bb5ae03449055a3a3342"
+      },
+      "pdf_sha256": {
+        "iclr": "e87a92c061909de8973a97ca568f9cc44258c387be96013060564c128c49075d",
+        "goodfire": "1f4a5466e1d68f703bcfa461bed0abec9d2fe7351c648e13be22d0ac64a5aead"
+      },
+      "pixel_sha256": {
+        "iclr": "d81385a862a8326f40c033f49c980d868a24d9780d60495ac675c458dc671c8e",
+        "goodfire": "95a828a77c31550ad3b95c2ad0d2c7320c5a4bf7e12628ebafb33f47d868f78f"
+      }
+    },
+    {
+      "name": "great_circle_pair_speed_grid",
+      "manuscript": "main.tex",
+      "png_sha256": {
+        "iclr": "cb2c5ed8ab948f4a478c492355aa45576ba1f6c0e7b5ed3961c4ebbe838b6b52",
+        "goodfire": "ef3c7925f83fc68d3f2de723c96ec27568f1a1da912c3e811085a300b8f5bb15"
+      },
+      "pdf_sha256": {
+        "iclr": "bbb5747bb9625327e4552fdfd5baad19b93e92cd1da44778b9621dd5f44df12a",
+        "goodfire": "292d950fe3735287be9c475984d4249a5c1b83f416347ea2d3680805ee95a796"
+      },
+      "pixel_sha256": {
+        "iclr": "f6d0669a8eca702c127fe4b683898935fb22ee66cc53c773cbd37cd60ffc462f",
+        "goodfire": "80af0da061dba0c982f8f2e9613335719a56512734ee21f7185ca9896c8311ba"
+      }
+    },
+    {
+      "name": "triple_area_heatmaps",
+      "manuscript": "main.tex",
+      "png_sha256": {
+        "iclr": "f0f79123936c69bd8b70017a7fa64a38eb1c2338ca0b03377498c249dfb6ec60",
+        "goodfire": "beabbe32b330ca0660c1b3802b5a8d95ba0550d5594b7539f214a2397478098b"
+      },
+      "pdf_sha256": {
+        "iclr": "318368b11ed3e27822ec65b1d1436923a1b76c9ebb6ed14c816c43b6ab810a25",
+        "goodfire": "6069305069d9f54dfcbaff05e8efde7b3a9f9bccf9cf46a1b1c6887c90ed0f82"
+      },
+      "pixel_sha256": {
+        "iclr": "1fafa9e5d704bcfbf3a1e408047d1d0460e2e7c5c41f96546cac36a313eb4a30",
+        "goodfire": "ea8c252ed4f9ecc9a71f39981914a0df9ba3e282b99ce5faf3b7bb36cdd5845f"
+      }
+    },
+    {
+      "name": "bubble_coords",
+      "manuscript": "main.tex",
+      "png_sha256": {
+        "iclr": "d09c1cb4bcea6e38eeb1d5eec6ee7d9b3d80078e437e6b6c15b8cc455b138ef5",
+        "goodfire": "9e6218fce4dbf8c0106277358eeef68c3437aa07835d67b35c2efa7b367b7bb6"
+      },
+      "pdf_sha256": {
+        "iclr": "67f155b245a1a88ed15d72872253d40e2cfac5050689badc529639d4875d3c21",
+        "goodfire": "a8182491008dab712cb859814dd61667d25a87671fc74b13e24a702bfa24d47c"
+      },
+      "pixel_sha256": {
+        "iclr": "1d5efdc93c5da45909831266de816d24ef3a067e2948147479fad097fedbc21f",
+        "goodfire": "298239626b385beb4dfc2da708a9148b0782b21efe2eadeb3cc679078c534a89"
+      }
+    },
+    {
+      "name": "refusal_steering_heatmaps",
+      "manuscript": "main.tex",
+      "png_sha256": {
+        "iclr": "cea3bbbe082f9b8b2155b920292f1e997b6af3e5dc5deb189fa92db58d306ba4",
+        "goodfire": "e127b00799d513d95bd6ffaf203b14e9862e0804c6201882256d4869721f3dc6"
+      },
+      "pdf_sha256": {
+        "iclr": "e41a8a56c411cd88139ab5af57072112dbe075c3cec4b2d3247588b8febcdb15",
+        "goodfire": "408246983e8759f2a8f2fa47823d74126eb526882ea12e5627668abe4829db2a"
+      },
+      "pixel_sha256": {
+        "iclr": "88a910e42b16443b3baca29bc678c20082ddbf2d328fda62701f3797cb41ff1e",
+        "goodfire": "ad0cd26d21ce46d688e2ea648251741b3c881e14d58cfbd5ca5b57a17a990e90"
+      }
+    },
+    {
+      "name": "language_area_heatmaps",
+      "manuscript": "main.tex",
+      "png_sha256": {
+        "iclr": "7da061da7ad31445d42f3dd3d1e5ba8f37696a4882e835973a150d5d1e5cf4f7",
+        "goodfire": "c38e1d64b70d9f6628c8d26c528ccc16b78967b9dd3ac92354790bc09b4f0d15"
+      },
+      "pdf_sha256": {
+        "iclr": "6855b22f776f845480c1f82c254b9358159a7ed094a361200267058c54f131bb",
+        "goodfire": "8f411976f109403968778ca045846aad58ec3dbf523f544f4a42ce575f09154e"
+      },
+      "pixel_sha256": {
+        "iclr": "629cebe9f7e8bfab751e41f78d10fda89e25ea81d00ef25b2fe22ef5aa20233e",
+        "goodfire": "6b172ee637f979bd22d0e7f3f6170fa02b18c461fe192b5b85201e5eddad59b4"
+      }
+    },
+    {
+      "name": "language_steering_speed",
+      "manuscript": "main.tex",
+      "png_sha256": {
+        "iclr": "6e467fafd1749e759c763c740b406b1ca566e0b967c3e512d77af2d72f41db70",
+        "goodfire": "61a2209bb4fc083cef3315eabbd854beb359fc6f3241aa265b208de6a03093fb"
+      },
+      "pdf_sha256": {
+        "iclr": "c8877689020c7676d29f6170a3125c7fb7fa9718803611289b5c7c3168540c7e",
+        "goodfire": "7732245dd1c14b0b83454490966e067efc3ba85cca0c918c91bff0fac24d7d1c"
+      },
+      "pixel_sha256": {
+        "iclr": "acc9334ca40ffc759798e824be6c76ad601c412b33fc476f873f0ec7da6202c5",
+        "goodfire": "7727f1d8a6a4bf373068bad77aaf09288fb80cedbcdfa30ea1942715e5f504de"
+      }
+    },
+    {
+      "name": "great_circle_norm_grid_context",
+      "manuscript": "appendix.tex",
+      "png_sha256": {
+        "iclr": "d3bbf33cebcc4781ec60e98b07f387c82e35a7c23d20904e26237e548c5ab75b",
+        "goodfire": "93626b8d948b92243575d5e166ef72da0b7cf87330e7c6299b0d29cc965acde3"
+      },
+      "pdf_sha256": {
+        "iclr": "1a435494acbb6728909bd644aa7fa3d275d8cc242335cebadbb78c96b6982a8e",
+        "goodfire": "d3c99455fc7e759cece63028023c81979c34b78a23682afcd4ca25377bdff18a"
+      },
+      "pixel_sha256": {
+        "iclr": "8765f4c30bc873ba93ead99db12ee7355dc0a798e93fa253fd3a309be4744e60",
+        "goodfire": "e497a80db3a2dfb6a9cd99813c258db0094431ee586b53db741a81359cfbcc74"
+      }
+    },
+    {
+      "name": "norm_growth_trajectory_starts_appendix",
+      "manuscript": "appendix.tex",
+      "png_sha256": {
+        "iclr": "de0c7c43106c169ae04dd063a62e92ad3f6a6eb15a0c07c41284427a90b8b1b7",
+        "goodfire": "82b1454f26da5ecd723759365bea02fd31bdc6253ff5129bb56b4ffe3a8eeba7"
+      },
+      "pdf_sha256": {
+        "iclr": "f314ec563480d4bdf9065910044b519efff322e322df73c66969c1d24260676c",
+        "goodfire": "75897e6817394b903c5080d8272ce85f7b093555355fb6c98c18c893c77ea9a5"
+      },
+      "pixel_sha256": {
+        "iclr": "2b65b23c72ac642d60de99d6999ddeeb69cd61ae217cf91cf314e5d11219f021",
+        "goodfire": "51cbc5b59a1415ce220e03b95130dba4fd5f06fb0d8ecd69f4fadbb1bcfc100d"
+      }
+    },
+    {
+      "name": "great_circle_speed_grid",
+      "manuscript": "appendix.tex",
+      "png_sha256": {
+        "iclr": "e48b1c8ae4b36ba39b027fa06bdb006e55079879fcf7cdedc9de25398bb5fbc1",
+        "goodfire": "f9fbf0fb3d3ded78ee89f4edafcb9aee5693df51429c417d69e33f0678fd4560"
+      },
+      "pdf_sha256": {
+        "iclr": "00aa7e05ac1a939196f8381f854eef6148d29822ac3a4a46dab7ca6b748ef37d",
+        "goodfire": "5f50498dde734e4a21bac354ba58066b9b49cf7019b220281a24427423c826c4"
+      },
+      "pixel_sha256": {
+        "iclr": "28ab73a9aa267d6227d0b3bcbf55a987e474341bcffe47f4c83950135656edfd",
+        "goodfire": "ac38134fb4c9831ae8a8b954ad27ea12a7c3139f87ff724f5df4a5da0740c05a"
+      }
+    },
+    {
+      "name": "great_circle_synthetic_speed_grid",
+      "manuscript": "appendix.tex",
+      "png_sha256": {
+        "iclr": "d2b7abea78b450e20701a9bc64f32d6469cd528de3e2ec7460645f1752628673",
+        "goodfire": "24f22bae1a2d2d613fea40e12f0bb6d449f16559dca0804f159be441b85b59a6"
+      },
+      "pdf_sha256": {
+        "iclr": "77399faf0611ca3b3558dcff0dd088e645b974ffd8655e83fa3732a7806cf4b1",
+        "goodfire": "d544dee6027fcb443c09987db015fd88003d862f84d3c1ff77b2fbc057ee65c9"
+      },
+      "pixel_sha256": {
+        "iclr": "d88cb6472b6de785db8f552d60f74b8f45919ad1b0ede7d652b4c48f58758e59",
+        "goodfire": "c622b39d13dd02e8da09546e17f06955e538eb0c4082d9333fa2cea9380fa4dd"
+      }
+    },
+    {
+      "name": "great_circle_pair_speed_grid_appendix",
+      "manuscript": "appendix.tex",
+      "png_sha256": {
+        "iclr": "a192d1f5af5734473b5de8f684923e2e6eb82668f98382c6460244f60f098f34",
+        "goodfire": "f206e4b36b1e12464ee7c5bb8e6e160a89a98219e5350134dc8fac5d101e2e94"
+      },
+      "pdf_sha256": {
+        "iclr": "3a81364cba4679aa8d7fdd253ea24bc5950032b68171996f9453247bc5a23e42",
+        "goodfire": "74211a16534911137fff53a885c2904b21183fd8de1dd4ea0d5679bbf24e18e4"
+      },
+      "pixel_sha256": {
+        "iclr": "a22cf5b0181e1134994cde97f711787da042fa748de206b99acf4086a5fb3269",
+        "goodfire": "3b2e324d9efd452f849cd60785d06feea513e243d376d12ce596e0cec3c273bd"
+      }
+    }
+  ],
+  "schematic": {
+    "generator": "two_basin_field",
+    "source": "main.tex introductory TikZ"
+  },
+  "inline_artworks": [
+    {
+      "name": "intro",
+      "status": "unverified",
+      "reason": "No original compiled manuscript/artwork export supplied for a canonical reference crop."
+    },
+    {
+      "name": "sphere_probe",
+      "status": "unverified",
+      "reason": "No original compiled manuscript/artwork export supplied for a canonical reference crop."
+    }
+  ],
+  "exactness_blockers": [
+    {
+      "kind": "source",
+      "paths": [
+        "styles/iclr-fonts.tex",
+        "styles/goodfire-fonts.tex",
+        "styles/figure-fonts.tex",
+        "styles/figure-math.tex"
+      ],
+      "reason": "Original untracked rendering preambles were not present in checkout, git history or archive. Included versions are explicitly marked reconstructions."
+    }
+  ]
+}
