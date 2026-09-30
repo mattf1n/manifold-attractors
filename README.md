@@ -9,14 +9,12 @@ retained. Public weights/corpora are downloaded; numerical intermediates are
 computed locally. Literal prompts, human-authored labels, and the source fish
 GIF are source inputs, not precomputed experiment results.
 
-**Status: exact end-to-end reproduction is not yet certified.** Four original
-TeX preambles were never tracked and are absent from the supplied archive;
-reconstructed replacements are explicitly marked. Some historical producer and
-corpus-selection provenance is also incomplete. Fresh full-size computation and
-scientific rendering are now being validated; published outputs and strict
-per-artwork comparisons appear below as they finish. The default full rendering
-command fails early rather than silently treating reconstructed typography as exact.
-See [AUDIT.md](AUDIT.md) for evidence and recovery requirements.
+**Target: scientific reproduction, not mandatory pixel identity.** Inconsequential
+hardware-rounding and typographic differences are acceptable; changing sampled
+tokens or numerical conclusions is not. Full-size computation is in progress,
+with completed images and per-artwork validation below. Missing original TeX
+preambles are replaced by explicitly documented reconstructions; source and
+corpus-selection provenance limitations remain in [AUDIT.md](AUDIT.md).
 
 ## Setup and commands
 
@@ -37,18 +35,18 @@ make smoke                                # source GIF + deterministic field; no
 make test                                 # CPU/tiny-model integration and unit tests
 ```
 
-After recovering the four original `styles/*.tex` files and marking the
-corresponding blocker resolved in `configs/reference.json`:
+After activating the TeX and rasterizer environment from `RENDER.md`:
 
 ```sh
 uv run --extra compute reproduce run --resume
 uv run --extra compute reproduce run --style goodfire --resume
-uv run reproduce check                    # check all available historical references
+uv run reproduce check                    # optional STRICT pixel-reference comparison
 ```
 
-For an explicitly **unverified typography reconstruction**, add
-`--allow-reconstructed-styles`; this does not bypass LuaLaTeX or numerical
-checks. A single task ID may replace `data`, e.g.
+Documented reconstructed typography is allowed by default; numerical checks
+remain mandatory. `--require-original-styles` enables strict provenance mode
+and fails until the four original preambles are recovered. The older explicit
+`--allow-reconstructed-styles` flag remains supported. A single task ID may replace `data`, e.g.
 `reproduce run data-great_circle_norm_grid-llama3 --resume` inside the compute
 environment. Optional SLURM submission, from this checkout:
 
@@ -81,14 +79,15 @@ submitted automatically.
 - Task logs/timing/provenance live in `runs/`; generated outputs in `data/` and
   `fig/`; downloaded author source in `external/`. These are all Git-ignored.
 
-`check` compares canonical decoded PNG pixels for the 15 scientific figures and
+The optional strict `check` compares canonical decoded PNG pixels for the 15 scientific figures and
 embedded image pixels/page geometry for the simple fish PDF. Original file
 hashes are also retained as provenance. PDF timestamps and PNG encoding are not
 scientific differences. No original standalone reference was supplied for the
 two inline artworks, so they are reported **UNVERIFIED**, never silently passed.
 Exit codes: 1 for missing/different artwork, 2 for incomplete reference coverage,
-0 only for complete matching coverage. Pixel agreement alone is not proof of a
-from-scratch execution; keep the run provenance too.
+0 only for complete matching coverage. A nonzero strict pixel result is not
+itself a scientific failure: see the separate scientific-validation evidence.
+Pixel agreement alone is not proof of a from-scratch execution; keep run provenance too.
 
 ## What was actually checked
 
@@ -115,7 +114,7 @@ and full-manuscript pagination are deliberately out of scope.
 
 These are **newly generated results**, not copies of the paper figures. Numerical experiments use the standalone package; typography uses explicitly reconstructed styles.
 
-Published **20/36** style-specific artworks; **3** pass their available exact image checks. “Different pixels” means the strict comparison failed—not a verified exact reproduction. The inline artworks have no supplied historical reference.
+Published **20/36** style-specific artworks; **3** pass the optional exact image check. **Pixel identity is not required**: small hardware-rounding and typographic differences are acceptable when scientifically inconsequential. Token selection, numerical results and conclusions must remain faithful. The per-artwork report distinguishes scientific validation from pixel identity; inline artworks lack historical image references.
 
 [Per-artwork hashes and validation](docs/figures/validation.json). [Protocols and limitations](AUDIT.md).
 
@@ -124,55 +123,55 @@ Published **20/36** style-specific artworks; **3** pass their available exact im
 
 ### Intro
 
-No historical reference — unverified. [PDF](docs/figures/iclr/intro.pdf)
+Scientific validation: **source reproduced**. No historical reference — unverified. [PDF](docs/figures/iclr/intro.pdf)
 
 ![Intro](docs/figures/iclr/intro.png)
 
 ### Sphere probe
 
-No historical reference — unverified. [PDF](docs/figures/iclr/sphere_probe.pdf)
+Scientific validation: **source reproduced**. No historical reference — unverified. [PDF](docs/figures/iclr/sphere_probe.pdf)
 
 ![Sphere probe](docs/figures/iclr/sphere_probe.png)
 
 ### Great circle norm grid
 
-Different pixels — not exact. [PDF](docs/figures/iclr/great_circle_norm_grid.pdf)
+Scientific validation: **correcting sampling regression**. Reference pixels differ. [PDF](docs/figures/iclr/great_circle_norm_grid.pdf)
 
 ![Great circle norm grid](docs/figures/iclr/great_circle_norm_grid.png)
 
 ### Triple area heatmaps
 
-Different pixels — not exact. [PDF](docs/figures/iclr/triple_area_heatmaps.pdf)
+Scientific validation: **inconsequential numerical differences**. Reference pixels differ. [PDF](docs/figures/iclr/triple_area_heatmaps.pdf)
 
 ![Triple area heatmaps](docs/figures/iclr/triple_area_heatmaps.png)
 
 ### Bubble coords
 
-Exact reference pixels. [PDF](docs/figures/iclr/bubble_coords.pdf)
+Scientific validation: **exact numerics**. Exact reference pixels. [PDF](docs/figures/iclr/bubble_coords.pdf)
 
 ![Bubble coords](docs/figures/iclr/bubble_coords.png)
 
 ### Refusal steering heatmaps
 
-Different pixels — not exact. [PDF](docs/figures/iclr/refusal_steering_heatmaps.pdf)
+Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/iclr/refusal_steering_heatmaps.pdf)
 
 ![Refusal steering heatmaps](docs/figures/iclr/refusal_steering_heatmaps.png)
 
 ### Language area heatmaps
 
-Different pixels — not exact. [PDF](docs/figures/iclr/language_area_heatmaps.pdf)
+Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/iclr/language_area_heatmaps.pdf)
 
 ![Language area heatmaps](docs/figures/iclr/language_area_heatmaps.png)
 
 ### Language steering speed
 
-Different pixels — not exact. [PDF](docs/figures/iclr/language_steering_speed.pdf)
+Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/iclr/language_steering_speed.pdf)
 
 ![Language steering speed](docs/figures/iclr/language_steering_speed.png)
 
 ### Great circle norm grid context
 
-Different pixels — not exact. [PDF](docs/figures/iclr/great_circle_norm_grid_context.pdf)
+Scientific validation: **correcting sampling regression**. Reference pixels differ. [PDF](docs/figures/iclr/great_circle_norm_grid_context.pdf)
 
 ![Great circle norm grid context](docs/figures/iclr/great_circle_norm_grid_context.png)
 
@@ -185,55 +184,55 @@ Fish component: [Exact embedded image and placement](docs/figures/iclr/dead_fish
 
 ### Intro
 
-No historical reference — unverified. [PDF](docs/figures/goodfire/intro.pdf)
+Scientific validation: **source reproduced**. No historical reference — unverified. [PDF](docs/figures/goodfire/intro.pdf)
 
 ![Intro](docs/figures/goodfire/intro.png)
 
 ### Sphere probe
 
-No historical reference — unverified. [PDF](docs/figures/goodfire/sphere_probe.pdf)
+Scientific validation: **source reproduced**. No historical reference — unverified. [PDF](docs/figures/goodfire/sphere_probe.pdf)
 
 ![Sphere probe](docs/figures/goodfire/sphere_probe.png)
 
 ### Great circle norm grid
 
-Different pixels — not exact. [PDF](docs/figures/goodfire/great_circle_norm_grid.pdf)
+Scientific validation: **correcting sampling regression**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_norm_grid.pdf)
 
 ![Great circle norm grid](docs/figures/goodfire/great_circle_norm_grid.png)
 
 ### Triple area heatmaps
 
-Different pixels — not exact. [PDF](docs/figures/goodfire/triple_area_heatmaps.pdf)
+Scientific validation: **inconsequential numerical differences**. Reference pixels differ. [PDF](docs/figures/goodfire/triple_area_heatmaps.pdf)
 
 ![Triple area heatmaps](docs/figures/goodfire/triple_area_heatmaps.png)
 
 ### Bubble coords
 
-Different pixels — not exact. [PDF](docs/figures/goodfire/bubble_coords.pdf)
+Scientific validation: **exact numerics**. Reference pixels differ. [PDF](docs/figures/goodfire/bubble_coords.pdf)
 
 ![Bubble coords](docs/figures/goodfire/bubble_coords.png)
 
 ### Refusal steering heatmaps
 
-Different pixels — not exact. [PDF](docs/figures/goodfire/refusal_steering_heatmaps.pdf)
+Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/goodfire/refusal_steering_heatmaps.pdf)
 
 ![Refusal steering heatmaps](docs/figures/goodfire/refusal_steering_heatmaps.png)
 
 ### Language area heatmaps
 
-Different pixels — not exact. [PDF](docs/figures/goodfire/language_area_heatmaps.pdf)
+Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/goodfire/language_area_heatmaps.pdf)
 
 ![Language area heatmaps](docs/figures/goodfire/language_area_heatmaps.png)
 
 ### Language steering speed
 
-Different pixels — not exact. [PDF](docs/figures/goodfire/language_steering_speed.pdf)
+Scientific validation: **pending**. Reference pixels differ. [PDF](docs/figures/goodfire/language_steering_speed.pdf)
 
 ![Language steering speed](docs/figures/goodfire/language_steering_speed.png)
 
 ### Great circle norm grid context
 
-Different pixels — not exact. [PDF](docs/figures/goodfire/great_circle_norm_grid_context.pdf)
+Scientific validation: **correcting sampling regression**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_norm_grid_context.pdf)
 
 ![Great circle norm grid context](docs/figures/goodfire/great_circle_norm_grid_context.png)
 

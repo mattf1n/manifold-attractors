@@ -42,7 +42,8 @@ historical default except natural speed (`8`). All probe batches are `128`.
 ```sh
 for m in llama3 olmo3 qwen3; do
   python -m manifold_attractors.experiments.great_circle_norm_grid \
-    --model "$m" --device cuda --seed 20260908 --samples 20 --max-tokens 256 --step 1 --batch 128
+    --model "$m" --device cuda --seed 20260908 --sampling-policy historical-all-nonspecial \
+    --samples 20 --max-tokens 256 --step 1 --batch 128
   python -m manifold_attractors.experiments.great_circle_norm_grid_context \
     --model "$m" --device cuda --batch 128
  done
@@ -54,6 +55,16 @@ one-based blocks (rounded from a linspace), 20 seeded documents/tokens, 401 angl
 −200…200°. Context mode reuses **exact** norm-circle anchors/tangents; fresh target
 K/V and original causal-prefix K/V, with direct/full-model injection checks.
 The alias is equivalent to `great_circle_norm_grid --context natural`.
+
+**Historical sampling correction found during the full run:** these norm figures
+sample *all* nonspecial positions, including position zero when nonspecial. The
+later producer had excluded zero, which changed 14/20 OLMo and 13/20 Qwen draws
+even though none of the historical selected positions was zero. Replaying the
+historical policy recovers all 60 original token selections from the seed and
+public input text. Llama's special BOS makes both policies equivalent. The
+`candidate_positions` helper still excludes zero by default for the distinct
+speed/synthetic/pair protocols; only the norm recipe explicitly opts into the
+historical rule. No archived activations are used.
 
 ### 2. Original midpoint reference fits, native-layer pools, selected norm plots
 

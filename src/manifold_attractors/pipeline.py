@@ -100,7 +100,7 @@ def fingerprint(task, style, digest, dep_records):
         "dependencies": dep_records}, sort_keys=True).encode()).hexdigest()
 
 
-def run_tasks(tasks, names, style, resume=False, root=ROOT, allow_reconstructed_styles=False):
+def run_tasks(tasks, names, style, resume=False, root=ROOT, allow_reconstructed_styles=True):
     blocked = [(name, tasks[name]["blocked"]) for name in names if tasks[name].get("blocked")]
     if blocked:
         raise RuntimeError("Cannot regenerate selected targets:\n" + "\n".join(f"  {n}: {why}" for n, why in blocked))
@@ -217,8 +217,11 @@ def main(argv=None):
     parser.add_argument("targets", nargs="*", help="Task ids or 'data'/'figures'; default: all published figures")
     parser.add_argument("--style", choices=["iclr", "goodfire"], default="iclr")
     parser.add_argument("--resume", action="store_true", help="Reuse only fingerprinted, hash-verified task outputs")
-    parser.add_argument("--allow-reconstructed-styles", action="store_true",
-                        help="Explicitly accept unverified typography; does not bypass the LuaLaTeX requirement")
+    typography = parser.add_mutually_exclusive_group()
+    typography.add_argument("--allow-reconstructed-styles", action="store_true", default=True,
+                            help="Allow documented reconstructed typography (default); LuaLaTeX is still required")
+    typography.add_argument("--require-original-styles", action="store_false", dest="allow_reconstructed_styles",
+                            help="Strict provenance mode: require the unavailable original TeX preambles")
     args = parser.parse_args(argv)
     try:
         if args.action == "check":

@@ -1,4 +1,42 @@
-# Exact-reproduction audit — final source assessment
+# Reproduction audit
+
+## Full-run update and acceptance criterion
+
+The current user requirement accepts **scientifically inconsequential** rounding
+and typography differences; pixel identity is optional. The strict historical
+source assessment below is retained as provenance, not a requirement to recover
+unavailable fonts before producing useful figures. Rendering permits documented
+reconstructed typography by default; `--require-original-styles` opts into the
+old strict gate.
+
+Full-size independent comparisons identified and distinguished three cases:
+
+- **Substantive sampling regression (being corrected):** natural norm figures
+  historically sampled all nonspecial positions. A later source revision
+  excluded position zero, changing 14/20 OLMo and 13/20 Qwen anchors even though
+  no historical selected token was at zero. Replaying seed20260908 with the
+  historical candidate rule recovers all60 original selections. The norm CLI
+  and recipe now explicitly restore that rule; other speed/synthetic/pair
+  protocols retain their separate positive-position policy. Fresh norm/context
+  forwards are rerun rather than substituting archived activations.
+- **Inconsequential arithmetic drift:** six triple-area maps agree within
+  relative1e-5 (observed maximum <3.514e-6). Historical native extraction used
+  A100; the fresh run used H100. Only10 of251430 quantized source colors and
+  41/48 final ICLR/Goodfire pixels differ. No rounding or output manipulation
+  is applied to force a match. The user accepted this degree of difference;
+  an A100 replay is unnecessary.
+- **Exact bubble science, harmless typography:** all13 columns of both bubble
+  tables (60025 +4002 rows) are exact. ICLR pixels are exact. Goodfire surface
+  images/geometry are exact; almost all changed pixels are Cabin font outlines
+  and hinting. Matching a font family/version did not identify the same binary:
+  historical Cabin is TrueType, the initial reconstruction used CFF/OpenType.
+
+Historical arrays were read **only as external validation references** after
+fresh computation, never as generator inputs or result replacements. Published
+per-artwork evidence is in `docs/figures/validation.json`; pending scientific
+comparisons must not be interpreted as passing.
+
+## Original source assessment
 
 Target: `~/paper` commit `ed8b89bc8344db678eb5e360a1893937d3b94a1f`.
 Standalone repository: `~/manifold-attractors`. Audit date: 2026-09-30.

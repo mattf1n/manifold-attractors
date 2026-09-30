@@ -3,8 +3,9 @@
 Render separately with paper/scripts/fig/great_circle_norm_grid.py.
 
 Natural states: one uniformly drawn nonspecial token among the first max_tokens
-of each uniformly sampled document from the cached NeelNanda/pile-10k subset,
-excluding model-input position zero (not position one after an automatic BOS).
+of each uniformly sampled document from the pinned NeelNanda/pile-10k subset.
+The historical norm figures allow position zero when nonspecial. The newer
+exclude-first policy remains explicit and is the helper default for other experiments.
 Probe context: [BOS, injected token], or EOS when BOS is absent, as in
  gen_ray_profiles.py. Capture each block's unmodified probe input/kwargs, then
 run that block alone, replacing position 1. Read raw residual output, including
@@ -29,9 +30,13 @@ def digest(path):
 SAMPLING_POLICY = 'Uniform nonspecial token within max_tokens, excluding model-input position 0 only; no norm filtering'
 
 
-def candidate_positions(input_ids, special_ids):
-    """Exclude the first actual input position, not the first content token after BOS."""
-    return [i for i, token in enumerate(input_ids) if i > 0 and token not in special_ids]
+HISTORICAL_NORM_POLICY = 'Uniform nonspecial token within max_tokens; position 0 eligible when nonspecial; historical norm-figure protocol'
+
+
+def candidate_positions(input_ids, special_ids, *, include_position_zero=False):
+    """Keep other experiments' positive-position policy unless explicitly overridden."""
+    return [i for i, token in enumerate(input_ids)
+            if (i > 0 or include_position_zero) and token not in special_ids]
 
 
 def compute_natural_context(a):
@@ -242,6 +247,7 @@ def compute(a):
     dataset = dataset_path(a.dataset)
     docs = pq.read_table(dataset, columns=['text'])['text'].to_pylist()
     rng = np.random.default_rng(a.seed)
+    historical = getattr(a, 'sampling_policy', 'historical-all-nonspecial') == 'historical-all-nonspecial'
     indices = rng.choice(len(docs), size=a.samples, replace=False)
     snapshot = model_snapshot(a.model, a.revision)
     tok = transformers.AutoTokenizer.from_pretrained(snapshot)
@@ -292,11 +298,12 @@ def compute(a):
         for si, di in enumerate(indices):
             enc = tok(docs[int(di)], truncation=True, max_length=a.max_tokens,
                       return_tensors='pt').to(a.device)
-            candidates = candidate_positions(enc.input_ids[0].tolist(), tok.all_special_ids)
+            candidates = candidate_positions(enc.input_ids[0].tolist(), tok.all_special_ids,
+                                             include_position_zero=historical)
             if not candidates:
-                raise ValueError(f'No eligible noninitial ordinary tokens in sampled document {di}')
+                raise ValueError(f'No eligible ordinary tokens in sampled document {di}')
             pos = int(rng.choice(candidates))
-            assert pos > 0 and int(enc.input_ids[0, pos]) not in tok.all_special_ids
+            assert (historical or pos > 0) and int(enc.input_ids[0, pos]) not in tok.all_special_ids
             states = {}
             def nat_hook(li):
                 def hook(m, args):
@@ -329,7 +336,7 @@ def compute(a):
                     out = out[0] if isinstance(out, tuple) else out
                     ratios[j, si, start:start+len(grid)] = (out[:, 1].norm(dim=-1)/grid.norm(dim=-1)).cpu().numpy()
             print(f'{a.model}: sample {si+1}/{a.samples}', flush=True)
-    assert all(record['position'] > 0 for record in records)
+    assert historical or all(record['position'] > 0 for record in records)
     assert np.isfinite(ratios).all() and (ratios > 0).all()
     # Exact same circle points at angles separated by 360 degrees.
     periodic_error = max(float(np.max(np.abs(ratios[..., k]-ratios[..., np.where(theta == t+360)[0][0]])))
@@ -340,7 +347,9 @@ def compute(a):
         max_tokens=a.max_tokens, step=a.step, batch=a.batch, dtype='float32',
         context='fixed [BOS, injected state], EOS fallback; raw single-block residual output',
         probe_token_id=probe_id, layers_1based=(layers+1).tolist(), records=records,
-        sampling_policy=SAMPLING_POLICY, input_positions_positive=True,
+        sampling_policy=HISTORICAL_NORM_POLICY if historical else SAMPLING_POLICY,
+        sampling_mode='historical-all-nonspecial' if historical else 'exclude-first',
+        input_positions_positive=all(record['position'] > 0 for record in records),
         checks=checks, max_periodic_absolute_error=periodic_error,
         torch=torch.__version__, transformers=transformers.__version__, numpy=np.__version__,
         gpu=torch.cuda.get_device_name() if a.device == 'cuda' else None, hostname=platform.node(), slurm_job=os.getenv('SLURM_JOB_ID'),
@@ -367,6 +376,8 @@ if __name__ == '__main__':
     p.add_argument('--samples', type=int, default=20)
     p.add_argument('--max-tokens', type=int, default=256)
     p.add_argument('--seed', type=int, default=20260908)
+    p.add_argument('--sampling-policy', choices=['historical-all-nonspecial', 'exclude-first'],
+                   default='historical-all-nonspecial', help='Historical norm figures include every nonspecial position')
     p.add_argument('--step', type=int, default=1)
     p.add_argument('--batch', type=int, default=128)
     args = p.parse_args()

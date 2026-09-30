@@ -37,6 +37,8 @@ def main():
     reference = json.loads((ROOT/'configs/reference.json').read_text())
     entries = {e['name']: e for e in reference['figures']}
     entries.update({e['name']: e for e in reference['inline_artworks']})
+    validation_path = run/'runs/scientific-validation.json'
+    scientific = json.loads(validation_path.read_text()) if validation_path.exists() else {}
     records, pending = [], []
     for style in ('iclr', 'goodfire'):
         for name, entry in entries.items():
@@ -54,6 +56,7 @@ def main():
                     raise RuntimeError(f'Refusing unrecorded/changed output: {path}')
             status = compare(entry, pdf, png, style)
             records.append({'name': name, 'style': style, 'comparison': status,
+                'scientific_validation': scientific.get(name, {'status': 'pending'}),
                 'source_digest': record.get('source_digest'),
                 'generation_records': record.get('generation_records', {}),
                 'pdf_sha256': sha256(pdf), 'png_sha256': sha256(png),
@@ -70,7 +73,7 @@ def main():
             shutil.copyfile(source.with_suffix(suffix), dest.with_suffix(suffix))
     report = {'paper_commit': reference['paper_commit'],
         'run_source_commit': json.loads((run/'runs/launch.json').read_text())['source_commit'],
-        'scope': 'Fresh model experiments; reconstructed typography; not a blanket exact-reproduction claim',
+        'scope': 'Fresh model experiments; scientific fidelity required; inconsequential numerical/typographic differences accepted',
         'artworks': records, 'pending': pending}
     directory = ROOT/'docs/figures'; directory.mkdir(parents=True, exist_ok=True)
     (directory/'validation.json').write_text(json.dumps(report, indent=2)+'\n')
@@ -78,15 +81,16 @@ def main():
     lines = [START, '## Reproduced figures', '',
         'These are **newly generated results**, not copies of the paper figures. '
         'Numerical experiments use the standalone package; typography uses explicitly reconstructed styles.', '',
-        f'Published **{len(records)}/36** style-specific artworks; **{exact}** pass their available exact image checks. '
-        '“Different pixels” means the strict comparison failed—not a verified exact reproduction. '
-        'The inline artworks have no supplied historical reference.', '',
+        f'Published **{len(records)}/36** style-specific artworks; **{exact}** pass the optional exact image check. '
+        '**Pixel identity is not required**: small hardware-rounding and typographic differences are acceptable '
+        'when scientifically inconsequential. Token selection, numerical results and conclusions must remain faithful. '
+        'The per-artwork report distinguishes scientific validation from pixel identity; inline artworks lack historical image references.', '',
         '[Per-artwork hashes and validation](docs/figures/validation.json). '
         '[Protocols and limitations](AUDIT.md).', '']
     labels = {'exact-pixels':'Exact reference pixels',
         'exact-image-and-placement':'Exact embedded image and placement',
-        'different-pixels':'Different pixels — not exact',
-        'different-image-or-placement':'Different image/placement — not exact',
+        'different-pixels':'Reference pixels differ',
+        'different-image-or-placement':'Reference image/placement differs',
         'no-historical-reference':'No historical reference — unverified'}
     order = ['intro', 'sphere_probe'] + [n for n in entries if n not in {'intro','sphere_probe','dead_fish_sequence'}]
     by_key = {(r['style'],r['name']):r for r in records}
@@ -98,7 +102,9 @@ def main():
                 continue
             title = name.replace('_',' ').capitalize()
             path = f'docs/figures/{style}/{name}'
-            lines += [f'### {title}', '', f'{labels[item["comparison"]]}. [PDF]({path}.pdf)', '',
+            science = item['scientific_validation']['status'].replace('-', ' ')
+            lines += [f'### {title}', '', f'Scientific validation: **{science}**. '
+                      f'{labels[item["comparison"]]}. [PDF]({path}.pdf)', '',
                       f'![{title}]({path}.png)', '']
         fish = by_key.get((style,'dead_fish_sequence'))
         if fish:

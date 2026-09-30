@@ -16,16 +16,18 @@ originals: ICLR typography comes from `iclr.tex`; Goodfire body typography
 comes from `goodfire.cls`/`goodfire.tex`, while scientific math and mono font
 routing now follow the original PDF resources documented in `AUDIT.md`.
 Scene geometry, samples, colors, layout constants, and drawing operations are
-retained. **Exact font metrics / pixel-identical scientific figures cannot be
-certified until the original styles are recovered and compared.** No silent
-Matplotlib font fallback is used: plotting requires LuaLaTeX.
+retained. **Original font-source provenance remains incomplete; individual pixel
+matches are reported only when actually observed.** Pixel identity is optional
+for scientific reproduction. No silent Matplotlib font fallback is used:
+plotting requires LuaLaTeX.
 
-The pipeline blocks scientific rendering by default while this provenance gap
-remains. Pass `--allow-reconstructed-styles` only when deliberately accepting the
-reconstructed typography. The pipeline preflights `lualatex` before running any
-GPU dependencies, so missing TeX fails before expensive computation. Standalone
-module commands below bypass that pipeline acknowledgment gate; they still
-require LuaLaTeX and use the explicitly disclosed reconstructed styles.
+The current target accepts scientifically inconsequential typography differences,
+so documented reconstructed styles are allowed by default. Use
+`--require-original-styles` for strict provenance mode; that fails until the
+original preambles are recovered. `--allow-reconstructed-styles` remains an
+explicit, backward-compatible acknowledgment. The pipeline still preflights
+`lualatex` before GPU work. Standalone module commands likewise require LuaLaTeX
+and retain the reconstructed-style disclosure.
 
 ## Environment
 

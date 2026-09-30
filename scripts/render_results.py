@@ -2,8 +2,8 @@
 """Render hash-verified fresh experiment outputs without rerunning computation.
 
 Run from an editable checkout. Missing experiment stages are reported as pending;
---require-all fails unless every artwork rendered. Reconstructed styles always
-require explicit acknowledgment, just like the full DAG command.
+--require-all fails unless every artwork rendered. Documented reconstructed
+styles are allowed for scientific reproduction; strict provenance is optional.
 """
 import argparse
 import json
@@ -19,7 +19,9 @@ from manifold_attractors.pipeline import ROOT, load_tasks, order_tasks, outputs,
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--style', choices=['iclr', 'goodfire'], default='iclr')
-    parser.add_argument('--allow-reconstructed-styles', action='store_true')
+    typography = parser.add_mutually_exclusive_group()
+    typography.add_argument('--allow-reconstructed-styles', action='store_true', default=True)
+    typography.add_argument('--require-original-styles', action='store_false', dest='allow_reconstructed_styles')
     parser.add_argument('--require-all', action='store_true')
     args = parser.parse_args()
     reference = json.loads((ROOT/'configs/reference.json').read_text())

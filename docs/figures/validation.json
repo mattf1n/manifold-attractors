@@ -1,12 +1,16 @@
 {
   "paper_commit": "ed8b89bc8344db678eb5e360a1893937d3b94a1f",
   "run_source_commit": "81d9da448998547be86814e844ed0582d9fbe826",
-  "scope": "Fresh model experiments; reconstructed typography; not a blanket exact-reproduction claim",
+  "scope": "Fresh model experiments; scientific fidelity required; inconsequential numerical/typographic differences accepted",
   "artworks": [
     {
       "name": "dead_fish_sequence",
       "style": "iclr",
       "comparison": "exact-image-and-placement",
+      "scientific_validation": {
+        "status": "exact-artwork",
+        "evidence": "New source-GIF render matches historical embedded image pixels, page contents and page box."
+      },
       "source_digest": null,
       "generation_records": {},
       "pdf_sha256": "727e1e886c6a6dfd60b2bcbdf842e347d4d1a305c44a8382825c831ada8ef337",
@@ -17,6 +21,10 @@
       "name": "great_circle_norm_grid",
       "style": "iclr",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "correcting-sampling-regression",
+        "evidence": "Initial reproduction inherited a later position-zero exclusion rule. Historical all-nonspecial sampling is now restored; fresh OLMo/Qwen/Llama forwards and matched-context runs are being recomputed, not copied from references."
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "data-great_circle_norm_grid-llama3": "ecde07f0bf0e15deab3d890be8d7a013b08b5b4656458d402050f140c6d9c1c2",
@@ -31,6 +39,18 @@
       "name": "triple_area_heatmaps",
       "style": "iclr",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "inconsequential-numerical-differences",
+        "evidence": "All six maps agree within relative tolerance 1e-5; tiny differences trace upstream to A100 versus H100 FP32 anchors. Same source token records and algorithm. No rounding, normalization changes or old arrays substituted.",
+        "maximum_relative_area_error_upper_bound": 3.514e-06,
+        "accepted_relative_tolerance": 1e-05,
+        "changed_quantized_source_color_cells": 10,
+        "source_color_cells": 251430,
+        "changed_png_pixels": {
+          "iclr": 41,
+          "goodfire": 48
+        }
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "prepare-triple_area_heatmaps": "37212d3aceb9eec9568204c1a7fad64de87705b5cc69e12eb36066395766546e",
@@ -44,6 +64,11 @@
       "name": "bubble_coords",
       "style": "iclr",
       "comparison": "exact-pixels",
+      "scientific_validation": {
+        "status": "exact-numerics",
+        "evidence": "Both independently regenerated coordinate tables match historical validation references in all 13 columns, 60025 base and 4002 supplemental rows. ICLR pixels exact; Goodfire differences localized to alternate Cabin outlines/hinting, not surface images or geometry.",
+        "maximum_coordinate_absolute_error": 0
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "data-bubble_coords": "509f95995df2a9415bc28d45225851f40257ada6a87b85e2c07acb6b2288a01c"
@@ -56,6 +81,9 @@
       "name": "refusal_steering_heatmaps",
       "style": "iclr",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "pending"
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "data-refusal_direction": "e85af745f0e6d6f4bcff7349d708b72e717bd2081d5912629b8cec53ef8c09cb",
@@ -69,6 +97,9 @@
       "name": "language_area_heatmaps",
       "style": "iclr",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "pending"
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "prepare-language_area_heatmaps": "de827e757131c383ac6a4ec0a1fdfaf081b2d01dbf24ad16ba593241d96a3076",
@@ -82,6 +113,9 @@
       "name": "language_steering_speed",
       "style": "iclr",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "pending"
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "prepare-language_steering_speed": "1d65701049f7aa476ffe02883497490739c089541b4e5a27f7a2ab2fa0caa46a",
@@ -95,6 +129,10 @@
       "name": "great_circle_norm_grid_context",
       "style": "iclr",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "correcting-sampling-regression",
+        "evidence": "Matched-context outputs are being recomputed from the corrected fresh norm anchors."
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "data-great_circle_norm_grid-llama3": "ecde07f0bf0e15deab3d890be8d7a013b08b5b4656458d402050f140c6d9c1c2",
@@ -112,6 +150,10 @@
       "name": "intro",
       "style": "iclr",
       "comparison": "no-historical-reference",
+      "scientific_validation": {
+        "status": "source-reproduced",
+        "evidence": "Original inline TikZ source and freshly generated fish/1304-vector field; field table hash matches historical source output. No original standalone image reference."
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {},
       "pdf_sha256": "be4b1134b813661af95dad13aa698e41f83426da91b0fb939347ef6333c1285c",
@@ -122,6 +164,10 @@
       "name": "sphere_probe",
       "style": "iclr",
       "comparison": "no-historical-reference",
+      "scientific_validation": {
+        "status": "source-reproduced",
+        "evidence": "Original inline TikZ source compiled in both styles with no font-substitution or missing-glyph warnings; no original standalone image reference."
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {},
       "pdf_sha256": "8469ddbb671e252f88d259d7ad9ac422d14c577585c2588d7bb176533900c5c2",
@@ -132,6 +178,10 @@
       "name": "dead_fish_sequence",
       "style": "goodfire",
       "comparison": "exact-image-and-placement",
+      "scientific_validation": {
+        "status": "exact-artwork",
+        "evidence": "New source-GIF render matches historical embedded image pixels, page contents and page box."
+      },
       "source_digest": null,
       "generation_records": {},
       "pdf_sha256": "727e1e886c6a6dfd60b2bcbdf842e347d4d1a305c44a8382825c831ada8ef337",
@@ -142,6 +192,10 @@
       "name": "great_circle_norm_grid",
       "style": "goodfire",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "correcting-sampling-regression",
+        "evidence": "Initial reproduction inherited a later position-zero exclusion rule. Historical all-nonspecial sampling is now restored; fresh OLMo/Qwen/Llama forwards and matched-context runs are being recomputed, not copied from references."
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "data-great_circle_norm_grid-llama3": "ecde07f0bf0e15deab3d890be8d7a013b08b5b4656458d402050f140c6d9c1c2",
@@ -156,6 +210,18 @@
       "name": "triple_area_heatmaps",
       "style": "goodfire",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "inconsequential-numerical-differences",
+        "evidence": "All six maps agree within relative tolerance 1e-5; tiny differences trace upstream to A100 versus H100 FP32 anchors. Same source token records and algorithm. No rounding, normalization changes or old arrays substituted.",
+        "maximum_relative_area_error_upper_bound": 3.514e-06,
+        "accepted_relative_tolerance": 1e-05,
+        "changed_quantized_source_color_cells": 10,
+        "source_color_cells": 251430,
+        "changed_png_pixels": {
+          "iclr": 41,
+          "goodfire": 48
+        }
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "prepare-triple_area_heatmaps": "37212d3aceb9eec9568204c1a7fad64de87705b5cc69e12eb36066395766546e",
@@ -169,6 +235,11 @@
       "name": "bubble_coords",
       "style": "goodfire",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "exact-numerics",
+        "evidence": "Both independently regenerated coordinate tables match historical validation references in all 13 columns, 60025 base and 4002 supplemental rows. ICLR pixels exact; Goodfire differences localized to alternate Cabin outlines/hinting, not surface images or geometry.",
+        "maximum_coordinate_absolute_error": 0
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "data-bubble_coords": "509f95995df2a9415bc28d45225851f40257ada6a87b85e2c07acb6b2288a01c"
@@ -181,6 +252,9 @@
       "name": "refusal_steering_heatmaps",
       "style": "goodfire",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "pending"
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "data-refusal_direction": "e85af745f0e6d6f4bcff7349d708b72e717bd2081d5912629b8cec53ef8c09cb",
@@ -194,6 +268,9 @@
       "name": "language_area_heatmaps",
       "style": "goodfire",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "pending"
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "prepare-language_area_heatmaps": "de827e757131c383ac6a4ec0a1fdfaf081b2d01dbf24ad16ba593241d96a3076",
@@ -207,6 +284,9 @@
       "name": "language_steering_speed",
       "style": "goodfire",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "pending"
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "prepare-language_steering_speed": "1d65701049f7aa476ffe02883497490739c089541b4e5a27f7a2ab2fa0caa46a",
@@ -220,6 +300,10 @@
       "name": "great_circle_norm_grid_context",
       "style": "goodfire",
       "comparison": "different-pixels",
+      "scientific_validation": {
+        "status": "correcting-sampling-regression",
+        "evidence": "Matched-context outputs are being recomputed from the corrected fresh norm anchors."
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {
         "data-great_circle_norm_grid-llama3": "ecde07f0bf0e15deab3d890be8d7a013b08b5b4656458d402050f140c6d9c1c2",
@@ -237,6 +321,10 @@
       "name": "intro",
       "style": "goodfire",
       "comparison": "no-historical-reference",
+      "scientific_validation": {
+        "status": "source-reproduced",
+        "evidence": "Original inline TikZ source and freshly generated fish/1304-vector field; field table hash matches historical source output. No original standalone image reference."
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {},
       "pdf_sha256": "705097726358be2293db0b2941a8dd83cc63e31088bc958ab21eb011ec45a7ae",
@@ -247,6 +335,10 @@
       "name": "sphere_probe",
       "style": "goodfire",
       "comparison": "no-historical-reference",
+      "scientific_validation": {
+        "status": "source-reproduced",
+        "evidence": "Original inline TikZ source compiled in both styles with no font-substitution or missing-glyph warnings; no original standalone image reference."
+      },
       "source_digest": "1c389a75f4d464dc4b531209fc05bf094347b273d3343517b0d7192a1fc55655",
       "generation_records": {},
       "pdf_sha256": "278f908635113a7b464628b8f33271704c176349bcd18e4ba54b8e072dd181d9",

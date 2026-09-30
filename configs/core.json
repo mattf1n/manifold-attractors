@@ -34,21 +34,21 @@
     {
       "id": "data-great_circle_norm_grid-llama3",
       "module": "manifold_attractors.experiments.great_circle_norm_grid",
-      "args": ["--model", "llama3", "--output", "data/great_circle_norm_grid", "--device", "cuda", "--seed", "20260908", "--samples", "20", "--max-tokens", "256", "--step", "1", "--batch", "128", "--threads", "4"],
+      "args": ["--model", "llama3", "--output", "data/great_circle_norm_grid", "--device", "cuda", "--seed", "20260908", "--sampling-policy", "historical-all-nonspecial", "--samples", "20", "--max-tokens", "256", "--step", "1", "--batch", "128", "--threads", "4"],
       "outputs": ["data/great_circle_norm_grid/llama3.npz", "data/great_circle_norm_grid/llama3.json"],
       "deps": []
     },
     {
       "id": "data-great_circle_norm_grid-olmo3",
       "module": "manifold_attractors.experiments.great_circle_norm_grid",
-      "args": ["--model", "olmo3", "--output", "data/great_circle_norm_grid", "--device", "cuda", "--seed", "20260908", "--samples", "20", "--max-tokens", "256", "--step", "1", "--batch", "128", "--threads", "4"],
+      "args": ["--model", "olmo3", "--output", "data/great_circle_norm_grid", "--device", "cuda", "--seed", "20260908", "--sampling-policy", "historical-all-nonspecial", "--samples", "20", "--max-tokens", "256", "--step", "1", "--batch", "128", "--threads", "4"],
       "outputs": ["data/great_circle_norm_grid/olmo3.npz", "data/great_circle_norm_grid/olmo3.json"],
       "deps": []
     },
     {
       "id": "data-great_circle_norm_grid-qwen3",
       "module": "manifold_attractors.experiments.great_circle_norm_grid",
-      "args": ["--model", "qwen3", "--output", "data/great_circle_norm_grid", "--device", "cuda", "--seed", "20260908", "--samples", "20", "--max-tokens", "256", "--step", "1", "--batch", "128", "--threads", "4"],
+      "args": ["--model", "qwen3", "--output", "data/great_circle_norm_grid", "--device", "cuda", "--seed", "20260908", "--sampling-policy", "historical-all-nonspecial", "--samples", "20", "--max-tokens", "256", "--step", "1", "--batch", "128", "--threads", "4"],
       "outputs": ["data/great_circle_norm_grid/qwen3.npz", "data/great_circle_norm_grid/qwen3.json"],
       "deps": []
     },
