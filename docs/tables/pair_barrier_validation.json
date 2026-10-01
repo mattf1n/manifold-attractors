@@ -1,0 +1,23 @@
+{
+  "rows": [
+    {
+      "class_name": "Gaussian",
+      "values": [
+        0.962921142578125,
+        0.983856201171875,
+        0.9384765625
+      ]
+    },
+    {
+      "class_name": "Shuffled",
+      "values": [
+        0.98046875,
+        0.995574951171875,
+        0.9862060546875
+      ]
+    }
+  ],
+  "cutoff": null,
+  "table": "pair_barrier_validation",
+  "render_script_sha256": "64795b3ea7b507da3cc484f5672075f8e073b57a548bd7ae457e89875b267995"
+}

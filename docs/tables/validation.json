@@ -33,10 +33,25 @@
         "norm_growth_classifier.md": "01f4baf1bb24f2183debb3a3284df3134a7de296afc6f826321e7cb6504f8d64",
         "norm_growth_classifier.json": "689ddcc1963df024d88a1e91bc18473522bb3851dfcf33bb90e0467eb0215844"
       }
+    },
+    {
+      "name": "pair_barrier_validation",
+      "tex_matches_reference": true,
+      "numerical_validation": {
+        "rendered_table_exact": true,
+        "all_model_auc_bootstrap_intervals_and_barrier_counts_exact": true,
+        "note": "Fresh score forwards; external historical arrays read only for post-computation validation."
+      },
+      "source_digest": "94551ff8b7711e2d625fe484c95ec35e601355f935ade5e1eab13dd6cf5162dc",
+      "generation_records": {},
+      "output_sha256": {
+        "pair_barrier_validation.tex": "941703cded14392d2d96dbd2778f1d42d9c0b2ce3fa45e023cf993b70936e64f",
+        "pair_barrier_validation.md": "c3559c028fa3064a46e8667acbfa242bdc105f5c5e2d02a5f314ea70afca2031",
+        "pair_barrier_validation.json": "00bc7ab3cdd761f4dc018dbdc602a543119fc3cbec91d92b2096050de6ea7481"
+      }
     }
   ],
   "pending": [
-    "pair_barrier_validation",
     "adaptive_steering"
   ]
 }

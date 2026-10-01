@@ -12,8 +12,10 @@ GIF are source inputs, not precomputed experiment results.
 
 **Target: scientific reproduction, not mandatory pixel identity.** Inconsequential
 hardware-rounding and typographic differences are acceptable; changing sampled
-tokens or numerical conclusions is not. Full-size computation is in progress,
-with completed images and per-artwork validation below. Missing original TeX
+tokens or numerical conclusions is not. **All figures are reproduced in both
+styles and scientifically validated.** The norm-growth and pair-barrier tables
+also match the paper exactly; the large adaptive-steering table is still running.
+Results and per-artwork validation are below. Missing original TeX
 preambles are replaced by explicitly documented reconstructions; source and
 corpus-selection provenance limitations remain in [AUDIT.md](AUDIT.md).
 
@@ -123,7 +125,7 @@ experiments must complete before results are published.
 
 These are **newly generated results**, not copies of the paper figures. Numerical experiments use the standalone package; typography uses explicitly reconstructed styles.
 
-Published **22/36** style-specific artworks; **6** pass the optional exact image check. **Pixel identity is not required**: small hardware-rounding and typographic differences are acceptable when scientifically inconsequential. Token selection, numerical results and conclusions must remain faithful. The per-artwork report distinguishes scientific validation from pixel identity; inline artworks lack historical image references.
+Published **36/36** style-specific artworks; **10** pass the optional exact image check. **Pixel identity is not required**: small hardware-rounding and typographic differences are acceptable when scientifically inconsequential. Token selection, numerical results and conclusions must remain faithful. The per-artwork report distinguishes scientific validation from pixel identity; inline artworks lack historical image references.
 
 [Per-artwork hashes and validation](docs/figures/validation.json). [Protocols and limitations](AUDIT.md).
 
@@ -153,6 +155,24 @@ Scientific validation: **exact numerics**. Exact reference pixels. [PDF](docs/fi
 Scientific validation: **exact numerics**. Exact reference pixels. [PDF](docs/figures/iclr/great_circle_synthetic_grid.pdf)
 
 ![Great circle synthetic grid](docs/figures/iclr/great_circle_synthetic_grid.png)
+
+### Norm growth trajectory starts
+
+Scientific validation: **accepted**. Exact reference pixels. [PDF](docs/figures/iclr/norm_growth_trajectory_starts.pdf)
+
+![Norm growth trajectory starts](docs/figures/iclr/norm_growth_trajectory_starts.png)
+
+### Synthetic profile trajectory
+
+Scientific validation: **exact numerics**. Exact reference pixels. [PDF](docs/figures/iclr/synthetic_profile_trajectory.pdf)
+
+![Synthetic profile trajectory](docs/figures/iclr/synthetic_profile_trajectory.png)
+
+### Great circle pair speed grid
+
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/iclr/great_circle_pair_speed_grid.pdf)
+
+![Great circle pair speed grid](docs/figures/iclr/great_circle_pair_speed_grid.png)
 
 ### Triple area heatmaps
 
@@ -190,6 +210,30 @@ Scientific validation: **exact numerics**. Exact reference pixels. [PDF](docs/fi
 
 ![Great circle norm grid context](docs/figures/iclr/great_circle_norm_grid_context.png)
 
+### Norm growth trajectory starts appendix
+
+Scientific validation: **accepted**. Exact reference pixels. [PDF](docs/figures/iclr/norm_growth_trajectory_starts_appendix.pdf)
+
+![Norm growth trajectory starts appendix](docs/figures/iclr/norm_growth_trajectory_starts_appendix.png)
+
+### Great circle speed grid
+
+Scientific validation: **exact numerics**. Exact reference pixels. [PDF](docs/figures/iclr/great_circle_speed_grid.pdf)
+
+![Great circle speed grid](docs/figures/iclr/great_circle_speed_grid.png)
+
+### Great circle synthetic speed grid
+
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/iclr/great_circle_synthetic_speed_grid.pdf)
+
+![Great circle synthetic speed grid](docs/figures/iclr/great_circle_synthetic_speed_grid.png)
+
+### Great circle pair speed grid appendix
+
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/iclr/great_circle_pair_speed_grid_appendix.pdf)
+
+![Great circle pair speed grid appendix](docs/figures/iclr/great_circle_pair_speed_grid_appendix.png)
+
 Fish component: [Exact embedded image and placement](docs/figures/iclr/dead_fish_sequence.pdf).
 
 </details>
@@ -220,6 +264,24 @@ Scientific validation: **exact numerics**. Reference pixels differ. [PDF](docs/f
 Scientific validation: **exact numerics**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_synthetic_grid.pdf)
 
 ![Great circle synthetic grid](docs/figures/goodfire/great_circle_synthetic_grid.png)
+
+### Norm growth trajectory starts
+
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/goodfire/norm_growth_trajectory_starts.pdf)
+
+![Norm growth trajectory starts](docs/figures/goodfire/norm_growth_trajectory_starts.png)
+
+### Synthetic profile trajectory
+
+Scientific validation: **exact numerics**. Reference pixels differ. [PDF](docs/figures/goodfire/synthetic_profile_trajectory.pdf)
+
+![Synthetic profile trajectory](docs/figures/goodfire/synthetic_profile_trajectory.png)
+
+### Great circle pair speed grid
+
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_pair_speed_grid.pdf)
+
+![Great circle pair speed grid](docs/figures/goodfire/great_circle_pair_speed_grid.png)
 
 ### Triple area heatmaps
 
@@ -257,11 +319,33 @@ Scientific validation: **exact numerics**. Reference pixels differ. [PDF](docs/f
 
 ![Great circle norm grid context](docs/figures/goodfire/great_circle_norm_grid_context.png)
 
+### Norm growth trajectory starts appendix
+
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/goodfire/norm_growth_trajectory_starts_appendix.pdf)
+
+![Norm growth trajectory starts appendix](docs/figures/goodfire/norm_growth_trajectory_starts_appendix.png)
+
+### Great circle speed grid
+
+Scientific validation: **exact numerics**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_speed_grid.pdf)
+
+![Great circle speed grid](docs/figures/goodfire/great_circle_speed_grid.png)
+
+### Great circle synthetic speed grid
+
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_synthetic_speed_grid.pdf)
+
+![Great circle synthetic speed grid](docs/figures/goodfire/great_circle_synthetic_speed_grid.png)
+
+### Great circle pair speed grid appendix
+
+Scientific validation: **accepted**. Reference pixels differ. [PDF](docs/figures/goodfire/great_circle_pair_speed_grid_appendix.pdf)
+
+![Great circle pair speed grid appendix](docs/figures/goodfire/great_circle_pair_speed_grid_appendix.png)
+
 Fish component: [Exact embedded image and placement](docs/figures/goodfire/dead_fish_sequence.pdf).
 
 </details>
-
-Still pending: `iclr/norm_growth_trajectory_starts`, `iclr/synthetic_profile_trajectory`, `iclr/great_circle_pair_speed_grid`, `iclr/norm_growth_trajectory_starts_appendix`, `iclr/great_circle_speed_grid`, `iclr/great_circle_synthetic_speed_grid`, `iclr/great_circle_pair_speed_grid_appendix`, `goodfire/norm_growth_trajectory_starts`, `goodfire/synthetic_profile_trajectory`, `goodfire/great_circle_pair_speed_grid`, `goodfire/norm_growth_trajectory_starts_appendix`, `goodfire/great_circle_speed_grid`, `goodfire/great_circle_synthetic_speed_grid`, `goodfire/great_circle_pair_speed_grid_appendix`.
 
 <!-- reproduced-figures:end -->
 
@@ -283,6 +367,15 @@ Matches the historical formatted table exactly. [LaTeX](docs/tables/norm_growth_
 | Shuffled | OLMo 3 7B | 0.525 | 0.887 | 0.954 | 0.913 | 0.927 | 0.956 | 0.974 | 0.986 | 0.990 | 0.975 | 0.903 | 0.902 | 0.866 | — | — |
 | Shuffled | Qwen 3 8B | 0.997 | 0.906 | 0.969 | 0.908 | 0.943 | 0.953 | 0.871 | 0.957 | 0.995 | 0.998 | 0.995 | 0.981 | 0.944 | 0.786 | 0.503 |
 
-Pending: `pair_barrier_validation`, `adaptive_steering`.
+### Pair barrier validation
+
+Matches the historical formatted table exactly. [LaTeX](docs/tables/pair_barrier_validation.tex) · [Numeric JSON](docs/tables/pair_barrier_validation.json)
+
+| Synthetic class | Llama 3.1 8B | OLMo 3 7B | Qwen 3 8B |
+| --- | --- | --- | --- |
+| Gaussian | 0.963 | 0.984 | 0.938 |
+| Shuffled | 0.980 | 0.996 | 0.986 |
+
+Pending: `adaptive_steering`.
 
 <!-- reproduced-tables:end -->

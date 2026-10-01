@@ -40,6 +40,37 @@ fresh computation, never as generator inputs or result replacements. Published
 per-artwork evidence is in `docs/figures/validation.json`; pending scientific
 comparisons must not be interpreted as passing.
 
+### Completed figure run
+
+All18 artwork components have now been rendered in both ICLR/Goodfire styles
+(36 published style-specific outputs). Every model-data family was independently
+generated and scientifically validated. Additional full-run findings:
+
+- Natural-speed grids and synthetic-profile trajectories match all compared
+  arrays exactly.
+- Trajectory natural baselines and validity masks are exact; the maximum error
+  in plotted synthetic-cohort means is3.802e-6. The worst individual Qwen norm
+  ratio relative difference is0.01868%, an inconsequential Float32 effect.
+- Synthetic-speed displayed curves differ by at most0.001344% relative.
+- Pair-speed Qwen curves differ by at most0.01308% relative. All three models'
+  AUCs, conditional bootstrap intervals and barrier counts are exactly unchanged.
+- Language-area primary fields agree to relative6.358e-6, with all31 displayed
+  local minima preserved. Language-speed primary curves agree to relative1.500e-6;
+  all11889 exported/refinement token IDs, selections, regions and glosses match.
+- Refusal areas differ by up to0.14010% after independent BF16 direction
+  extraction on different GPU hardware. The selected position/layer, displayed
+  tokens, basin counts and compliance/refusal continuations are unchanged. This
+  is accepted scientific drift, **not** claimed to be1e-5 equivalence.
+
+Ten of36 artifacts also pass the optional strict image check; remaining pixel
+identity is not a requirement. Detailed per-model metrics/exceptions and hashes
+are published in `docs/figures/validation.json`.
+
+The added norm-growth classifier table reproduces every score exactly and its
+formatted LaTeX is exact. The pair-barrier table likewise matches exactly.
+Adaptive-steering table computation is separate and still pending; these figure
+and table results do not constitute a claim that the expanded full scope is done.
+
 ## Original source assessment
 
 Target: `~/paper` commit `ed8b89bc8344db678eb5e360a1893937d3b94a1f`.
