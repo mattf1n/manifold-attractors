@@ -68,8 +68,21 @@ are published in `docs/figures/validation.json`.
 
 The added norm-growth classifier table reproduces every score exactly and its
 formatted LaTeX is exact. The pair-barrier table likewise matches exactly.
-Adaptive-steering table computation is separate and still pending; these figure
-and table results do not constitute a claim that the expanded full scope is done.
+Adaptive steering is now complete too: both10,000-example tests, all40 test and
+all40 oracle shards, required refinement audits and final summaries. All tuned
+parameters, greedy category counts and displayed rankings match. Twenty-four
+of32 printed table cells match; the eight Chinese-mass cells differ by at most
+0.01712 percentage points (0.02 after printing).
+
+The adaptive difference is a confirmed Unicode13→15.1 portability effect, not
+merely numerical roundoff: two incomplete UTF-8 Han-prefix tokens (165,18630)
+become Chinese instead of Other nonalphabetic once U+9FFD..U+9FFF are assigned.
+The bad-letter mask is exactly unchanged. Recomputing the classifier from the
+pinned tokenizer under Unicode13 reproduces every historical category exactly;
+no old labels were used as classifier inputs. The actual completed run keeps its
+fresh15.1 partition consistently. This measured difference is inconsequential
+to the table's conclusions and is explicitly disclosed in its validation JSON.
+The expanded scope—every included figure and all three active tables—is complete.
 
 ## Original source assessment
 

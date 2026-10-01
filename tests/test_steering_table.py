@@ -212,3 +212,21 @@ def test_real_tiny_llama_native_to_fp64_mass_and_oracle(tmp_path, monkeypatch):
         assert selection["parameter"] == strengths[0, index]
     finally:
         modeling_llama.eager_attention_forward = original_attention
+
+
+def test_unicode_assignment_explains_two_han_prefix_labels(monkeypatch):
+    """Same algorithm, different Unicode assignment DB; no saved labels needed."""
+    import unicodedata
+    class Tokenizer:
+        all_special_ids = []
+        def decode(self, ids): return '�' if ids[0] == 165 else ' �'
+        def convert_ids_to_tokens(self, token_id): return 'é' if token_id == 165 else 'Ġé'
+    tokenizer = Tokenizer()
+    classifier = vocabulary.classify_cached(tokenizer, vocabulary.HAN_PREFIX_METRIC)
+    assert [classifier(i) for i in [165,18630]] == ['Chinese','Chinese']
+    original_name = unicodedata.name
+    def unicode13_name(character, *args):
+        return '' if 0x9FFD <= ord(character) <= 0x9FFF else original_name(character, *args)
+    monkeypatch.setattr(unicodedata, 'name', unicode13_name)
+    historical = vocabulary.classify_cached(tokenizer, vocabulary.HAN_PREFIX_METRIC)
+    assert [historical(i) for i in [165,18630]] == ['Other nonalphabetic']*2

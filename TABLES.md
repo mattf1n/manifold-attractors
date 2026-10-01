@@ -42,7 +42,10 @@ The pair table shares the figure experiment; no redundant pair forwards are
 necessary. Adaptive steering must preserve the published tuning/test separation
 and corpus protocol, not substitute the illustrative language-figure examples.
 
-Data-generator protocols and execution status are documented separately as they
-are integrated. A table is not considered reproduced until fresh computation,
-formatting, and numerical validation complete; formatter-only unit tests do not
-establish that result.
+All three tables have now completed fresh computation, formatting and validation.
+Norm-growth and pair-barrier scores/printed tables match exactly. Adaptive
+steering matches every greedy count, fitted parameter and method ranking; only
+Chinese-mass cells differ, by at most0.01712 percentage points, from an explicitly
+diagnosed Unicode-version effect. See [TABLE_CLASSIFIER.md](TABLE_CLASSIFIER.md),
+[TABLE_STEERING.md](TABLE_STEERING.md), and `docs/tables/validation.json`.
+Formatter-only tests are not the basis of these full-size validation claims.

@@ -1,0 +1,102 @@
+{
+  "columns": [
+    [
+      "non_chinese",
+      "mass",
+      "wiki_test"
+    ],
+    [
+      "non_chinese",
+      "mass",
+      "fineweb_test"
+    ],
+    [
+      "non_chinese",
+      "greedy",
+      "wiki_test"
+    ],
+    [
+      "non_chinese",
+      "greedy",
+      "fineweb_test"
+    ],
+    [
+      "chinese",
+      "mass",
+      "wiki_test"
+    ],
+    [
+      "chinese",
+      "mass",
+      "fineweb_test"
+    ],
+    [
+      "chinese",
+      "greedy",
+      "wiki_test"
+    ],
+    [
+      "chinese",
+      "greedy",
+      "fineweb_test"
+    ]
+  ],
+  "rows": [
+    {
+      "method": "Untuned",
+      "values": [
+        20.099208873189383,
+        21.48300913048058,
+        17.16,
+        18.740000000000002,
+        61.64839037192501,
+        63.8409378798815,
+        59.230000000000004,
+        58.60999999999999
+      ]
+    },
+    {
+      "method": "Tuned",
+      "values": [
+        13.820175359048587,
+        10.430244436558631,
+        11.180000000000001,
+        8.18,
+        69.50873089504815,
+        77.63627065222506,
+        68.07,
+        74.81
+      ]
+    },
+    {
+      "method": "Adaptive",
+      "values": [
+        12.805202676714494,
+        9.172645738382483,
+        10.549999999999999,
+        6.61,
+        70.70681504932014,
+        79.50824538692068,
+        69.1,
+        77.94
+      ]
+    },
+    {
+      "method": "Oracle",
+      "values": [
+        9.388837415393615,
+        7.663765339535293,
+        4.43,
+        3.92,
+        73.20325037696318,
+        80.33002775599505,
+        79.13,
+        82.36
+      ]
+    }
+  ],
+  "n_per_test": 10000,
+  "non_chinese_excludes_neutral": true,
+  "table": "adaptive_steering",
+  "render_script_sha256": "64795b3ea7b507da3cc484f5672075f8e073b57a548bd7ae457e89875b267995"
+}

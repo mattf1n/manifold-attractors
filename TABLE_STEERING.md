@@ -175,7 +175,34 @@ Non-table Gutenberg evaluation and historical development preflight/copy jobs
 are intentionally absent. All six confirmatory methods and the oracle diagnostics
 for the two table datasets are retained.
 
-## Validation performed and remaining compute
+## Completed full-size reproduction
+
+The complete fresh run finished before the requested 6pm Pacific deadline:
+1,000 calibration examples, both10,000-example test cohorts, all40 geometry/test
+shards, all40 dense-oracle shards, prespecified refinement audits and final
+collection. No old activations, fitted strengths or outcomes were used as inputs.
+
+The table is **scientifically reproduced**, not byte-identical. All calibrated
+parameters, baseline/oracle argmax-category counts and displayed method rankings
+match the historical results. Twenty-four of32 displayed cells match at printed
+precision. The eight Chinese-mass cells differ by at most **0.01712 percentage
+points** (at most0.02 at two-decimal printing); non-Chinese mass differences are
+below0.00001 percentage points.
+
+This small difference is diagnosed, not attributed vaguely to floating point:
+Python3.13 uses Unicode15.1, whereas the historical Python3.10 classifier used
+Unicode13. Under15.1, token IDs165 and18630 (incomplete UTF-8 Han prefixes) move
+from Other nonalphabetic to Chinese because U+9FFD..U+9FFF are now assigned.
+The **bad-letter mask is bitwise unchanged**. Recomputing the partition from the
+pinned tokenizer under Python3.10/Unicode13 reproduces every historical category
+exactly; old labels were used only afterward to validate that diagnostic.
+The completed inference run retains its fresh15.1 partition consistently rather
+than patching results. This version-dependent effect is inconsequential to the
+paper's steering comparison and is disclosed in the README/table validation.
+
+See `docs/tables/validation.json` for numerical comparisons and provenance.
+
+## Implementation validation and resource planning
 
 CPU tests:
 
@@ -196,15 +223,18 @@ All 21,000 bundled texts were also retokenized using the cached pinned real
 Llama tokenizer and every position RNG draw replayed successfully, without
 reading old outputs or running GPU inference.
 
-**No full Llama table run, GPU allocation, commit or push was performed.** New
-numerical results and agreement to published rounded cells remain unverified
-until these producers finish. Any numerical/reference ambiguity blocks completion.
+The initial extraction task performed no full-size inference; the subsequent
+orchestrated run and its measured results are documented above. Implementation
+unit tests alone are not the basis for the full-size reproduction claim.
 
-Planning estimate (not benchmarked): one 80-GB-class CUDA GPU with strong FP64
-throughput, about 20–100 aggregate GPU-hours for the full two-dataset experiment,
-potentially more with extensive refinement. FP64 weights alone occupy roughly
-64 GB; 40-GB cards cannot run this implementation as written. The independent
-500-example shards can be scheduled externally to reduce wall time.
+**Observed H100 run:** 3.843 allocated GPU-hours for the complete adaptive table,
+across82 GPU allocations (prepare, calibration,40 test shards,40 oracle shards)
+and two additional CPU collection allocations. Every allocation completed.
+The independent500-example shards were externally scheduled; the oracle cap was
+raised to40 to meet the deadline. This supersedes the initial unbenchmarked
+20–100 GPU-hour planning estimate. Runtime on other devices or with more
+refinement can differ. FP64 weights occupy roughly64GB;40GB GPUs cannot run
+this implementation as written.
 
 Work accounting before grid expansion/refinement:
 

@@ -5,6 +5,14 @@ models**, not rendered tables. It reuses only the fresh fit/heldout activation
 pools produced by `experiments.prepare_native`. There is no runtime dependency
 on `~/project`, a paper checkout, archived arrays, or historical experiments.
 
+## Completed full-size validation
+
+The subsequent GPU run completed for all three models. Every all-layer score
+matches the historical validation reference exactly (maximum absolute error0),
+as do all AUCs and the rendered LaTeX table. Historical arrays were read only
+after fresh computation for comparison. Results and metrics are published under
+`docs/tables/` and embedded in the README.
+
 ## DAG and invocation
 
 `configs/classifier_table.json` exports:

@@ -13,9 +13,11 @@ GIF are source inputs, not precomputed experiment results.
 **Target: scientific reproduction, not mandatory pixel identity.** Inconsequential
 hardware-rounding and typographic differences are acceptable; changing sampled
 tokens or numerical conclusions is not. **All figures are reproduced in both
-styles and scientifically validated.** The norm-growth and pair-barrier tables
-also match the paper exactly; the large adaptive-steering table is still running.
-Results and per-artwork validation are below. Missing original TeX
+styles and scientifically validated, and all three tables are complete.** The
+norm-growth and pair-barrier tables match exactly. Adaptive-steering differences
+are at most **0.01712 percentage points**, traced to two Unicode-version-dependent
+Han-prefix token labels; all greedy counts, tuned parameters and method rankings
+match. Results and validation are below. Missing original TeX
 preambles are replaced by explicitly documented reconstructions; source and
 corpus-selection provenance limitations remain in [AUDIT.md](AUDIT.md).
 
@@ -117,8 +119,9 @@ substitute for the full-size numerical and per-artwork comparisons below.
 Protocol details and limitations: [CORE.md](CORE.md), [MAPS.md](MAPS.md),
 [RENDER.md](RENDER.md), [TABLES.md](TABLES.md), [AUDIT.md](AUDIT.md).
 Unused/commented diagnostic tables and plots, and full-manuscript pagination,
-remain out of scope. The three active tables are included; their full fresh
-experiments must complete before results are published.
+remain out of scope. All three active tables below come from completed fresh
+experiments, including all20,000 adaptive-steering test examples and the full
+finite-search oracle.
 
 <!-- reproduced-figures:start -->
 ## Reproduced figures
@@ -376,6 +379,15 @@ Matches the historical formatted table exactly. [LaTeX](docs/tables/pair_barrier
 | Gaussian | 0.963 | 0.984 | 0.938 |
 | Shuffled | 0.980 | 0.996 | 0.986 |
 
-Pending: `adaptive_steering`.
+### Adaptive steering
+
+Scientifically reproduced; documented differences are inconsequential. Maximum cell difference: 0.0171 percentage points. [LaTeX](docs/tables/adaptive_steering.tex) · [Numeric JSON](docs/tables/adaptive_steering.json)
+
+| Method | Non-Chinese ↓ / Mass (%) / ID | Non-Chinese ↓ / Mass (%) / OOD | Non-Chinese ↓ / Greedy (%) / ID | Non-Chinese ↓ / Greedy (%) / OOD | Chinese ↑ / Mass (%) / ID | Chinese ↑ / Mass (%) / OOD | Chinese ↑ / Greedy (%) / ID | Chinese ↑ / Greedy (%) / OOD |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Untuned | 20.10 | 21.48 | 17.16 | 18.74 | 61.65 | 63.84 | 59.23 | 58.61 |
+| Tuned | 13.82 | 10.43 | 11.18 | 8.18 | 69.51 | 77.64 | 68.07 | 74.81 |
+| Adaptive | 12.81 | 9.17 | 10.55 | 6.61 | 70.71 | 79.51 | 69.10 | 77.94 |
+| Oracle | 9.39 | 7.66 | 4.43 | 3.92 | 73.20 | 80.33 | 79.13 | 82.36 |
 
 <!-- reproduced-tables:end -->

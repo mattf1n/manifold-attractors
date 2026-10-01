@@ -61,10 +61,17 @@ def publish_tables(run, root, require_all=False):
                         'source_digest':record.get('source_digest'),
                         'generation_records':record.get('generation_records',{}),
                         'output_sha256':{p.name:sha256(p) for p in paths}})
+        if exact:
+            assessment = 'Matches the historical formatted table exactly.'
+        elif evidence and evidence.get('status') == 'accepted':
+            delta = evidence.get('maximum_displayed_cell_difference_percentage_points')
+            assessment = 'Scientifically reproduced; documented differences are inconsequential.'
+            if delta is not None:
+                assessment += f' Maximum cell difference: {delta:.4f} percentage points.'
+        else:
+            assessment = 'Fresh results; historical formatted-table comparison differs and requires assessment.'
         section += [f'### {name.replace("_"," ").capitalize()}','',
-            ('Matches the historical formatted table exactly.' if exact else
-             'Fresh results; historical formatted-table comparison differs and requires assessment.')
-            +f' [LaTeX](docs/tables/{name}.tex) · [Numeric JSON](docs/tables/{name}.json)','',
+            assessment+f' [LaTeX](docs/tables/{name}.tex) · [Numeric JSON](docs/tables/{name}.json)','',
             paths[1].read_text().strip(),'']
     if pending:section += ['Pending: '+', '.join(f'`{name}`' for name in pending)+'.','']
     section += ['<!-- reproduced-tables:end -->']

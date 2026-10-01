@@ -49,9 +49,82 @@
         "pair_barrier_validation.md": "c3559c028fa3064a46e8667acbfa242bdc105f5c5e2d02a5f314ea70afca2031",
         "pair_barrier_validation.json": "00bc7ab3cdd761f4dc018dbdc602a543119fc3cbec91d92b2096050de6ea7481"
       }
+    },
+    {
+      "name": "adaptive_steering",
+      "tex_matches_reference": false,
+      "numerical_validation": {
+        "status": "accepted",
+        "rendered_table_exact": false,
+        "n_per_test": 10000,
+        "test_examples": 20000,
+        "maximum_displayed_cell_difference_percentage_points": 0.017117208622686064,
+        "rounded_cells_equal": 24,
+        "displayed_cells": 32,
+        "all_baseline_and_oracle_argmax_category_counts_exact": true,
+        "all_calibrated_parameters_exact": true,
+        "all_displayed_method_rankings_exact": true,
+        "explanation": "Only Chinese mass columns differ at displayed precision (<=0.02 percentage points). Python3.13 Unicode15.1 classifies two incomplete UTF-8 Han-prefix tokens (165,18630) as Chinese; original Python3.10 Unicode13 left them Other nonalphabetic because U+9FFD..9FFF were then unassigned. The bad-letter mask is bitwise identical. Independently regenerating the classifier under Unicode13 reproduces all historical categories exactly. This is a measured, scientifically inconsequential Unicode-version effect, not merely floating-point noise.",
+        "unicode_diagnostic": {
+          "unicode_version": "13.0.0",
+          "recomputed_from_pinned_tokenizer": true,
+          "historical_categories_exact": true,
+          "differing_token_ids": []
+        },
+        "cell_difference_percentage_points": [
+          [
+            -3.239395795162636e-06,
+            -8.974913736636836e-06,
+            0.0,
+            0.0,
+            0.017117208622686064,
+            0.016125355684117437,
+            0.0,
+            0.0
+          ],
+          [
+            -1.9809814766347245e-07,
+            -1.4601001652181367e-07,
+            0.0,
+            0.0,
+            0.016462880208351294,
+            0.014503902162743998,
+            0.0,
+            0.0
+          ],
+          [
+            8.154480575228717e-07,
+            -2.611179983347256e-07,
+            0.0,
+            0.0,
+            0.01668268722001187,
+            0.01441731773400079,
+            0.0,
+            0.0
+          ],
+          [
+            5.073728814863898e-08,
+            -1.8662239131828073e-07,
+            0.0,
+            0.0,
+            0.016489803939208514,
+            0.013630198275137673,
+            0.0,
+            0.0
+          ]
+        ],
+        "no_heldout_subsampling": true,
+        "oracle_candidates_and_audits_complete": true,
+        "reference_usage": "Historical summaries/categories used only for post-computation comparison; never generator inputs."
+      },
+      "source_digest": "94551ff8b7711e2d625fe484c95ec35e601355f935ade5e1eab13dd6cf5162dc",
+      "generation_records": {},
+      "output_sha256": {
+        "adaptive_steering.tex": "4678c299677c6475da34b38b0153c9c6cff0c3138867045eac47dabee8ae59c1",
+        "adaptive_steering.md": "d77bf849f4d96de54f954c2064690b36e1caa7ac7401eefd01ced025ed4821c2",
+        "adaptive_steering.json": "f82793ceaecc86bc3ef13f2862b186e629a3138fb2baf1274f47d64b6629f705"
+      }
     }
   ],
-  "pending": [
-    "adaptive_steering"
-  ]
+  "pending": []
 }

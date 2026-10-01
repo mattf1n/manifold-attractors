@@ -1,0 +1,510 @@
+{
+  "allocations": 84,
+  "gpu_hours": 3.8427777777777776,
+  "jobs": [
+    {
+      "job": "1584756",
+      "state": "COMPLETED",
+      "elapsed_seconds": 487,
+      "gpus": 1
+    },
+    {
+      "job": "1584757",
+      "state": "COMPLETED",
+      "elapsed_seconds": 280,
+      "gpus": 1
+    },
+    {
+      "job": "1584759",
+      "state": "COMPLETED",
+      "elapsed_seconds": 132,
+      "gpus": 0
+    },
+    {
+      "job": "1584761",
+      "state": "COMPLETED",
+      "elapsed_seconds": 109,
+      "gpus": 0
+    },
+    {
+      "job": "1584758_0",
+      "state": "COMPLETED",
+      "elapsed_seconds": 179,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_1",
+      "state": "COMPLETED",
+      "elapsed_seconds": 210,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_2",
+      "state": "COMPLETED",
+      "elapsed_seconds": 210,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_3",
+      "state": "COMPLETED",
+      "elapsed_seconds": 195,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_4",
+      "state": "COMPLETED",
+      "elapsed_seconds": 195,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_5",
+      "state": "COMPLETED",
+      "elapsed_seconds": 195,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_6",
+      "state": "COMPLETED",
+      "elapsed_seconds": 196,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_7",
+      "state": "COMPLETED",
+      "elapsed_seconds": 197,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_8",
+      "state": "COMPLETED",
+      "elapsed_seconds": 176,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_9",
+      "state": "COMPLETED",
+      "elapsed_seconds": 178,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_10",
+      "state": "COMPLETED",
+      "elapsed_seconds": 190,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_11",
+      "state": "COMPLETED",
+      "elapsed_seconds": 193,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_12",
+      "state": "COMPLETED",
+      "elapsed_seconds": 179,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_13",
+      "state": "COMPLETED",
+      "elapsed_seconds": 178,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_14",
+      "state": "COMPLETED",
+      "elapsed_seconds": 178,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_15",
+      "state": "COMPLETED",
+      "elapsed_seconds": 199,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_16",
+      "state": "COMPLETED",
+      "elapsed_seconds": 205,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_17",
+      "state": "COMPLETED",
+      "elapsed_seconds": 175,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_18",
+      "state": "COMPLETED",
+      "elapsed_seconds": 182,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_19",
+      "state": "COMPLETED",
+      "elapsed_seconds": 182,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_20",
+      "state": "COMPLETED",
+      "elapsed_seconds": 183,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_21",
+      "state": "COMPLETED",
+      "elapsed_seconds": 183,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_22",
+      "state": "COMPLETED",
+      "elapsed_seconds": 183,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_23",
+      "state": "COMPLETED",
+      "elapsed_seconds": 183,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_24",
+      "state": "COMPLETED",
+      "elapsed_seconds": 182,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_25",
+      "state": "COMPLETED",
+      "elapsed_seconds": 185,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_26",
+      "state": "COMPLETED",
+      "elapsed_seconds": 184,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_27",
+      "state": "COMPLETED",
+      "elapsed_seconds": 184,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_28",
+      "state": "COMPLETED",
+      "elapsed_seconds": 184,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_29",
+      "state": "COMPLETED",
+      "elapsed_seconds": 184,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_30",
+      "state": "COMPLETED",
+      "elapsed_seconds": 175,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_31",
+      "state": "COMPLETED",
+      "elapsed_seconds": 170,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_32",
+      "state": "COMPLETED",
+      "elapsed_seconds": 176,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_33",
+      "state": "COMPLETED",
+      "elapsed_seconds": 176,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_34",
+      "state": "COMPLETED",
+      "elapsed_seconds": 177,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_35",
+      "state": "COMPLETED",
+      "elapsed_seconds": 180,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_36",
+      "state": "COMPLETED",
+      "elapsed_seconds": 178,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_37",
+      "state": "COMPLETED",
+      "elapsed_seconds": 178,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_38",
+      "state": "COMPLETED",
+      "elapsed_seconds": 193,
+      "gpus": 1
+    },
+    {
+      "job": "1584758_39",
+      "state": "COMPLETED",
+      "elapsed_seconds": 171,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_0",
+      "state": "COMPLETED",
+      "elapsed_seconds": 190,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_1",
+      "state": "COMPLETED",
+      "elapsed_seconds": 190,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_2",
+      "state": "COMPLETED",
+      "elapsed_seconds": 148,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_3",
+      "state": "COMPLETED",
+      "elapsed_seconds": 147,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_4",
+      "state": "COMPLETED",
+      "elapsed_seconds": 148,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_5",
+      "state": "COMPLETED",
+      "elapsed_seconds": 151,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_6",
+      "state": "COMPLETED",
+      "elapsed_seconds": 152,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_7",
+      "state": "COMPLETED",
+      "elapsed_seconds": 152,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_8",
+      "state": "COMPLETED",
+      "elapsed_seconds": 152,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_9",
+      "state": "COMPLETED",
+      "elapsed_seconds": 152,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_10",
+      "state": "COMPLETED",
+      "elapsed_seconds": 152,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_11",
+      "state": "COMPLETED",
+      "elapsed_seconds": 151,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_12",
+      "state": "COMPLETED",
+      "elapsed_seconds": 151,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_13",
+      "state": "COMPLETED",
+      "elapsed_seconds": 155,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_14",
+      "state": "COMPLETED",
+      "elapsed_seconds": 155,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_15",
+      "state": "COMPLETED",
+      "elapsed_seconds": 154,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_16",
+      "state": "COMPLETED",
+      "elapsed_seconds": 155,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_17",
+      "state": "COMPLETED",
+      "elapsed_seconds": 155,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_18",
+      "state": "COMPLETED",
+      "elapsed_seconds": 155,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_19",
+      "state": "COMPLETED",
+      "elapsed_seconds": 155,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_20",
+      "state": "COMPLETED",
+      "elapsed_seconds": 154,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_21",
+      "state": "COMPLETED",
+      "elapsed_seconds": 124,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_22",
+      "state": "COMPLETED",
+      "elapsed_seconds": 124,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_23",
+      "state": "COMPLETED",
+      "elapsed_seconds": 120,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_24",
+      "state": "COMPLETED",
+      "elapsed_seconds": 126,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_25",
+      "state": "COMPLETED",
+      "elapsed_seconds": 124,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_26",
+      "state": "COMPLETED",
+      "elapsed_seconds": 125,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_27",
+      "state": "COMPLETED",
+      "elapsed_seconds": 127,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_28",
+      "state": "COMPLETED",
+      "elapsed_seconds": 128,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_29",
+      "state": "COMPLETED",
+      "elapsed_seconds": 128,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_30",
+      "state": "COMPLETED",
+      "elapsed_seconds": 129,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_31",
+      "state": "COMPLETED",
+      "elapsed_seconds": 128,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_32",
+      "state": "COMPLETED",
+      "elapsed_seconds": 128,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_33",
+      "state": "COMPLETED",
+      "elapsed_seconds": 127,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_34",
+      "state": "COMPLETED",
+      "elapsed_seconds": 128,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_35",
+      "state": "COMPLETED",
+      "elapsed_seconds": 125,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_36",
+      "state": "COMPLETED",
+      "elapsed_seconds": 125,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_37",
+      "state": "COMPLETED",
+      "elapsed_seconds": 125,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_38",
+      "state": "COMPLETED",
+      "elapsed_seconds": 126,
+      "gpus": 1
+    },
+    {
+      "job": "1584760_39",
+      "state": "COMPLETED",
+      "elapsed_seconds": 125,
+      "gpus": 1
+    }
+  ]
+}
