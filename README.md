@@ -102,9 +102,11 @@ Pixel agreement alone is not proof of a from-scratch execution; keep run provena
 
 ## What was actually checked
 
-The original **38-test suite passed** in a fresh Git clone with isolated locked
-environments and no original `data/` or `fig/` directories; subsequent regression
-tests also cover download scope and safe figure publication. CPU mathematical and
+**All74 tests pass in a fresh Git clone** with isolated locked environments and
+no `data/`, `fig/`, `tab/`, `runs/`, or `external/` directories. The four table
+formatter tests also pass separately under their exact locked environment.
+Regression coverage includes download scope, scientific sampling, source-input
+contracts and safe figure/table publication. CPU mathematical and
 tiny-random-model integration tests exercise the core and advanced generators
 without pretrained weights or old result arrays. The source
 GIF regenerates historical fish PDF pixels/placement exactly; the schematic's

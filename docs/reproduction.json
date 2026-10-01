@@ -1,0 +1,33 @@
+{
+  "completed_utc": "2026-10-01T00:46:11.032674+00:00",
+  "deadline_utc": "2026-10-01T01:00:00+00:00",
+  "completed_before_deadline": true,
+  "paper_commit": "ed8b89bc8344db678eb5e360a1893937d3b94a1f",
+  "validated_repository_commit": "ecb8d77359399aeef7b379694ba64039a9e6526f",
+  "fresh_run_initial_commit": "81d9da448998547be86814e844ed0582d9fbe826",
+  "table_implementation_commit": "29bf2ab",
+  "initial_generated_data_directory_existed": false,
+  "precomputed_experiment_outputs_used_as_inputs": false,
+  "scope": {
+    "artwork_components": 18,
+    "rendering_profiles": [
+      "iclr",
+      "goodfire"
+    ],
+    "published_artwork_variants": 36,
+    "paper_tables": 3
+  },
+  "validation": {
+    "figures": "All families scientifically reproduced; per-artwork numerical/image evidence in docs/figures/validation.json",
+    "norm_growth_classifier": "All model scores, AUCs and formatted table exact",
+    "pair_barrier_validation": "All AUCs/intervals/barrier counts and formatted table exact",
+    "adaptive_steering": "All greedy counts, tuned parameters and rankings exact; maximum displayed-cell difference0.01711721 percentage points from diagnosed Unicode-version effect"
+  },
+  "clean_clone_tests": {
+    "suite_passed": 74,
+    "isolated_table_tests_passed": 4,
+    "table_tests_are_subset_not_additional": true
+  },
+  "adaptive_allocated_gpu_hours": 3.8427777777777776,
+  "historical_references": "Used only for validation after independent generation, never as numerical inputs or replacement figures"
+}
