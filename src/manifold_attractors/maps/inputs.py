@@ -37,7 +37,8 @@ def public_corpus(kind, language):
                 texts.append(text[:1200])
             if len(texts) == 200:
                 break
-        expected = load('speed_corpus_hashes')[language]
+        # Greek was frozen later (en-el steering) under the same selection rule.
+        expected = load('speed_corpus_hashes_greek' if language == 'el' else 'speed_corpus_hashes')[language]
         actual = [hashlib.sha256(t.encode()).hexdigest() for t in texts]
         if actual != expected:
             raise ValueError('Public Wikipedia no longer matches original centroid passages; no substitution allowed')

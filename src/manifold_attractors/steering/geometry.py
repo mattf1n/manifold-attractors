@@ -247,11 +247,11 @@ def _profile(probe, state, direction, track, extent, audit):
     return result
 
 
-def evaluate(probe, state, direction, audit=False):
+def evaluate(probe, state, direction, audit=False, layer=15):
     """Return independent angular and straight records; never decode tokens here."""
-    if probe.start != 15:
+    if probe.start != layer:
         raise ValueError(
-            "Four-block confirmatory probe must start at hidden-state index 15"
+            f"Four-block confirmatory probe must start at hidden-state index {layer}"
         )
     state, direction = (
         np.asarray(state, dtype=float),
@@ -265,7 +265,7 @@ def evaluate(probe, state, direction, audit=False):
     ):
         raise ValueError("Invalid state/direction")
     if not np.isclose(np.linalg.norm(direction), 1, rtol=0, atol=1e-12):
-        raise ValueError("Direction must be unit zh-minus-en")
+        raise ValueError("Direction must be unit target-minus-en")
     results = {}
     for track in ("angular", "straight"):
         try:
@@ -315,7 +315,10 @@ def run(root, dataset, shard, shard_size):
     root = Path(root)
     check_inference_approval(root, dataset)
     metadata = json.loads((root / "direction/llama3.json").read_text())
-    if metadata["hidden_state_index"] != 15:
+    from .common import MODELS, run_model
+    spec = MODELS[run_model(root)]
+    layer = spec["layer"]
+    if metadata["hidden_state_index"] != layer:
         raise ValueError("Direction layer mismatch")
     with np.load(root / "direction/llama3.npz") as data:
         direction = -data["direction"].astype(float)
@@ -324,29 +327,37 @@ def run(root, dataset, shard, shard_size):
         if data["states"].dtype != np.float32:
             raise ValueError("Expected native FP32 states")
         states, ids = data["states"].astype(float), data["sample_ids"].copy()
-    if states.shape != (len(ids), 4096) or not 0 < len(ids) <= shard_size:
+    if states.shape != (len(ids), spec["width"]) or not 0 < len(ids) <= shard_size:
         raise ValueError("State shard shape mismatch")
     np.testing.assert_array_equal(
         ids, np.arange(shard * shard_size, shard * shard_size + len(ids))
     )
     output = root / "geometry" / dataset
     output.mkdir(parents=True, exist_ok=True)
+    protocol = dict(PROTOCOL)
+    target = metadata.get("target", "zh")
+    if target != "zh":
+        protocol["direction"] = protocol["direction"].replace("zh", target)
+    if layer != PROTOCOL["hidden_state_index"]:
+        protocol.update(hidden_state_index=layer, model=spec["model"],
+                        block_indices=list(range(layer, layer + 4)),
+                        human_blocks=list(range(layer + 1, layer + 5)))
     fingerprint = hashlib.sha256(
-        json.dumps(PROTOCOL, sort_keys=True).encode()
+        json.dumps(protocol, sort_keys=True).encode()
     ).hexdigest()
     atomic_json(
         output / f"protocol_size{shard_size}_{shard:03d}.json",
         dict(
-            PROTOCOL,
+            protocol,
             protocol_sha256=fingerprint,
             shard_size=shard_size,
             shard=shard,
             sample_ids=ids.tolist(),
         ),
     )
-    probe = Probe(metadata["snapshot"], 15)
+    probe = Probe(metadata["snapshot"], layer)
     for state, sample_id in zip(states, ids, strict=True):
-        result = evaluate(probe, state, direction, int(sample_id) % 100 == 0)
+        result = evaluate(probe, state, direction, int(sample_id) % 100 == 0, layer)
         flat = {
             f"{track}_{key}": np.asarray(value)
             for track, record in result.items()

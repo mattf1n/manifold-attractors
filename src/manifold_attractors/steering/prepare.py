@@ -10,7 +10,7 @@ import hashlib
 from pathlib import Path
 from types import SimpleNamespace
 import numpy as np
-from .common import (DEFAULT_ROOT, MODEL, REVISION, SIZES, atomic_json, atomic_npz,
+from .common import (DEFAULT_MODEL, DEFAULT_ROOT, MODELS, SIZES, atomic_json, atomic_npz,
                      digest, read, freeze_run)
 
 INPUTS = Path(__file__).parent / "inputs"
@@ -70,36 +70,46 @@ def validate_sources(manifests, tokenizer):
             "limitations": LIMITATIONS}
 
 
-def prepare_partition(root, snapshot, tokenizer):
-    from .vocabulary import (CLASSES, HAN_PREFIX_METRIC, classify_cached, prepare_subtypes)
+def prepare_partition(root, snapshot, tokenizer, target="zh"):
+    from .vocabulary import (CLASSES, TARGETS, class_names, classify_cached,
+                             greek_classify_cached, prepare_subtypes)
     folder = root / "vocabulary"
-    classify = classify_cached(tokenizer, HAN_PREFIX_METRIC)
+    name, _, _, metric = TARGETS[target]
+    names = class_names(target)
+    classify = (greek_classify_cached(tokenizer) if target == "el"
+                else classify_cached(tokenizer, metric))
     specials = set(tokenizer.all_special_ids) | {
         i for i, token in tokenizer.added_tokens_decoder.items() if token.special
     }
     assert len(tokenizer) == 128256 and len(specials) == 256
-    categories = np.array([CLASSES.index("Other nonalphabetic" if i in specials else classify(i))
+    # Each classifier names its target class by the target's class name.
+    labels = CLASSES[:2] + (name,) + CLASSES[3:]
+    categories = np.array([labels.index("Other nonalphabetic" if i in specials else classify(i))
                            for i in range(len(tokenizer))], dtype=np.int8)
     atomic_npz(folder / "vocabulary.npz", categories=categories,
-               class_names=CLASSES, special_ids=sorted(specials))
+               class_names=names, special_ids=sorted(specials))
     atomic_json(folder / "definition.json", {
-        "snapshot": snapshot, "temperature": 1, "token_metric": HAN_PREFIX_METRIC,
-        "class_names": CLASSES, "fresh_from_tokenizer": True,
-        "loss": "Latin plus Other alphabet; not one minus Chinese",
+        "snapshot": snapshot, "temperature": 1, "token_metric": metric,
+        "class_names": names, "fresh_from_tokenizer": True,
+        "loss": f"Latin plus Other alphabet; not one minus {name}", "target": target,
     })
     # Regenerate rather than accepting an old label array in the work directory.
     (folder / "vocabulary_subtypes.npz").unlink(missing_ok=True)
     prepare_subtypes(SimpleNamespace(output=folder))
 
 
-def prepare(root, inputs_only=False):
+def prepare(root, inputs_only=False, target="zh", model=DEFAULT_MODEL):
     from huggingface_hub import snapshot_download
     from transformers import AutoTokenizer
     root = Path(root)
-    stamp = freeze_run(root)
+    stamp = freeze_run(root, model)
+    spec = MODELS[model]
+    MODEL, REVISION, LAYER = spec["model"], spec["revision"], spec["layer"]
     if (root / "prepared.json").exists():
         from .common import require_prepared
         require_prepared(root)
+        if read(root / "vocabulary/definition.json").get("target", "zh") != target:
+            raise ValueError("Prepared root has a different --target; use a new --root")
         return
     # Pinned public weights; HF credential/license acceptance may be required.
     snapshot = snapshot_download(MODEL, revision=REVISION,
@@ -109,10 +119,10 @@ def prepare(root, inputs_only=False):
     manifests = source_manifests()
     audit = validate_sources(manifests, tokenizer)
     for split, manifest in manifests.items():
-        manifest.update(snapshot=snapshot, input_layer_index=15)
+        manifest.update(snapshot=snapshot, input_layer_index=LAYER)
         atomic_json(root / f"manifests/{split}.json", manifest)
     atomic_json(root / "split_audit.json", audit)
-    prepare_partition(root, snapshot, tokenizer)
+    prepare_partition(root, snapshot, tokenizer, target)
     if inputs_only:
         return  # Deliberately NOT prepared; no inference completion claim.
 
@@ -123,22 +133,23 @@ def prepare(root, inputs_only=False):
     torch.set_num_threads(4)
     torch.backends.cuda.matmul.allow_tf32 = False
     torch.backends.cudnn.allow_tf32 = False
-    corpora = {language: public_corpus("speed", language) for language in ("en", "zh")}
+    corpora = {language: public_corpus("speed", language) for language in ("en", target)}
     # This is the 200+200 speed/confirmatory corpus, NOT the area corpus.
     atomic_json(root / "direction/source_texts.json", corpora)
-    model = AutoModel.from_pretrained(snapshot, dtype=torch.float32, device_map="cuda",
+    network = AutoModel.from_pretrained(snapshot, dtype=torch.float32, device_map="cuda",
                                      attn_implementation="eager").eval().requires_grad_(False)
-    centers = centroids(model, tokenizer, corpora, index=15, device="cuda")
-    raw = centers["en"] - centers["zh"]
+    centers = centroids(network, tokenizer, corpora, index=LAYER, device="cuda")
+    raw = centers["en"] - centers[target]
     unit = raw / np.linalg.norm(raw)
     atomic_npz(root / "direction/llama3.npz", direction=unit, raw_direction=raw,
-               centroid_en=centers["en"], centroid_zh=centers["zh"])
+               centroid_en=centers["en"], **{f"centroid_{target}": centers[target]})
     atomic_json(root / "direction/llama3.json", {
         "snapshot": snapshot, "model": MODEL, "revision": REVISION,
-        "hidden_state_index": 15, "max_tokens": 128, "batch": 4,
+        "hidden_state_index": LAYER, "max_tokens": 128, "batch": 4,
         "pooling": "All attention_mask=1 tokens including special tokens; token weighted",
         "precision": "FP32 model, FP64 accumulation; unrounded FP64 centroid difference",
-        "stored_sign": "en-minus-zh; evaluation negates it", "fresh": True,
+        "stored_sign": f"en-minus-{target}; evaluation negates it", "fresh": True,
+        "target": target,
     })
     approval = {key: True for key in ("approved", "split_audit_passed", "protocol_frozen",
                                      "direction_provenance_approved")}
@@ -151,7 +162,7 @@ def prepare(root, inputs_only=False):
             records = manifest["records"][shard*500:(shard+1)*500]
             with torch.inference_mode():
                 values, checks = extract_cached(
-                    model, records, [15], "cuda", snapshot, root / "activation_cache",
+                    network, records, [LAYER], "cuda", snapshot, root / "activation_cache",
                     f"{split}/{shard:03d}",
                 )
             path = root / f"states/{split}/{shard:03d}.npz"
@@ -159,10 +170,10 @@ def prepare(root, inputs_only=False):
             atomic_json(path.with_suffix(".json"), {
                 "manifest_sha256": approval["manifest_sha256"][split],
                 "approval_sha256": digest(root / "inference_approval.json"),
-                "native_dtype": "float32", "hidden_state_index": 15,
+                "native_dtype": "float32", "hidden_state_index": LAYER,
                 "count": len(records), "extraction": checks,
             })
-    del model
+    del network
     gc.collect()
     torch.cuda.empty_cache()
     files = ["inference_approval.json", "split_audit.json", "direction/llama3.npz",
@@ -181,8 +192,11 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--root", type=Path, default=DEFAULT_ROOT)
     p.add_argument("--inputs-only", action="store_true", help="No GPU inference; does not complete prepare")
+    p.add_argument("--target", choices=["zh", "el"], default="zh",
+                   help="Steering target language (direction and vocabulary partition)")
+    p.add_argument("--model", choices=list(MODELS), default=DEFAULT_MODEL)
     args = p.parse_args()
-    prepare(args.root, args.inputs_only)
+    prepare(args.root, args.inputs_only, args.target, args.model)
 
 
 if __name__ == "__main__":

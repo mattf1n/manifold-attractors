@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from .common import DEFAULT_ROOT, atomic_json, digest, read
 from .compute import require_computed
-from .vocabulary import CLASSES
+from .vocabulary import class_names, run_target
 
 
 def verify(root):
@@ -15,6 +15,7 @@ def verify(root):
     assert completion["summary_sha256"] == digest(root / "linear_oracle/summary.json")
     baseline = read(root / "summary.json")
     oracle = read(root / "linear_oracle/summary.json")
+    CLASSES = class_names(run_target(root))
     assert baseline["n_per_test"] == 10000 and baseline["calibration_n"] == 1000
     assert set(baseline["datasets"]) == set(oracle["datasets"]) == {"wiki_test", "fineweb_test"}
     for dataset in baseline["datasets"]:

@@ -6,8 +6,20 @@ from pathlib import Path
 import numpy as np
 
 DEFAULT_ROOT = Path("runs/adaptive_steering")
-MODEL = "meta-llama/Llama-3.1-8B"
-REVISION = "d04e592bb4f6aa9cfee91e2e20afa771667e1d4b"
+# Llama-3.2-3B shares Llama-3.1-8B's tokenizer byte-for-byte, so the frozen
+# source token IDs/positions are valid for both. Its layer is the same relative
+# depth (15/32 -> 13/28); it fits a 48GB GPU in the FP64 probe.
+MODELS = {
+    "llama3.1-8b": {"model": "meta-llama/Llama-3.1-8B",
+                    "revision": "d04e592bb4f6aa9cfee91e2e20afa771667e1d4b",
+                    "layer": 15, "width": 4096},
+    "llama3.2-3b": {"model": "meta-llama/Llama-3.2-3B",
+                    "revision": "13afe5124825b4f3751f836b40dafda64c1ed062",
+                    "layer": 13, "width": 3072},
+}
+DEFAULT_MODEL = "llama3.1-8b"
+MODEL = MODELS[DEFAULT_MODEL]["model"]
+REVISION = MODELS[DEFAULT_MODEL]["revision"]
 SIZES = {"wiki_cal": 1000, "wiki_test": 10000, "fineweb_test": 10000}
 
 
@@ -48,12 +60,22 @@ def implementation_hash():
     return hashlib.sha256("".join(digest(p) for p in files).encode()).hexdigest()
 
 
-def freeze_run(root):
+def run_model(root):
+    """Registry key of a run's model; runs predating the choice are Llama-3.1-8B."""
+    path = Path(root) / "run.json"
+    if not path.exists():
+        return DEFAULT_MODEL
+    name = read(path)["model"]
+    return next(key for key, spec in MODELS.items() if spec["model"] == name)
+
+
+def freeze_run(root, model=None):
     """Do not accept an unprovenanced existing output directory."""
     root = Path(root)
     from importlib.metadata import version
+    spec = MODELS[model or run_model(root)]
     request = {
-        "schema": 1, "model": MODEL, "revision": REVISION,
+        "schema": 1, "model": spec["model"], "revision": spec["revision"],
         "source_inputs_sha256": digest(Path(__file__).parent / "inputs/sources.json"),
         "implementation_sha256": implementation_hash(),
         "libraries": {name: version(name) for name in ("torch", "transformers", "numpy")},

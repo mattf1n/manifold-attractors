@@ -16,13 +16,15 @@ import numpy as np
 from .common import atomic_json, atomic_npz
 from .vocabulary import (
     COARSE_FROM_SUBTYPE,
-    HAN_PREFIX_METRIC,
     SUBTYPES,
+    TARGETS,
     Probe,
     aggregate_subtypes,
     audit_distribution,
     checked_distribution,
     load_partition,
+    run_target,
+    target_key,
 )
 from .common import load_states
 
@@ -42,12 +44,14 @@ def digest(path):
 
 
 def source(root):
+    from .common import MODELS, run_model
+    spec = MODELS[run_model(root)]
     meta = read(root / "direction/llama3.json")
-    assert meta["hidden_state_index"] == 15
+    assert meta["hidden_state_index"] == spec["layer"]
     with np.load(root / "direction/llama3.npz") as data:
         unit = -data["direction"].astype(np.float64)
         raw = -data["raw_direction"].astype(np.float64)
-    assert unit.shape == raw.shape == (4096,)
+    assert unit.shape == raw.shape == (spec["width"],)
     unit /= np.linalg.norm(unit)
     assert np.isfinite(unit).all() and np.isfinite(raw).all()
     return meta, unit, raw
@@ -106,7 +110,7 @@ def grid_definition(root):
                 },
                 "endpoint_rule": "Expand any selected endpoint in its direction; calibration only",
                 "tracks": list(TRACKS),
-                "metric": HAN_PREFIX_METRIC,
+                "metric": TARGETS[run_target(root)][3],
             },
         )
     return read(path)
@@ -125,10 +129,11 @@ def state_file(args):
 
 def states_stage(args):
     stamp = approval(args)
-    meta, _, _ = source(args.root)
+    meta, unit, _ = source(args.root)
     split, path = manifest_path(args)
     manifest = read(path)
-    assert manifest["split"] == split and manifest["input_layer_index"] == 15
+    layer = meta["hidden_state_index"]
+    assert manifest["split"] == split and manifest["input_layer_index"] == layer
     records = manifest["records"]
     # Support a per-split manifest or a combined manifest, preserving frozen order.
     if any("split" in row for row in records):
@@ -139,7 +144,7 @@ def states_stage(args):
     assert 0 <= args.shard * 500 < len(records)
     records = records[args.shard * 500 : (args.shard + 1) * 500]
     assert manifest.get("snapshot", meta["snapshot"]) == meta["snapshot"]
-    adapter = dict(manifest, snapshot=meta["snapshot"], input_layer_index=15)
+    adapter = dict(manifest, snapshot=meta["snapshot"], input_layer_index=layer)
     folder = args.root / f"states/{args.split}/extraction/{args.shard:03d}"
     folder.mkdir(parents=True, exist_ok=True)
     request = {
@@ -158,7 +163,7 @@ def states_stage(args):
         adapter,
         folder,
     )
-    assert native.dtype == np.float32 and native.shape == (len(records), 4096)
+    assert native.dtype == np.float32 and native.shape == (len(records), len(unit))
     atomic_npz(
         state_file(args),
         states=native,
@@ -171,7 +176,7 @@ def states_stage(args):
             "manifest": str(path),
             "manifest_sha256": digest(path),
             "native_dtype": "float32",
-            "hidden_state_index": 15,
+            "hidden_state_index": layer,
             "count": len(records),
         },
     )
@@ -184,7 +189,9 @@ def get_states(args):
     assert provenance["manifest_sha256"] == digest(manifest)
     with np.load(state_file(args)) as data:
         states, ids = data["states"].copy(), data["sample_ids"].copy()
-    assert states.dtype == np.float32 and states.shape == (len(ids), 4096)
+    from .common import MODELS, run_model
+    width = MODELS[run_model(args.root)]["width"]
+    assert states.dtype == np.float32 and states.shape == (len(ids), width)
     np.testing.assert_array_equal(
         ids, np.arange(args.shard * 500, args.shard * 500 + len(ids))
     )
@@ -211,7 +218,7 @@ def point(state, unit, method, parameter):
 def setup(args):
     stamp = approval(args)
     meta, unit, raw = source(args.root)
-    probe = Probe(meta["snapshot"], 15)
+    probe = Probe(meta["snapshot"], meta["hidden_state_index"])
     labels, matrix = load_partition(
         SimpleNamespace(output=args.root / "vocabulary"), probe, subtypes=True
     )
@@ -243,6 +250,8 @@ def calibrate_stage(args):
     definition = grid_definition(args.root)
     stamp, unit, _, probe, labels, matrix = setup(args)
     for name, grid in grids(definition).items():
+        if getattr(args, "method", None) not in (None, name):
+            continue  # Another array task computes this grid.
         path = (
             args.root
             / f"calibration/v{definition['version']:03d}/{args.shard:03d}/{name}.npz"
@@ -349,7 +358,7 @@ def calibrate_stage(args):
         )
 
 
-def choose(parameters, masses, categories, track):
+def choose(parameters, masses, categories, track, key="chinese"):
     if track == "mass":
         bad = masses[..., [0, 3]].sum(-1).mean(0)
         chinese = masses[..., 2].mean(0)
@@ -360,7 +369,7 @@ def choose(parameters, masses, categories, track):
     return index, {
         "parameter": float(parameters[index]),
         "bad": float(bad[index]),
-        "chinese": float(chinese[index]),
+        key: float(chinese[index]),
     }
 
 
@@ -385,7 +394,8 @@ def select_stage(args):
         np.testing.assert_array_equal(np.concatenate(ids), np.arange(1000))
         for track in TRACKS:
             index, selection = choose(
-                grid, np.concatenate(masses), np.concatenate(categories), track
+                grid, np.concatenate(masses), np.concatenate(categories), track,
+                target_key(run_target(args.root)),
             )
             selections[track][name] = selection
             if index in (0, len(grid) - 1):
@@ -814,6 +824,8 @@ def main():
     parser.add_argument("--split", choices=SPLITS, default="wiki_cal")
     parser.add_argument("--shard", type=int, default=0)
     parser.add_argument("--batch-size", type=int, default=128)
+    parser.add_argument("--method", choices=BASELINES,
+                        help="calibrate: compute only this baseline's grid (default all)")
     parser.add_argument(
         "--adaptive",
         type=Path,

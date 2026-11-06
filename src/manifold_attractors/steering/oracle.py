@@ -10,7 +10,6 @@ from .fixed import point, source
 from .vocabulary import (
     BAD,
     CHINESE,
-    CLASSES,
     SUBTYPES,
     Probe,
     aggregate_subtypes,
@@ -19,7 +18,11 @@ from .vocabulary import (
     audit_distribution,
     bootstrap_means,
     checked_distribution,
+    class_names,
     load_partition,
+    run_target,
+    subtype_names,
+    target_key,
 )
 
 BASE = Path("runs/adaptive_steering")
@@ -65,6 +68,12 @@ def prepare():
         "saved": "allcandidate5/11masses, strengths, argmax, masks, selected indices and gridconvergence",
         "scope": "Only additivefamily; angular/norm-preserving outsidefamily; no certified global optimality",
     }
+    target = run_target(BASE)
+    if target != "zh":  # zh protocol text is frozen as originally written.
+        name, key = class_names(target)[CHINESE], target_key(target)
+        definition = json.loads(json.dumps(definition).replace("Chinese", name)
+                                .replace("chinese", key).replace("zh-en", f"{target}-en"))
+        definition["target"] = target
     path = OUT / "protocol.json"
     if path.exists():
         assert read(path) == json.loads(json.dumps(definition))
@@ -78,8 +87,9 @@ def prepare():
     )
 
 
-def choices(strengths, masses, ids, valid, categories, subset=None):
-    selected = {name: [] for name in ("mass", "greedy", "chinese_ceiling")}
+def choices(strengths, masses, ids, valid, categories, subset=None, key="chinese"):
+    ceiling = f"{key}_ceiling"
+    selected = {name: [] for name in ("mass", "greedy", ceiling)}
     for row in range(len(strengths)):
         mask = valid[row].copy()
         if subset is not None:
@@ -97,7 +107,7 @@ def choices(strengths, masses, ids, valid, categories, subset=None):
                 -(labels == CHINESE).astype(int),
                 np.isin(labels, list(BAD)).astype(int),
             ),
-            "chinese_ceiling": (s, bad, -cn),
+            ceiling: (s, bad, -cn),
         }
         for name, key in keys.items():
             selected[name].append(indices[np.lexsort(key)[0]])
@@ -162,7 +172,7 @@ def worker(dataset, shard):
     strengths = np.concatenate([strengths, extra], axis=1)
     valid = np.isfinite(strengths) & (strengths > 0) & (strengths < 10)
     assert valid[:, : len(GRID)].all()
-    probe = Probe(meta["snapshot"], 15)
+    probe = Probe(meta["snapshot"], meta["hidden_state_index"])
     _, matrix = load_partition(
         SimpleNamespace(output=root / "vocabulary"), probe, subtypes=True
     )
@@ -223,8 +233,9 @@ def worker(dataset, shard):
             fine[keep, len(GRID) + j] = expected
             regression_count += int(keep.sum())
         masses = aggregate_subtypes(fine)
-        coarse_best = choices(s, masses, tokens, mask, categories, COARSE)
-        best = choices(s, masses, tokens, mask, categories)
+        key = target_key(run_target(root))
+        coarse_best = choices(s, masses, tokens, mask, categories, COARSE, key)
+        best = choices(s, masses, tokens, mask, categories, key=key)
         atomic_npz(
             path,
             sample_ids=ids,
@@ -274,18 +285,21 @@ def collect():
         "datasets": {},
         "confidence": "10000 paired bootstrap draws, common indices across contrasts within dataset; conditional on frozen output-aware search",
     }
+    target = run_target(BASE)
+    key = target_key(target)
+    CLASSES, SUBTYPES = class_names(target), subtype_names(target)
     for dataset_index, dataset in enumerate(DATASETS):
         root = BASE
         with np.load(root / "vocabulary/vocabulary.npz") as z:
             categories = z["categories"].copy()
-        names = ("mass", "greedy", "chinese_ceiling")
+        names = ("mass", "greedy", f"{key}_ceiling")
         fields = ("strengths", "masses", "subtype_masses", "token_ids")
         selected = {
             level: {name: {field: [] for field in fields} for name in names}
             for level in ("coarse", "fine")
         }
         reach = {
-            level: {name: [] for name in ("chinese", "accepted")}
+            level: {name: [] for name in (key, "accepted")}
             for level in ("coarse", "fine")
         }
         audit_records = []
@@ -323,7 +337,7 @@ def collect():
                     if level == "coarse":
                         mask &= COARSE[None]
                     labels = categories[np.maximum(data["token_ids"], 0)]
-                    reach[level]["chinese"].extend(
+                    reach[level][key].extend(
                         np.any(mask & (labels == CHINESE), axis=1).tolist()
                     )
                     reach[level]["accepted"].extend(
@@ -336,6 +350,7 @@ def collect():
                         data["valid"],
                         categories,
                         COARSE if level == "coarse" else None,
+                        key,
                     )
                     for name in names:
                         indices = data[f"{level}_{name}"]
@@ -364,6 +379,7 @@ def collect():
                         merged["token_ids"][None],
                         valid[None],
                         categories,
+                        key=key,
                     )
                     record = {"sample_id": int(sample), "best": {}}
                     for name in names:
@@ -381,10 +397,10 @@ def collect():
                             "bad_mass_reduction": float(
                                 old[list(BAD)].sum() - new[list(BAD)].sum()
                             ),
-                            "chinese_mass_gain": float(new[CHINESE] - old[CHINESE]),
+                            f"{key}_mass_gain": float(new[CHINESE] - old[CHINESE]),
                             "greedy_bad_reduction": int(old_class in BAD)
                             - int(new_class in BAD),
-                            "greedy_chinese_gain": int(new_class == CHINESE)
+                            f"greedy_{key}_gain": int(new_class == CHINESE)
                             - int(old_class == CHINESE),
                         }
                     audit_records.append(record)
@@ -436,11 +452,11 @@ def collect():
             summary["coarse_fine"][name] = {
                 "bad_mass_reduction_mean": float(gains.mean()),
                 "bad_mass_reduction_max": float(gains.max()),
-                "chinese_mass_gain_mean": float(cgains.mean()),
-                "chinese_mass_gain_max": float(cgains.max()),
+                f"{key}_mass_gain_mean": float(cgains.mean()),
+                f"{key}_mass_gain_max": float(cgains.max()),
                 "changed_argmax_count": int((a["token_ids"] != b["token_ids"]).sum()),
             }
-        for label in ("chinese", "accepted"):
+        for label in (key, "accepted"):
             coarse = np.array(reach["coarse"][label])
             fine = np.array(reach["fine"][label])
             assert np.all(~coarse | fine)
@@ -486,9 +502,9 @@ def collect():
             summary["global_audit_summary"][name] = {}
             for metric in (
                 "bad_mass_reduction",
-                "chinese_mass_gain",
+                f"{key}_mass_gain",
                 "greedy_bad_reduction",
-                "greedy_chinese_gain",
+                f"greedy_{key}_gain",
             ):
                 gains = np.array([r[metric] for r in records])
                 summary["global_audit_summary"][name][metric] = {
@@ -508,10 +524,10 @@ def collect():
                 metrics = {
                     "bad_mass_reduction": mass[:, list(BAD)].sum(1)
                     - b["masses"][:, list(BAD)].sum(1),
-                    "chinese_mass_gain": b["masses"][:, CHINESE] - mass[:, CHINESE],
+                    f"{key}_mass_gain": b["masses"][:, CHINESE] - mass[:, CHINESE],
                     "greedy_bad_reduction": np.isin(labels, list(BAD)).astype(float)
                     - np.isin(lab, list(BAD)).astype(float),
-                    "greedy_chinese_gain": (lab == CHINESE).astype(float)
+                    f"greedy_{key}_gain": (lab == CHINESE).astype(float)
                     - (labels == CHINESE).astype(float),
                 }
                 for metric, delta in metrics.items():

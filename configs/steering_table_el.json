@@ -1,0 +1,51 @@
+{
+  "description": "en-el counterpart of steering_table.json: identical protocol (model, frozen English source selections, grids, oracle, bootstrap) with Greek as the target language for the centroid direction and vocabulary partition. Source selections only; no archived activations/results. See TABLE_STEERING.md.",
+  "protocol": {
+    "model": "meta-llama/Llama-3.1-8B",
+    "revision": "d04e592bb4f6aa9cfee91e2e20afa771667e1d4b",
+    "wiki_revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+    "fineweb_revision": "9bb295ddab0e05d785b879661af7260fed5140fc",
+    "source_inputs": "src/manifold_attractors/steering/inputs/sources.json",
+    "counts": {"wiki_cal": 1000, "wiki_test": 10000, "fineweb_test": 10000},
+    "hidden_state_index": 15,
+    "geometry_block_indices": [15, 16, 17, 18],
+    "centroid_protocol": "speed/confirmatory 200 English + 200 Greek (20231101.el, same first-200 rule; maps/inputs/speed_corpus_hashes_greek.json); batch4 all-valid-token pooling, FP32 states/FP64 sum; NOT area corpus",
+    "probe": "evolving two BOS positions, FP64, full remaining decoder for probability/argmax",
+    "tracks": ["mass", "greedy"],
+    "table_methods": ["raw_centroid", "additive", "adaptive_straight", "oracle"],
+    "calibration": "Wikipedia only, 0.05 grids with endpoint expansion; bad then Greek then smaller parameter; each track separate",
+    "oracle": "strict 0<s<10; .025 grid plus boundary-adjacent and exact comparator candidates; .05 comparison and prespecified .0125 global audits",
+    "bootstrap_draws": 10000,
+    "target": "el"
+  },
+  "tasks": [
+    {
+      "id": "data-adaptive_steering_el-prepare",
+      "module": "manifold_attractors.steering.prepare",
+      "args": ["--root", "data/language_steering_confirmatory_el", "--target", "el"],
+      "outputs": ["data/language_steering_confirmatory_el/prepared.json"],
+      "deps": []
+    },
+    {
+      "id": "data-adaptive_steering_el-compute",
+      "module": "manifold_attractors.steering.compute",
+      "args": ["--root", "data/language_steering_confirmatory_el"],
+      "outputs": ["data/language_steering_confirmatory_el/computed.json", "data/language_steering_confirmatory_el/summary.json", "data/language_steering_confirmatory_el/final_validation.json"],
+      "deps": ["data-adaptive_steering_el-prepare"]
+    },
+    {
+      "id": "data-adaptive_steering_el-oracle",
+      "module": "manifold_attractors.steering.oracle",
+      "args": ["all", "--root", "data/language_steering_confirmatory_el"],
+      "outputs": ["data/language_steering_confirmatory_el/linear_oracle/summary.json", "data/language_steering_confirmatory_el/linear_oracle/complete.json"],
+      "deps": ["data-adaptive_steering_el-prepare", "data-adaptive_steering_el-compute"]
+    },
+    {
+      "id": "data-adaptive_steering_el",
+      "module": "manifold_attractors.steering.verify",
+      "args": ["--root", "data/language_steering_confirmatory_el"],
+      "outputs": ["data/language_steering_confirmatory_el/data_complete.json"],
+      "deps": ["data-adaptive_steering_el-prepare", "data-adaptive_steering_el-compute", "data-adaptive_steering_el-oracle"]
+    }
+  ]
+}

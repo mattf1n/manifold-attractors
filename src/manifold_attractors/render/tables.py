@@ -99,11 +99,13 @@ def adaptive_steering(data, output):
     mass = scores.filter(like='mean_masses.').rename(columns=lambda c:c.removeprefix('mean_masses.'))
     greedy = scores.filter(like='argmax_counts.').rename(columns=lambda c:c.removeprefix('argmax_counts.'))
     fractions = mass.where(scores['track'].eq('mass'),greedy/results['n_per_test'],axis=0)
-    scores = scores.assign(non_chinese=100*(fractions['Latin']+fractions['Other alphabet']),
-                           chinese=100*fractions['Chinese'])
+    code = results.get('target','zh')
+    name = {'zh':'Chinese','el':'Greek'}[code]; key = name.lower()
+    scores = scores.assign(**{f'non_{key}':100*(fractions['Latin']+fractions['Other alphabet']),
+                              key:100*fractions[name]})
     tracks = {'mass':r'Mass (\%)','greedy':r'Greedy (\%)'}
     datasets = {'wiki_test':r'\textsc{id}','fineweb_test':r'\textsc{ood}'}
-    outcomes = {'non_chinese':r'non-\texttt{zh} $\downarrow$','chinese':r'\texttt{zh} $\uparrow$'}
+    outcomes = {f'non_{key}':rf'non-\texttt{{{code}}} $\downarrow$',key:rf'\texttt{{{code}}} $\uparrow$'}
     numeric = (scores.pivot(index='method',columns=['track','dataset'],values=list(outcomes))
         .reindex(index=METHODS,columns=pd.MultiIndex.from_product([outcomes,tracks,datasets])))
     table = (numeric.rename(index=METHODS).rename(columns=outcomes,level=0)
@@ -118,13 +120,13 @@ def adaptive_steering(data, output):
     output.write_text('\\begingroup\n\\small\n\\sisetup{detect-weight=true}\n'
         '\\setlength{\\tabcolsep}{3pt}\n'+latex+'\\endgroup\n')
     rows = [[METHODS[index],*[f'{v:.2f}' for v in values]] for index,values in numeric.iterrows()]
-    labels = {'non_chinese':'Non-Chinese ↓', 'chinese':'Chinese ↑', 'mass':'Mass (%)',
+    labels = {f'non_{key}':f'Non-{name} ↓', key:f'{name} ↑', 'mass':'Mass (%)',
               'greedy':'Greedy (%)', 'wiki_test':'ID', 'fineweb_test':'OOD'}
     output.with_suffix('.md').write_text(markdown(['Method',*[' / '.join(labels[x] for x in column)
         for column in numeric.columns]],rows))
     return {'columns':[list(c) for c in numeric.columns],
         'rows':[{'method':METHODS[index],'values':[float(v) for v in values]} for index,values in numeric.iterrows()],
-        'n_per_test':results['n_per_test'], 'non_chinese_excludes_neutral':True}
+        'n_per_test':results['n_per_test'], f'non_{key}_excludes_neutral':True}
 
 
 def main():

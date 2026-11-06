@@ -24,6 +24,30 @@
       "args": ["adaptive_steering", "--data", "data/language_steering_confirmatory", "--output", "tab/adaptive_steering.tex"],
       "outputs": ["tab/adaptive_steering.tex", "tab/adaptive_steering.md", "tab/adaptive_steering.json"],
       "deps": ["data-adaptive_steering"]
+    },
+    {
+      "id": "render-table-adaptive_steering_el",
+      "module": "manifold_attractors.render.tables",
+      "environment": "table",
+      "args": ["adaptive_steering", "--data", "data/language_steering_confirmatory_el", "--output", "tab/adaptive_steering_el.tex"],
+      "outputs": ["tab/adaptive_steering_el.tex", "tab/adaptive_steering_el.md", "tab/adaptive_steering_el.json"],
+      "deps": ["data-adaptive_steering_el"]
+    },
+    {
+      "id": "render-table-adaptive_steering_llama32_3b",
+      "module": "manifold_attractors.render.tables",
+      "environment": "table",
+      "args": ["adaptive_steering", "--data", "data/language_steering_confirmatory-llama3.2-3b", "--output", "tab/adaptive_steering_llama32_3b.tex"],
+      "outputs": ["tab/adaptive_steering_llama32_3b.tex", "tab/adaptive_steering_llama32_3b.md", "tab/adaptive_steering_llama32_3b.json"],
+      "deps": ["data-adaptive_steering_llama32_3b"]
+    },
+    {
+      "id": "render-table-adaptive_steering_el_llama32_3b",
+      "module": "manifold_attractors.render.tables",
+      "environment": "table",
+      "args": ["adaptive_steering", "--data", "data/language_steering_confirmatory_el-llama3.2-3b", "--output", "tab/adaptive_steering_el_llama32_3b.tex"],
+      "outputs": ["tab/adaptive_steering_el_llama32_3b.tex", "tab/adaptive_steering_el_llama32_3b.md", "tab/adaptive_steering_el_llama32_3b.json"],
+      "deps": ["data-adaptive_steering_el_llama32_3b"]
     }
   ]
 }

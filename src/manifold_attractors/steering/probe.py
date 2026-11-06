@@ -1,4 +1,8 @@
-"""Original evolving two-BOS FP64 four-block/full-decoder probe."""
+"""Original evolving two-BOS FP64 four-block/full-decoder probe.
+
+Position 0 (BOS) is causal-independent of the steered position 1, so its
+keys/values are cached per block and only position 1 is propagated.
+"""
 import numpy as np
 from ..experiments.pair_barrier_validation import enable_float64_math
 
@@ -47,8 +51,95 @@ class Probe:
             )
             for handle in handles:
                 handle.remove()
+        self._prefix = self._cache_prefix()
         point = self.captured[start][0][0, 1].cpu().numpy()[None]
         assert int(self.predict(point)[0]) == reference
+        self._check_single_position(point[0])
+
+    def _cache_prefix(self):
+        """Keys/values of the BOS at position 0, which never sees position 1 (causal)."""
+        import torch
+        from transformers.models.llama.modeling_llama import apply_rotary_pos_emb
+
+        prefix = {}
+        with torch.inference_mode():
+            for index in range(self.start, len(self.model.model.layers)):
+                layer = self.model.model.layers[index]
+                attention = layer.self_attn
+                hidden, kwargs = self.captured[index]
+                mask = kwargs.get("attention_mask")
+                # Position 1 must attend to both positions with no additive bias.
+                if mask is not None:
+                    row = mask[..., 1, :2]
+                    assert bool(row.all() if row.dtype == torch.bool else (row == 0).all())
+                cos, sin = kwargs["position_embeddings"]
+                x = layer.input_layernorm(hidden[:, :1])
+                shape = (1, 1, -1, attention.head_dim)
+                key = attention.k_proj(x).view(shape).transpose(1, 2)
+                value = attention.v_proj(x).view(shape).transpose(1, 2)
+                _, key = apply_rotary_pos_emb(key, key, cos[:, :1], sin[:, :1])
+                prefix[index] = (key, value, cos[:, 1:], sin[:, 1:])
+        return prefix
+
+    def _layer(self, index, hidden):
+        """One decoder block for position 1 only, given (B, 1, d) states."""
+        import torch
+        from transformers.models.llama.modeling_llama import apply_rotary_pos_emb, repeat_kv
+
+        layer = self.model.model.layers[index]
+        attention = layer.self_attn
+        key0, value0, cos, sin = self._prefix[index]
+        batch = len(hidden)
+        x = layer.input_layernorm(hidden)
+        shape = (batch, 1, -1, attention.head_dim)
+        query = attention.q_proj(x).view(shape).transpose(1, 2)
+        key = attention.k_proj(x).view(shape).transpose(1, 2)
+        value = attention.v_proj(x).view(shape).transpose(1, 2)
+        query, key = apply_rotary_pos_emb(query, key, cos, sin)
+        key = torch.cat([key0.expand(batch, -1, -1, -1), key], dim=2)
+        value = torch.cat([value0.expand(batch, -1, -1, -1), value], dim=2)
+        key = repeat_kv(key, attention.num_key_value_groups)
+        value = repeat_kv(value, attention.num_key_value_groups)
+        weights = torch.matmul(query, key.transpose(2, 3)) * attention.scaling
+        weights = torch.softmax(weights, dim=-1, dtype=torch.float64)
+        output = torch.matmul(weights, value).transpose(1, 2).reshape(batch, 1, -1)
+        hidden = hidden + attention.o_proj(output)
+        return hidden + layer.mlp(layer.post_attention_layernorm(hidden))
+
+    def _run(self, batch, end, depths=()):
+        """Propagate (B, d) position-1 states from self.start up to block `end`."""
+        hidden = batch[:, None]
+        kept = {}
+        for index in range(self.start, end):
+            hidden = self._layer(index, hidden)
+            if index - self.start + 1 in depths:
+                kept[index - self.start + 1] = hidden[:, 0]
+        return hidden[:, 0], kept
+
+    def _run_two_positions(self, batch, end):
+        """Original evolving two-BOS propagation; reference for the cached path."""
+        hidden = self.captured[self.start][0].expand(len(batch), -1, -1).clone()
+        hidden[:, 1] = batch
+        for index in range(self.start, end):
+            value = self.model.model.layers[index](hidden, **self.captured[index][1])
+            hidden = value[0] if isinstance(value, tuple) else value
+        return hidden[:, 1]
+
+    def _check_single_position(self, point):
+        import torch
+
+        random = np.random.default_rng(0)
+        scale = np.linalg.norm(point)
+        points = point + random.normal(size=(4, len(point))) * scale / np.sqrt(len(point))
+        batch = torch.as_tensor(np.vstack([point, points]), dtype=torch.float64,
+                                device=self.device)
+        end = len(self.model.model.layers)
+        with torch.inference_mode():
+            fast = self._run(batch, end)[0]
+            slow = self._run_two_positions(batch, end)
+        error = float(((fast - slow).abs().max() / slow.abs().max()).item())
+        assert error < 1e-12, error
+        self.single_position_relative_error = error
 
     def forward(self, points, full=False, category_matrix=None):
         """Return vectors/argmax, or (category masses, argmax) when a matrix is supplied."""
@@ -63,14 +154,7 @@ class Probe:
                 batch = torch.as_tensor(
                     points[offset : offset + 128], dtype=torch.float64, device=self.device
                 )
-                hidden = self.captured[self.start][0].expand(len(batch), -1, -1).clone()
-                hidden[:, 1] = batch
-                for index in range(self.start, end):
-                    value = self.model.model.layers[index](
-                        hidden, **self.captured[index][1]
-                    )
-                    hidden = value[0] if isinstance(value, tuple) else value
-                value = hidden[:, 1]
+                value = self._run(batch, end)[0]
                 if full:
                     logits = self.model.lm_head(self.model.model.norm(value))
                     if category_matrix is None:
@@ -101,16 +185,9 @@ class Probe:
                 batch = torch.as_tensor(
                     points[offset : offset + 128], dtype=torch.float64, device=self.device
                 )
-                hidden = self.captured[self.start][0].expand(len(batch), -1, -1).clone()
-                hidden[:, 1] = batch
-                for depth in range(1, depths[-1] + 1):
-                    layer = self.start + depth - 1
-                    value = self.model.model.layers[layer](
-                        hidden, **self.captured[layer][1]
-                    )
-                    hidden = value[0] if isinstance(value, tuple) else value
-                    if depth in outputs:
-                        outputs[depth].append(hidden[:, 1].cpu().numpy())
+                _, kept = self._run(batch, self.start + depths[-1], depths)
+                for depth, value in kept.items():
+                    outputs[depth].append(value.cpu().numpy())
         return {depth: np.concatenate(values) for depth, values in outputs.items()}
 
     def predict(self, points):

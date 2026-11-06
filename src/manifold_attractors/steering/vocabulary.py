@@ -9,6 +9,14 @@ from .probe import Probe
 LEGACY_METRIC = "han_only_v0"
 CJK_METRIC = "han_cjk_punctuation_v1"
 HAN_PREFIX_METRIC = "han_cjk_punctuation_utf8_prefix_v2"
+GREEK_PREFIX_METRIC = "greek_punctuation_utf8_prefix_v1"
+# Target language -> (class name at index 2, schema key, subtype names at 2..4, metric).
+TARGETS = {
+    "zh": ("Chinese", "chinese", ("Han", "CJK punctuation", "Han UTF-8 prefix"),
+           HAN_PREFIX_METRIC),
+    "el": ("Greek", "greek", ("Greek letters", "Greek punctuation", "Greek UTF-8 prefix"),
+           GREEK_PREFIX_METRIC),
+}
 SEED = 20261002
 CLASSES = (
     "Latin",
@@ -32,7 +40,27 @@ SUBTYPES = (
 )
 COARSE_FROM_SUBTYPE = np.array([0, 1, 2, 2, 2, 3, 4, 4, 4, 4, 4], dtype=np.int8)
 BAD = (0, 3)
-CHINESE = 2
+CHINESE = 2  # Index of the target-language class, whichever the target.
+TARGET = CHINESE
+
+
+def class_names(target="zh"):
+    return CLASSES[:2] + (TARGETS[target][0],) + CLASSES[3:]
+
+
+def subtype_names(target="zh"):
+    return SUBTYPES[:2] + TARGETS[target][2] + SUBTYPES[5:]
+
+
+def target_key(target="zh"):
+    return TARGETS[target][1]
+
+
+def run_target(root):
+    """Target language of a run; runs predating the field are en-zh."""
+    path = Path(root) / "vocabulary/definition.json"
+    return read(path).get("target", "zh") if path.exists() else "zh"
+
 
 def token_class(token_id, tokenizer):
     if token_id in tokenizer.all_special_ids:
@@ -69,6 +97,115 @@ def is_cjk_punctuation(text):
         )
         for char in text
     )
+
+
+GREEK_BLOCKS = ((0x0370, 0x03FF), (0x1F00, 0x1FFF))
+
+
+def is_greek_letter(char):
+    return unicodedata.name(char, "").startswith("GREEK")
+
+
+def greek_token_class(token_id, tokenizer):
+    """Mirror of token_class with Greek, not Han, as the target script."""
+    if token_id in tokenizer.all_special_ids:
+        return "Other nonalphabetic"
+    text = tokenizer.decode([token_id])
+    if "\ufffd" in text:
+        return "Other nonalphabetic"
+    letters = [char for char in text if char.isalpha()]
+    if letters:
+        if all(is_greek_letter(char) for char in letters):
+            return "Greek"
+        if all("LATIN" in unicodedata.name(char, "") for char in letters):
+            return "Latin"
+        return "Other alphabet"
+    chars = [char for char in text if not char.isspace()]
+    if chars and all(unicodedata.category(char)[0] in "PS" for char in chars):
+        return "Punctuation/symbols"
+    return "Other nonalphabetic"
+
+
+def is_greek_punctuation(text):
+    # Greek question mark, ano teleia, tonos/dialytika signs.
+    return any(
+        unicodedata.category(char)[0] in "PS" and is_greek_letter(char)
+        for char in text
+    )
+
+
+def byte_level_inverse():
+    byte_values = list(range(33, 127)) + list(range(161, 173)) + list(range(174, 256))
+    codepoints = byte_values.copy()
+    extra = 0
+    for byte in range(256):
+        if byte not in byte_values:
+            byte_values.append(byte)
+            codepoints.append(256 + extra)
+            extra += 1
+    return {chr(code): byte for byte, code in zip(byte_values, codepoints)}
+
+
+def greek_prefix_checker(tokenizer):
+    """Incomplete ByteLevel UTF-8 prefixes whose every completion is in a Greek block.
+
+    Same rules as han_prefix_checker; block membership rather than character
+    names, so the 0xCF lead byte (pi..omega, with Coptic letters) counts.
+    """
+    inverse = byte_level_inverse()
+
+    def check(token_id):
+        if token_id in tokenizer.all_special_ids:
+            return False
+        piece = tokenizer.convert_ids_to_tokens(token_id)
+        try:
+            raw = bytes(inverse[char] for char in piece)
+        except KeyError:
+            return False
+        assert raw.decode("utf8", errors="replace") == tokenizer.decode([token_id])
+        decoder = codecs.getincrementaldecoder("utf8")()
+        try:
+            complete = decoder.decode(raw, final=False)
+        except UnicodeDecodeError:
+            return False
+        pending = decoder.getstate()[0]
+        if not pending or "\ufffd" in complete:
+            return False
+        if any(char.isalpha() and not is_greek_letter(char) for char in complete):
+            return False
+        length = 2 if pending[0] < 0xE0 else 3 if pending[0] < 0xF0 else 4
+        value = pending[0] & ((1 << (7 - length)) - 1)
+        for byte in pending[1:]:
+            value = (value << 6) | (byte & 63)
+        bits = 6 * (length - len(pending))
+        low = value << bits
+        high = low + (1 << bits) - 1
+        return any(start <= low <= high <= end for start, end in GREEK_BLOCKS)
+
+    return check
+
+
+def greek_classify_cached(tokenizer):
+    cache = {}
+    prefix = greek_prefix_checker(tokenizer)
+
+    def classify(token_id):
+        if token_id not in cache:
+            category = greek_token_class(token_id, tokenizer)
+            if category == "Other nonalphabetic" and "\ufffd" in tokenizer.decode(
+                [token_id]
+            ) and prefix(token_id):
+                category = "Greek"
+            elif category == "Punctuation/symbols":
+                category = (
+                    "Greek"
+                    if is_greek_punctuation(tokenizer.decode([token_id]))
+                    else "Neutral punctuation/symbols"
+                )
+            cache[token_id] = category
+        return cache[token_id]
+
+    return classify
 
 
 def han_prefix_checker(tokenizer):
@@ -183,6 +320,8 @@ def prepare_subtypes(args):
     if path.exists():
         return
     definition = read(args.output / "definition.json")
+    target = definition.get("target", "zh")
+    names = subtype_names(target)
     tokenizer = AutoTokenizer.from_pretrained(definition["snapshot"])
     with np.load(args.output / "vocabulary.npz") as data:
         coarse = data["categories"].copy()
@@ -204,6 +343,12 @@ def prepare_subtypes(args):
             label = "Neutral punctuation/symbols"
         elif category == 3:
             label = "Other alphabet"
+        elif category == 2 and target == "el":
+            previous = greek_token_class(index, tokenizer)
+            label = {
+                "Greek": "Han",
+                "Punctuation/symbols": "CJK punctuation",
+            }.get(previous, "Han UTF-8 prefix")  # Positional; renamed via `names`.
         elif category == 2:
             previous = token_class(index, tokenizer)
             label = {
@@ -237,13 +382,13 @@ def prepare_subtypes(args):
     atomic_npz(
         path,
         categories=labels,
-        subtype_names=SUBTYPES,
+        subtype_names=names,
         coarse_from_subtype=COARSE_FROM_SUBTYPE,
     )
     definition.update(
-        subtypes=SUBTYPES,
+        subtypes=names,
         subtype_counts={
-            name: int((labels == i).sum()) for i, name in enumerate(SUBTYPES)
+            name: int((labels == i).sum()) for i, name in enumerate(names)
         },
         subtype_coarse_partition_exact=True,
         numeric_subtype="Number-only or number+punctuation/symbol tokens with no letters",
@@ -267,7 +412,8 @@ def load_partition(args, probe, subtypes=False):
     import torch
 
     filename = "vocabulary_subtypes.npz" if subtypes else "vocabulary.npz"
-    names = SUBTYPES if subtypes else CLASSES
+    target = read(args.output / "definition.json").get("target", "zh")
+    names = subtype_names(target) if subtypes else class_names(target)
     with np.load(args.output / filename) as data:
         categories = data["categories"].copy()
         assert data["subtype_names" if subtypes else "class_names"].tolist() == list(

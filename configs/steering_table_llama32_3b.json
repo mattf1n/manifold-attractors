@@ -1,0 +1,79 @@
+{
+  "description": "en-zh and en-el adaptive-steering TABLES on Llama-3.2-3B (same tokenizer as Llama-3.1-8B, so the frozen source selections replay exactly; layer 13/28 is the 8B run's relative depth 15/32). Otherwise identical to steering_table.json.",
+  "protocol": {
+    "model": "meta-llama/Llama-3.2-3B",
+    "revision": "13afe5124825b4f3751f836b40dafda64c1ed062",
+    "wiki_revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+    "fineweb_revision": "9bb295ddab0e05d785b879661af7260fed5140fc",
+    "source_inputs": "src/manifold_attractors/steering/inputs/sources.json",
+    "counts": {"wiki_cal": 1000, "wiki_test": 10000, "fineweb_test": 10000},
+    "hidden_state_index": 13,
+    "geometry_block_indices": [13, 14, 15, 16],
+    "centroid_protocol": "speed/confirmatory 200 English + 200 target-language (zh or el) Wikipedia passages; batch4 all-valid-token pooling, FP32 states/FP64 sum; NOT area corpus",
+    "probe": "evolving two BOS positions, FP64, full remaining decoder for probability/argmax",
+    "tracks": ["mass", "greedy"],
+    "table_methods": ["raw_centroid", "additive", "adaptive_straight", "oracle"],
+    "calibration": "Wikipedia only, 0.05 grids with endpoint expansion; bad then target language then smaller parameter; each track separate",
+    "oracle": "strict 0<s<10; .025 grid plus boundary-adjacent and exact comparator candidates; .05 comparison and prespecified .0125 global audits",
+    "bootstrap_draws": 10000,
+    "targets": ["zh", "el"]
+  },
+  "tasks": [
+    {
+      "id": "data-adaptive_steering_llama32_3b-prepare",
+      "module": "manifold_attractors.steering.prepare",
+      "args": ["--root", "data/language_steering_confirmatory-llama3.2-3b", "--model", "llama3.2-3b", "--target", "zh"],
+      "outputs": ["data/language_steering_confirmatory-llama3.2-3b/prepared.json"],
+      "deps": []
+    },
+    {
+      "id": "data-adaptive_steering_llama32_3b-compute",
+      "module": "manifold_attractors.steering.compute",
+      "args": ["--root", "data/language_steering_confirmatory-llama3.2-3b"],
+      "outputs": ["data/language_steering_confirmatory-llama3.2-3b/computed.json", "data/language_steering_confirmatory-llama3.2-3b/summary.json", "data/language_steering_confirmatory-llama3.2-3b/final_validation.json"],
+      "deps": ["data-adaptive_steering_llama32_3b-prepare"]
+    },
+    {
+      "id": "data-adaptive_steering_llama32_3b-oracle",
+      "module": "manifold_attractors.steering.oracle",
+      "args": ["all", "--root", "data/language_steering_confirmatory-llama3.2-3b"],
+      "outputs": ["data/language_steering_confirmatory-llama3.2-3b/linear_oracle/summary.json", "data/language_steering_confirmatory-llama3.2-3b/linear_oracle/complete.json"],
+      "deps": ["data-adaptive_steering_llama32_3b-prepare", "data-adaptive_steering_llama32_3b-compute"]
+    },
+    {
+      "id": "data-adaptive_steering_llama32_3b",
+      "module": "manifold_attractors.steering.verify",
+      "args": ["--root", "data/language_steering_confirmatory-llama3.2-3b"],
+      "outputs": ["data/language_steering_confirmatory-llama3.2-3b/data_complete.json"],
+      "deps": ["data-adaptive_steering_llama32_3b-prepare", "data-adaptive_steering_llama32_3b-compute", "data-adaptive_steering_llama32_3b-oracle"]
+    },
+    {
+      "id": "data-adaptive_steering_el_llama32_3b-prepare",
+      "module": "manifold_attractors.steering.prepare",
+      "args": ["--root", "data/language_steering_confirmatory_el-llama3.2-3b", "--target", "el", "--model", "llama3.2-3b"],
+      "outputs": ["data/language_steering_confirmatory_el-llama3.2-3b/prepared.json"],
+      "deps": []
+    },
+    {
+      "id": "data-adaptive_steering_el_llama32_3b-compute",
+      "module": "manifold_attractors.steering.compute",
+      "args": ["--root", "data/language_steering_confirmatory_el-llama3.2-3b"],
+      "outputs": ["data/language_steering_confirmatory_el-llama3.2-3b/computed.json", "data/language_steering_confirmatory_el-llama3.2-3b/summary.json", "data/language_steering_confirmatory_el-llama3.2-3b/final_validation.json"],
+      "deps": ["data-adaptive_steering_el_llama32_3b-prepare"]
+    },
+    {
+      "id": "data-adaptive_steering_el_llama32_3b-oracle",
+      "module": "manifold_attractors.steering.oracle",
+      "args": ["all", "--root", "data/language_steering_confirmatory_el-llama3.2-3b"],
+      "outputs": ["data/language_steering_confirmatory_el-llama3.2-3b/linear_oracle/summary.json", "data/language_steering_confirmatory_el-llama3.2-3b/linear_oracle/complete.json"],
+      "deps": ["data-adaptive_steering_el_llama32_3b-prepare", "data-adaptive_steering_el_llama32_3b-compute"]
+    },
+    {
+      "id": "data-adaptive_steering_el_llama32_3b",
+      "module": "manifold_attractors.steering.verify",
+      "args": ["--root", "data/language_steering_confirmatory_el-llama3.2-3b"],
+      "outputs": ["data/language_steering_confirmatory_el-llama3.2-3b/data_complete.json"],
+      "deps": ["data-adaptive_steering_el_llama32_3b-prepare", "data-adaptive_steering_el_llama32_3b-compute", "data-adaptive_steering_el_llama32_3b-oracle"]
+    }
+  ]
+}

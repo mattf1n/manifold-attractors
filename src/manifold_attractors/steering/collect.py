@@ -3,7 +3,8 @@ import argparse
 import json
 from pathlib import Path
 import numpy as np
-from .vocabulary import (BAD, CHINESE, CLASSES, SUBTYPES, aggregate_subtypes, bootstrap_means)
+from .vocabulary import (BAD, CHINESE, aggregate_subtypes, bootstrap_means, class_names,
+                         run_target, subtype_names, target_key)
 from .common import atomic_json, atomic_npz
 def collect(root):
     """Paired, full-cohort summaries; unresolved primary outcomes block completion."""
@@ -18,6 +19,8 @@ def collect(root):
         "adaptive_angular",
         "adaptive_straight",
     )
+    target = run_target(root)
+    CLASSES, SUBTYPES, name = class_names(target), subtype_names(target), target_key(target)
     selection = json.loads((root / "calibration/selection.json").read_text())
     assert selection["all_interior"]
     approval = json.loads((root / "inference_approval.json").read_text())
@@ -25,6 +28,7 @@ def collect(root):
     result = {
         "n_per_test": 10000,
         "calibration_n": 1000,
+        **({} if target == "zh" else {"target": target}),
         "tracks": tracks,
         "methods": methods,
         "calibration": selection,
@@ -179,13 +183,13 @@ def collect(root):
                 ref, candidate = f"{track}/{reference}", f"{track}/{method}"
                 metrics = {
                     "bad_mass_reduction": bad[ref] - bad[candidate],
-                    "chinese_mass_gain": masses[candidate][:, CHINESE]
+                    f"{name}_mass_gain": masses[candidate][:, CHINESE]
                     - masses[ref][:, CHINESE],
                     "greedy_bad_reduction": np.isin(labels[ref], list(BAD)).astype(
                         float
                     )
                     - np.isin(labels[candidate], list(BAD)).astype(float),
-                    "greedy_chinese_gain": (labels[candidate] == CHINESE).astype(float)
+                    f"greedy_{name}_gain": (labels[candidate] == CHINESE).astype(float)
                     - (labels[ref] == CHINESE).astype(float),
                 }
                 for metric, delta in metrics.items():
