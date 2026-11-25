@@ -1,0 +1,1026 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Language Model Geometry for Security, Trust, and Interpretabilty</title>
+    <style>
+      /* Math is written as LaTeX in the HTML text: \( ... \) inline, \[ ... \] on its own line (not $ ... $, so prices
+         stay as they are). On load, js/math.js turns each formula into MathML with Temml (assets/temml) and applies the
+         spacing conventions below (options: CONFIG in js/math.js). To show a literal \( or \[, put the text in <code> or
+         in an element with a data-no-math attribute. Hand-written <math> elements are left alone.
+         The browser draws the MathML in Libertinus Math. The font file is
+         compressed from the release's OTF: the release's own WOFF2 lacks the MATH table (sizes, shifts and stretchy glyphs for
+         math layout), and without it the browser guesses them, so exponents come out too high and gaps open around them.
+         One change to the OTF: each glyph's italic correction (MATH table) is added to its advance width and then set to 0,
+         except for the integrals. TeX adds it after slanted letters; the browser does not, so d² and d( collided. */
+      @font-face { font-family: 'Libertinus Math'; src: url('assets/fonts/LibertinusMath-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+      math { font-family: 'Libertinus Math', math; font-size: var(--math-size, 1em); }   /* size relative to the surrounding text */
+      /* Scripts at LaTeX's size: 7/10 of the base, like \DeclareMathSizes{10}{10}{7}{5} (the browser uses the font's 80%).
+         The height of an exponent matches LaTeX because js/math.js wraps a single-symbol base in <mpadded height="0">:
+         TeX ignores the height of such a base when raising its exponent; the browser (MathML Core) does not, and sets d²
+         0.09em higher than LaTeX. */
+      :is(msup, msub, msubsup) > :not(:first-child) { font-size: var(--script-size, 0.7em); }
+      /* Self-hosted Libertinus, compressed from the release's OTF files with all OpenType features
+         (Google Fonts strips them, and the release's own WOFF2 files lack GSUB).
+         Source: https://github.com/alerque/libertinus, SIL OFL; see assets/fonts/LICENSE-Libertinus.txt */
+      @font-face { font-family: 'Libertinus Serif'; src: url('assets/fonts/LibertinusSerif-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+      @font-face { font-family: 'Libertinus Serif'; src: url('assets/fonts/LibertinusSerif-Italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+      @font-face { font-family: 'Libertinus Serif'; src: url('assets/fonts/LibertinusSerif-Semibold.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+      @font-face { font-family: 'Libertinus Serif'; src: url('assets/fonts/LibertinusSerif-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+      @font-face { font-family: 'Libertinus Serif Display'; src: url('assets/fonts/LibertinusSerifDisplay-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+      @font-face { font-family: 'Libertinus Mono'; src: url('assets/fonts/LibertinusMono-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+      /* BI's headline font: https://www.businessinsider.com/styles/fonts-async.87dc6399b035527336ce.css */
+      @font-face {
+        font-family: 'Garnett';
+        src: url('assets/garnett.woff2') format('woff2');
+        font-style: normal;
+        font-weight: 250 900;
+        font-display: swap;
+      }
+      /* Engadget headline face: https://www.engadget.com/font/Guardian-Text-Sans-Web-Bold.woff2 */
+      @font-face {
+        font-family: 'Guardian Text Sans';
+        src: url('assets/guardian-text-sans-bold.woff2') format('woff2');
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+      }
+      /* The Verge article headline face, verified against the live article. */
+      @font-face {
+        font-family: 'PolySans';
+        src: url('assets/polysans-bold.woff2') format('woff2');
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+      }
+      /* Guardian launch coverage uses GH Guardian Headline, medium weight. */
+      @font-face {
+        font-family: 'Guardian Headline';
+        src: url('assets/guardian-headline-medium.woff2') format('woff2');
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+      }
+      /* Mark sizes are registered as lengths so scripts can read them in pixels (getComputedStyle(...).getPropertyValue). */
+      @property --mark-body { syntax: '<length>'; inherits: true; initial-value: 0px; }
+      @property --mark-small { syntax: '<length>'; inherits: true; initial-value: 0px; }
+      @property --mark-tiny { syntax: '<length>'; inherits: true; initial-value: 0px; }
+      /* Adjust these values to customize the title slide. */
+      :root {
+        --background: #f7f5f0;
+        --foreground: #202a36;
+        --title-font: 'Libertinus Serif Display', Georgia, serif;
+        --body-font: 'Libertinus Serif', Georgia, serif;
+        --mono-font: 'Libertinus Mono', ui-monospace, monospace;   /* model names (gpt-…) and model/inverter output */
+        --mono-x-height: 0.431;   /* monospace is scaled so its x-height matches the body serif's (0.431 em); Libertinus Mono's own is 0.482, which looks jarringly large */
+        /* OpenType features applied everywhere; the font's own spacing and kerning are left untouched.
+           Add e.g. "onum" 1, "dlig" 1, "ss01" 1 to experiment. */
+        --font-features: "kern" 1, "liga" 1, "clig" 1, "calt" 1;
+        /* Type scale: every slide's text uses one of these sizes. Edit here to resize text across the deck.
+           Each is clamp(smallest, scaling with the window, largest). */
+        --size-title: clamp(2.5rem, 6.2vw, 6.5rem);      /* title slide */
+        --size-heading: clamp(1.4rem, 2.8vw, 2.8rem);    /* slide headings above demos */
+        --size-heading-portrait: clamp(1.05rem, 5vw, 2rem);   /* the same headings in portrait windows */
+        --size-body: clamp(1.1rem, min(2.1vw + 0.5rem, 3.3svh), 2.2rem);    /* notes, readouts */
+        --size-small: clamp(0.75rem, min(1.6vw + 0.5rem, 2.4svh), 1.5rem);  /* captions, labels, calculator, diagram text */
+        --size-tiny: calc(0.75 * var(--size-small));  /* inverter output inside the prompts panels */
+        --size-footnote: clamp(0.75rem, 1.1vw, 0.95rem); /* footnotes */
+        /* Mark sizes (dot diameters), tied to the type scale. Sample clouds and data-driven nodes keep their own sizes. */
+        --mark-body: calc(0.8 * var(--size-body));    /* dots set in body text (logit-bias tokens) */
+        --mark-small: calc(0.8 * var(--size-small));  /* dots in figures: draggable points, activations, distributions, simplex corners */
+        --mark-tiny: calc(0.6 * var(--mark-small));   /* secondary dots in figures: the plane end of each normal line on the signature slide */
+        --measure-panel-title: 40ch;   /* longest line of a panel caption (<figcaption>) before it wraps: short lines, as everywhere in the deck */
+        --space-caption: 0.5rem;       /* between a panel caption and its visual */
+        --title-width: 18ch;
+        /* Spacing, the same on every slide. Text (headings, body, footnotes) stays inside the page margins;
+           figures are centered and may extend into the margins, up to --space-figure from the window edge. */
+        --space-page: clamp(1.5rem, 7vw, 8rem);     /* left and right page margins */
+        --space-top: clamp(0.75rem, 3svh, 2rem);    /* above the content of a slide */
+        --space-row: clamp(0.5rem, 3svh, 2rem);     /* between stacked items: heading, text, figure, slider */
+        --space-col: clamp(1rem, 4vw, 4rem);        /* between figures side by side */
+        --space-figure: clamp(0.5rem, 2vw, 2rem);   /* closest a figure may come to the window edge */
+        --space-card: clamp(0.6rem, min(2svh, 3vw), 1.5rem);   /* inside a card with text (the forging calculator, the prompt-extraction panels); less in narrow windows */
+        --figure-width: calc(100vw - 2 * var(--space-figure));   /* widest a figure may be */
+        --slider-max-width: 36rem;   /* longest a slider (with its label and value) gets, so sliders don't stretch across wide layouts */
+        --footnote-lines: 3;                        /* lines of footnote a slide keeps room for at the bottom: one reference in a --footnote-column wide column (more in narrow windows, see .footnote) */
+        --footnote-offset: clamp(0.75rem, 3svh, 1.75rem);   /* footnote distance from the bottom edge */
+        /* Text column: set by the body text's line length (about 60 characters of body text, as 60ch at the body size).
+           Every text block (headings, body, readouts, footnotes) shares this width and right edge. */
+        --text-width: calc(30 * var(--size-body));   /* 30 body ems ≈ 60 characters of body text (a body character is about 0.5em) */
+        /* Smaller text keeps short lines by splitting into columns inside the text column. */
+        --footnote-column: 50ch;     /* target column width for footnotes, in their own characters */
+        /* Collaborator headshots: a row of round photos under each reference to the deck author's own papers (see .footnote .headshots). */
+        --headshot-size: calc(2.2 * var(--size-footnote));       /* photo diameter, tied to the footnote text */
+        --headshot-overlap: calc(0.25 * var(--headshot-size));   /* how far each photo tucks under the next */
+        --headshot-gap: calc(0.3 * var(--size-footnote));        /* between the reference text and the photo row */
+        --hint-opacity: 0.4;
+        --below-line-blur: 2px;
+        --divider-position: calc(100% - 24px);
+        --diagram-border: #202a3633;
+        --diagram-fill: #ffffff70;
+        --arrow-length: 1.1em;
+        --arrow-gap: 0.3em;
+        /* Right-side artwork size on the lifecycle slide. */
+        --illustration-width: 30rem;
+        --headline-size: clamp(1.4rem, 2.6vw, 2.5rem);
+        /* News clipping typography, masthead size, padding, and paper colors. */
+        --headline-font: 'Garnett', Helvetica, Arial, sans-serif;
+        --headline-weight: 500;
+        --headline-logo-width: 10rem;
+        --headline-padding: clamp(1rem, 2.2vw, 2rem);
+        --headline-paper: #fff;
+        --headline-ink: #0a0a0a;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-kerning: normal;
+        font-feature-settings: var(--font-features);
+        text-rendering: optimizeLegibility;
+        overflow-x: hidden;
+        background: var(--background);
+        color: var(--foreground);
+        font-family: var(--body-font);
+      }
+
+      .slide[hidden], .level-illustration[hidden] { display: none; }
+
+      .slide {
+        position: relative;
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        padding: var(--space-page);
+      }
+
+      /* Demo slides: one column inside the page margins. Text starts at the left margin; figures (.figure) are centered. */
+      .statement-slide {
+        /* Room kept for the footnote: offset plus its lines, plus the headshot row when the footnote has one (--footnote-headshot-rows, see .footnote .headshots). */
+        --footnote-space: calc(var(--footnote-offset) + var(--footnote-lines) * 1.3 * var(--size-footnote) + var(--footnote-headshot-rows, 0) * (var(--headshot-size) + var(--headshot-gap)) + 0.5rem);
+        height: 100svh;
+        min-height: 0;
+        padding: var(--space-top) var(--space-page) var(--footnote-space);
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;   /* text blocks share one centered column (--text-width); figures are centered too */
+        align-content: center;
+        row-gap: var(--space-row);
+      }
+      .statement-slide h1 { width: min(100%, var(--text-width)); max-width: none; font-size: var(--size-heading); }
+      /* Plain text on a demo slide (a bare <p> inside the <section>); use class "footnote" for the footnote. */
+      .statement-slide > p:not(.footnote) { margin: 0; width: min(100%, var(--text-width)); text-align: left; font-size: var(--size-body); line-height: 1.35; text-wrap: pretty; }
+      @media (max-aspect-ratio: 1/1) { .statement-slide h1 { font-size: var(--size-heading-portrait); } }
+      /* Classifier demo slide: heading beside a square box; stacks in portrait windows. */
+      #function-slide {
+        --demo-size: min(100%, 72svh, 42rem);
+        grid-template-columns: minmax(0, 1fr) minmax(0, var(--demo-size));
+        align-items: center;
+        column-gap: var(--space-col);
+      }
+      #function-slide > aside { grid-column: 2; width: min(100%, var(--demo-size)); align-self: start; }   /* the instruction sits under the demo it describes */
+      .demo-box {
+        width: var(--demo-size);
+        aspect-ratio: 1;
+        background: #fff;
+        border: 1px solid var(--diagram-border);
+        box-shadow: 0 1px 3px #00000014, 10px 10px 0 #202a360a;
+      }
+      .demo-box canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: default; font-size: var(--size-small); }   /* font-size: the size of labels the scripts draw on the canvas */
+      /* Figure group: centered on the slide and as wide as the window allows (figures are not bound by the page margins).
+         It lays out --panels figures of --panel-size side by side; each slide sets both below. */
+      .figure {
+        width: var(--figure-width);
+        display: grid;
+        grid-template-columns: repeat(var(--panels, 1), var(--panel-size));
+        justify-content: center;
+        align-items: start;
+        column-gap: var(--space-col);
+        row-gap: var(--space-row);
+      }
+      .figure > *, .figure .panel > .demo-box { width: 100%; }
+      @media (max-aspect-ratio: 1/1) {
+        .figure { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+        .figure > * { width: min(100%, var(--panel-size)); }
+      }
+      /* Panel captions, the same on every slide: a panel is a <figure class="panel"> holding its visual and at most one <figcaption>
+         (HTML allows one). Where the caption goes in the markup sets where it shows: first = above the visual, last = below it.
+           <figure class="panel">
+             <figcaption>Title above the visual</figcaption>
+             <div class="demo-box"><canvas …></canvas></div>
+           </figure>
+           <figure class="panel">
+             <div class="demo-box"><canvas …></canvas></div>
+             <figcaption>Caption below the visual.</figcaption>
+           </figure>
+         Every caption looks the same: small, regular weight, text left-aligned in a block --measure-panel-title wide (or the panel's width,
+         if narrower) centered in its panel, --space-caption from its visual.
+         Panels side by side in a .figure line up: each spans three rows of the figure (above, visual, below) and shares them (subgrid),
+         so the visuals stay aligned whether a panel has a caption above, below or none, and however many lines it takes; unused rows
+         stay empty. A panel without a caption next to captioned ones is a <figure class="panel"> too, so it takes the visual row.
+         Such a figure has no row gap (so empty rows add no space); the deck's --space-row goes above anything after the panels (a
+         slider) and, where panels stack (portrait windows), between panels. */
+      figure.panel { margin: 0; min-width: 0; min-height: 0; }
+      .figure:has(> figure.panel) { row-gap: 0; }
+      .figure > figure.panel ~ :not(figure.panel) { margin-top: var(--space-row); }
+      @media (max-aspect-ratio: 1/1) { .figure > figure.panel + figure.panel { margin-top: var(--space-row); } }
+      .figure > figure.panel { grid-row: span 3; display: grid; grid-template-rows: subgrid; }
+      .figure > figure.panel > * { grid-row: 2; }   /* the visual */
+      .figure > figure.panel > figcaption:first-child { grid-row: 1; align-self: end; }   /* above: right on top of the visual, when a caption next to it takes more lines */
+      .figure > figure.panel > figcaption:last-child { grid-row: 3; align-self: start; }
+      figcaption { width: min(100%, var(--measure-panel-title)); font-size: var(--size-small); font-weight: 400; line-height: 1.2; text-align: left; text-wrap: pretty; }   /* pretty: no one-word last line, like the body text */
+      figure.panel > figcaption:first-child { margin: 0 auto var(--space-caption); }   /* auto: centered in the panel */
+      figure.panel > figcaption:last-child { margin: var(--space-caption) auto 0; }
+      /* Softmax geometry slide: the output-layer diagram over two square panels (activation space and the simplex). */
+      #distributions-slide { --panels: 2; --panel-size: min(46%, 46svh, calc(70svh - 7rem - var(--footnote-space)), 34rem); }
+      #distributions-slide .demo-box canvas, #unforgeable-slide .demo-box canvas { cursor: grab; }
+      #distributions-slide .nn-box { grid-column: 1 / -1; aspect-ratio: auto; height: clamp(4.5rem, 16svh, 9.5rem); background: none; border: 0; box-shadow: none; }
+      @media (max-aspect-ratio: 1/1) {
+        #distributions-slide { --panel-size: min(100%, 34rem, max(4rem, calc((73svh - 6rem - var(--footnote-space)) / 2))); }
+        #distributions-slide .nn-box { width: 100%; height: clamp(3.5rem, 12svh, 7rem); }
+      }
+      /* Unforgeable-signature slide: three captioned panels in a row (hidden state on the sphere, logit space, simplex). */
+      #unforgeable-slide { --panels: 3; --panel-size: min(31%, 46svh, calc(86svh - 12rem - var(--footnote-space)), 34rem); }
+      @media (max-aspect-ratio: 1/1) {
+        #unforgeable-slide { --panel-size: min(100%, 34rem, max(2.5rem, calc((80svh - 15rem - var(--footnote-space)) / 3))); }
+        #unforgeable-slide .figure > .panel { width: min(100%, 34rem); }   /* captions keep a readable width; the plot inside stays panel-sized */
+        #unforgeable-slide .panel .demo-box { width: var(--panel-size); margin-inline: auto; }
+      }
+      /* Bounding slide: three square panels (1-D activation, simplex, probabilities along the line) under the title. */
+      #bounding-slide { --panels: 3; --panel-size: min(31%, 46svh, 34rem); }
+      #bounding-slide .plain-box { background: none; border: 0; box-shadow: none; }   /* the 1-D panel sits directly on the page */
+      @media (max-aspect-ratio: 1/1) { #bounding-slide { --panel-size: min(100%, 34rem, max(4rem, calc((88svh - 6rem - var(--footnote-space)) / 3))); } }
+      /* Recovery slide: sampled model outputs on the simplex, their log-ratio coordinates, and the singular values of those points, with a slider under all three. */
+      #recovery-slide {
+        --footnote-lines: 5;   /* two references */
+        --panels: 3;
+        --panel-size: min(31%, 46svh, calc(86svh - 10rem - var(--footnote-space)), 34rem);
+      }
+      #recovery-slide .demo-box canvas { cursor: grab; }
+      #recovery-slide #recovery-singular { cursor: default; }   /* the bar chart is not draggable */
+      /* Slider that sets how many points are sampled. Adjust the sizes here; --fill is set by the script. */
+      .sample-slider {
+        --slider-track-height: 0.3rem;
+        --slider-thumb-size: 1.25rem;
+        --slider-color: var(--foreground);
+        --slider-track-color: #202a3633;
+        --fill: 0%;
+        grid-column: 1 / -1;
+        width: 100%;
+        height: var(--slider-thumb-size);
+        margin: 0;
+        padding: 0;
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        cursor: pointer;
+      }
+      /* Long sliders are hard to read: a slider field, or a bare slider placed directly in a figure, is at most --slider-max-width
+         wide, centered under the figure. (Sliders inside a .slider-wrap follow the wrap, so their marks stay aligned.) */
+      .slider-field, .figure > .sample-slider { max-width: var(--slider-max-width); }
+      .figure > .sample-slider, .figure > .slider-field { grid-column: 1 / -1; justify-self: center; }   /* its own row under all the figure's panels */
+      .sample-slider::-webkit-slider-runnable-track { height: var(--slider-track-height); border-radius: 99px; background: linear-gradient(to right, var(--slider-color) var(--fill), var(--slider-track-color) var(--fill)); }
+      .sample-slider::-webkit-slider-thumb { -webkit-appearance: none; width: var(--slider-thumb-size); height: var(--slider-thumb-size); margin-top: calc((var(--slider-track-height) - var(--slider-thumb-size)) / 2); border-radius: 50%; border: 3px solid var(--background); background: var(--slider-color); }
+      .sample-slider::-moz-range-track { height: var(--slider-track-height); border-radius: 99px; background: var(--slider-track-color); }
+      .sample-slider::-moz-range-progress { height: var(--slider-track-height); border-radius: 99px; background: var(--slider-color); }
+      .sample-slider::-moz-range-thumb { box-sizing: border-box; width: var(--slider-thumb-size); height: var(--slider-thumb-size); border-radius: 50%; border: 3px solid var(--background); background: var(--slider-color); }
+      .sample-slider:focus-visible { outline: 2px solid var(--slider-color); outline-offset: 4px; }
+      /* Slider field: a slider with optional text around it. Wrap the slider and add the parts you want:
+           <div class="slider-field">
+             <label for="ID">Name</label>                       name on its own row above the slider (optional)
+             <input class="sample-slider" id="ID" type="range" />
+             <output for="ID" data-auto></output>                the slider's value at its right end (optional)
+           </div>
+         To show a value: add <output for="ID" data-auto></output>; js/slider-fields.js fills it and keeps it current, no other code needed.
+         It shows the slider's aria-valuetext, so a slide script whose slider value is not the number to show (log scales, prices)
+         sets slider.setAttribute('aria-valuetext', text) at start and on every change; without one, the raw value is shown.
+         Variants: add class "slider-field-inline" to the field to put the label left of the slider on the same row;
+         add class "slider-field-below" to an <output> to put it on its own row under the slider.
+         An output without data-auto can hold any text; give an inner <span> an id for the part a script fills (e.g. the logit-bias
+         output, whose value comes with a token dot). The slider cell may be a bare .sample-slider or a .slider-wrap that also holds
+         ticks or marks. Labels and outputs are the small size (--size-small) everywhere. */
+      .slider-field {
+        --slider-field-gap: 0.7em;   /* space between the slider and its value */
+        font-size: var(--size-small);   /* labels and outputs */
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        column-gap: var(--slider-field-gap);
+        row-gap: 0.15em;   /* label sits just above its slider */
+      }
+      .slider-field > label, .slider-field > .slider-field-head { grid-column: 1 / -1; }   /* a head row holds the label plus controls that sit beside it */
+      .slider-field > .sample-slider, .slider-field > .slider-wrap { grid-column: 1; }
+      .slider-field > output { grid-column: 2; text-align: right; font-variant-numeric: tabular-nums; }
+      .slider-field-inline { grid-template-columns: auto minmax(0, 1fr); }   /* label | slider */
+      .slider-field-inline:has(> output:not(.slider-field-below)) { grid-template-columns: auto minmax(0, 1fr) auto; }   /* label | slider | value, when a value sits at the right end */
+      .slider-field-inline > label { grid-column: 1; }
+      .slider-field-inline > .sample-slider, .slider-field-inline > .slider-wrap { grid-column: 2; }
+      .slider-field-inline > output { grid-column: 3; }
+      .slider-field > output.slider-field-below { grid-column: 1 / -1; text-align: left; margin-top: 0.3em; }   /* its own row under the slider */
+      /* Play button at the start of a slider's row (js/slider-autoplay.js option playButton plays the slider; it toggles class "playing" and the
+         aria-label). Add class "slider-field-play" to the field and put the button before the slider:
+           <button class="slider-play" type="button" aria-label="Play"><svg class="icon-play" viewBox="0 0 16 16"><path d="M4 2.5 13.5 8 4 13.5z"/></svg><svg class="icon-pause" viewBox="0 0 16 16"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg></button>
+         The icon is the field's small size (--size-small) in the slider's color. */
+      .slider-field-play { grid-template-columns: auto minmax(0, 1fr) auto; }   /* button | slider | value */
+      .slider-field-play > .sample-slider, .slider-field-play > .slider-wrap { grid-column: 2; }
+      .slider-field-play > output { grid-column: 3; }
+      .slider-play { grid-column: 1; display: grid; place-items: center; width: 1.2em; height: 1.2em; padding: 0; margin: 0; border: 0; background: none; color: var(--slider-color); font: inherit; cursor: pointer; }
+      .slider-play svg { width: 1em; height: 1em; fill: currentColor; }
+      .slider-play .icon-pause, .slider-play.playing .icon-play { display: none; }
+      .slider-play.playing .icon-pause { display: block; }
+      .slider-play:focus-visible { outline: 2px solid var(--slider-color); outline-offset: 2px; border-radius: 0.2em; }
+      @media (max-width: 760px) { #recovery-slide { --footnote-lines: 9; --space-caption: 0.2rem; } }
+      @media (max-aspect-ratio: 1/1) { #recovery-slide { --panel-size: min(100%, 34rem, max(2.5rem, calc((84svh - 10rem - var(--footnote-space)) / 3))); } }
+      /* Logit-bias slide: a row of token dots, the current top token, a bias slider and the constraints learned so far. */
+      #logit-bias-slide { --dot-size: var(--mark-body); }   /* every token dot on this slide: the picker, the top token, the bias, the constraints */
+      #logit-bias-slide .bias-demo { width: min(100%, var(--text-width)); display: flex; flex-direction: column; gap: clamp(0.5rem, 2.2svh, 1.25rem); font-size: var(--size-body); line-height: 1.3; }
+      #logit-bias-slide .bias-demo p { margin: 0; }
+      #logit-bias-slide .token-row { display: flex; flex-wrap: wrap; gap: calc(var(--dot-size) * 0.5); }   /* sits at the start of the bias row */
+      #logit-bias-slide .token-dot { box-sizing: border-box; width: var(--dot-size); height: var(--dot-size); padding: 0; border-radius: 50%; border: 0; background: rgb(var(--c)); cursor: pointer; }
+      #logit-bias-slide .token-dot[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--background), 0 0 0 calc(3px + 0.2rem) var(--foreground); }   /* selected: a solid ring */
+      #logit-bias-slide .inline-dot { display: inline-block; width: var(--dot-size); height: var(--dot-size); border-radius: 50%; background: rgb(var(--c)); vertical-align: -0.12em; }
+      #logit-bias-slide .bias-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6em 1em; }
+      #logit-bias-slide .reset-button { margin-left: auto; font: inherit; font-size: var(--size-small); padding: 0.15em 0.8em; color: var(--foreground); background: none; border: 1px solid var(--foreground); border-radius: 0.4em; cursor: pointer; }   /* margin-left: auto pushes it to the end of the row */
+      #logit-bias-slide .reset-button:hover { background: #202a360d; }
+      #logit-bias-slide .sample-slider:disabled { opacity: 0.35; cursor: default; }
+      /* Marks on the slider, behind the track and thumb, in the token's color: the selected token's bound region (where its
+         crossover can still be) and a mark at each crossover found so far. --bound-alpha is the region's opacity. */
+      #logit-bias-slide .slider-wrap { --mark-width: 0.25rem; --bound-alpha: 0.3; position: relative; height: var(--slider-thumb-size, 1.25rem); }
+      #logit-bias-slide .slider-wrap .sample-slider { position: relative; display: block; }
+      #logit-bias-slide .cross-mark { position: absolute; top: -0.2rem; bottom: -0.2rem; width: var(--mark-width); margin-left: calc(var(--mark-width) / -2); border-radius: 99px; background: rgb(var(--c)); pointer-events: none; left: calc(var(--slider-thumb-size, 1.25rem) / 2 + (100% - var(--slider-thumb-size, 1.25rem)) * var(--pos)); }
+      #logit-bias-slide .bound-region { position: absolute; top: -0.2rem; bottom: -0.2rem; border-radius: 99px; background: rgba(var(--c), var(--bound-alpha)); pointer-events: none; left: calc(var(--slider-thumb-size, 1.25rem) / 2 + (100% - var(--slider-thumb-size, 1.25rem)) * var(--lo)); width: calc((100% - var(--slider-thumb-size, 1.25rem)) * (var(--hi) - var(--lo))); }
+      /* Constraints sit at the bottom of the demo; their height is reserved so the layout does not jump as lines appear. */
+      #logit-bias-slide .constraints { min-height: calc(var(--lines, 4) * 1.7em); line-height: 1.7; font-variant-numeric: tabular-nums; }
+      #logit-bias-slide .constraints .nb { white-space: nowrap; }   /* long lines wrap between items, never inside one */
+      /* Prompt-extraction slide: architecture of the two inversion methods drawn as 3-D blocks in the style of PlotNeuralNet
+         (https://github.com/HarisIqbal88/PlotNeuralNet). The diagram is built by the script at the bottom of the page from its ARCH
+         config (dimensions, rows, labels) as SVG polygons; here are the colors and sizes. Block height = vector dimension,
+         width 1 for 1-D vectors, depth = sequence length. */
+      #prompts-slide {
+        --footnote-lines: 4;   /* its one reference is long (five authors and a long title): four lines in a --footnote-column wide column */
+        --arch-text: clamp(0.25rem, min(1vw, 0.4svh), 1.25rem);   /* scale of the drawing (methods stacked): the blocks and their spacing scale with it, so the diagram fits the width and height (the labels keep the deck's text sizes) */
+        /* The same when the methods sit side by side: what is left of a panel's width once its labels are set (about 17 small-text ems),
+           shared by the blocks (about 24 ems of drawing), and at most 1% of the window height. */
+        --arch-text-side: clamp(0.25rem, min(((100vw - 2 * var(--space-figure) - var(--space-col)) / 2 - 2 * var(--space-card) - 17 * var(--size-small)) / 24, 1svh), 1.25rem);
+        --tensor-opacity: 1;     /* opacity of the tensor faces (1 = solid, 0.6 = see-through); the edges and dividing lines stay solid */
+        --arrow-color: var(--foreground);
+        --link-opacity: 0.35;    /* how faint the lines connecting the tensors are (1 = solid) */
+        /* Highlights in the recovered prompts of words they share with the hidden prompt (translucent, like the signature slide's model highlights). */
+        --overlap-token: rgb(250 204 21 / 0.35);    /* soft yellow: a single shared word */
+        --overlap-phrase: rgb(74 222 128 / 0.35);   /* soft green: a run of 2 or more words that also appears, in order, in the hidden prompt */
+        /* Block colors (front face; the top and side faces are lighter and darker mixes of it, see .blk). */
+        --c-prompt: #efece6;                  /* the hidden prompt and the recovered prompt */
+        --c-intermediate: rgb(184, 170, 226); /* every intermediate tensor: logits, reshaped logits, compressed logits */
+      }
+      /* The two methods (markup in the slide: name, then a panel with the diagram and the recovered prompt), in a .figure. Each diagram's
+         grid has 4 tensor columns with an operation column between each pair. Landscape windows at least 800px wide (and 5:4) put the
+         methods side by side, which is when each panel still fits its labels; other windows stack them, and there the panels and
+         diagrams reuse the columns of the outer grid (subgrid) so the two diagrams' blocks line up. Spacing: the deck's --space-row
+         between stacked items, --space-col between side-by-side ones, --space-card inside the panels. */
+      #prompts-slide .hidden-prompt { margin: 0; width: min(100%, var(--text-width)); text-align: left; font-size: var(--size-small); line-height: 1.3; }   /* the label above the hidden prompt: informational, so small */
+      #prompts-slide .figure { --panel-size: minmax(0, 1fr); }
+      #prompts-slide .arch { --arch-columns: auto repeat(3, 1fr auto); isolation: isolate; display: grid; grid-template-columns: var(--arch-columns); row-gap: var(--space-row); justify-self: center; width: calc(100% - 2 * (var(--space-page) - var(--space-figure))); min-width: min-content; max-width: 100%; font-size: var(--arch-text); }   /* fills the page margins' width, and widens into the margins (centered) only when its labels need more room */
+      #prompts-slide .arch-method { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; grid-template-rows: auto 1fr; }   /* a <figure class="panel">: the caption ("Previous" / "Ours"), then the panel; its own grid, not the .figure's three rows */
+      #prompts-slide .arch-method > figcaption { grid-column: 1 / -1; --measure-panel-title: 100%; }   /* full panel width: each caption stays one line over its wide panel, and this slide has no height to spare */
+      #prompts-slide .arch-panel { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-content: start; row-gap: var(--space-card); width: auto; aspect-ratio: auto; padding: var(--space-card); }   /* the .demo-box class gives the panel look; --space-card between the diagram and the quote too, like its padding */
+      #prompts-slide .arch-diagram { position: relative; grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; align-content: end; }   /* the tensors, their labels under them (at its bottom, when it is stretched); the connecting lines are drawn over it */
+      @media (min-width: 800px) and (min-aspect-ratio: 5/4) {
+        /* Side by side: the outer grid has three rows (name, diagram, recovered prompt) that both methods share through subgrid rows,
+           so the two names, the bottoms of the two diagrams and the two recovered prompts line up; the shorter diagram gets the extra room above it. */
+        #prompts-slide { --arch-text: var(--arch-text-side); }
+        #prompts-slide .arch { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, auto); column-gap: var(--space-col); row-gap: 0; width: 100%; }   /* using the full figure width */
+        #prompts-slide .arch-method, #prompts-slide .arch-panel { grid-column: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: subgrid; }
+        #prompts-slide .arch-method { grid-row: span 3; }
+        #prompts-slide .arch-panel { grid-row: span 2; }
+        #prompts-slide .arch-diagram { grid-template-columns: var(--arch-columns); }
+      }
+      /* Monospace text with a solid rule on the left: the model's and the inverter's outputs. The script stacks the text over an invisible copy
+         of the longest text it will show (.quote-reserve), so the quote keeps its height as the slider changes the text. */
+      #prompts-slide .mono-quote { display: grid; margin: 0; font-family: var(--mono-font); line-height: 1.3; }
+      #prompts-slide .mono-quote > span { grid-area: 1 / 1; align-self: start; padding-left: 0.8em; border-left: 3px solid var(--foreground); }   /* the rule spans the visible text only */
+      #prompts-slide .mono-quote > .quote-reserve { visibility: hidden; }
+      #prompts-slide > .mono-quote { width: min(100%, var(--text-width)); justify-items: start; }   /* a quote placed directly in the slide (the hidden prompt) sits in the text column, left-aligned like the text */
+      /* Longest the model's output (#inv-output) and the recovered prompts (.arch-quote) get, in lines; longer text ends in "…".
+         The invisible .quote-reserve copy is clamped too, so the reserved height is this many lines (or fewer, for shorter texts). */
+      #prompts-slide { --quote-lines: 2; }
+      #prompts-slide #inv-output > span, #prompts-slide .arch-quote > span { display: -webkit-box; -webkit-line-clamp: var(--quote-lines); -webkit-box-orient: vertical; overflow: hidden; }
+      /* The recovered prompt under each diagram: tiny. */
+      #prompts-slide .arch-quote { grid-column: 1 / -1; font-size: var(--size-tiny); }
+      #prompts-slide .arch-quote > span { align-self: end; }   /* sits the text at the bottom of its reserved space, so both panels' outputs end on the same line */
+      /* Words shared with the hidden prompt (marked by the script). The negative margin cancels the padding, so the text keeps its width and wrapping. */
+      #prompts-slide .arch-quote mark { color: inherit; padding: 0 0.1em; margin: 0 -0.1em; border-radius: 0.2em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+      #prompts-slide .arch-quote .overlap-token { background: var(--overlap-token); }
+      #prompts-slide .arch-quote .overlap-phrase { background: var(--overlap-phrase); }
+      #prompts-slide .inv-output { font-size: var(--size-small); }   /* the target model's output, under the slider */
+      #prompts-slide .node { position: relative; display: flex; align-items: center; justify-content: center; }   /* z-order is set by the script: tensor i at 2i+1, the connectors leaving it at 2i+2 */
+      #prompts-slide .label { align-self: start; margin: 0.5em -0.5em 0; text-align: center; font-size: var(--size-small); line-height: 1.15; }   /* the negative side margins let a tensor's name spread a little into the empty space under the operations, so narrow windows fit */
+      #prompts-slide .label[data-edge="start"] { margin-left: 0; }   /* ...but the first and last names stay inside the panel's text edges */
+      #prompts-slide .label[data-edge="end"] { margin-right: 0; }
+      #prompts-slide .blk-wrap { position: relative; }
+      #prompts-slide .blk { display: block; overflow: visible; --top: color-mix(in srgb, var(--c) 60%, white); --side: color-mix(in srgb, var(--c) 82%, black); --edge: color-mix(in srgb, var(--c) 55%, black); }   /* lit top, slightly darker side, soft edges */
+      #prompts-slide .blk polygon { stroke: var(--edge); stroke-width: 1.2px; vector-effect: non-scaling-stroke; stroke-linejoin: round; fill-opacity: var(--tensor-opacity); }
+      #prompts-slide .blk .f { fill: var(--c); }
+      #prompts-slide .blk .t { fill: var(--top); }
+      #prompts-slide .blk .s { fill: var(--side); }
+      #prompts-slide .blk .sl { stroke: var(--edge); stroke-width: 0.8px; vector-effect: non-scaling-stroke; }   /* dividing lines between sequence elements */
+      /* Operations: the label sits between the two tensors; the connecting lines are drawn over the grid by the script. */
+      #prompts-slide .op { position: relative; z-index: 99; align-self: stretch; display: flex; align-items: center; justify-content: center; margin: 0 0.35em; pointer-events: none; }   /* labels above everything */
+      #prompts-slide .op-label { font-size: var(--size-small); line-height: 1.15; text-align: center; }
+      #prompts-slide .links { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+      #prompts-slide .links path.link { fill: none; stroke: var(--arrow-color); stroke-width: 1.2px; stroke-opacity: var(--link-opacity); }   /* corner-to-corner lines of an operation */
+      /* Step slider and the text it drives (the target model's output so far; the recovered prompts are in the panels). */
+      #prompts-slide .inversion-demo { width: min(100%, var(--text-width)); display: flex; flex-direction: column; gap: clamp(0.3rem, 1.4svh, 1rem); font-size: var(--size-body); line-height: 1.3; }
+      #prompts-slide .inv-lines { margin: 0; display: grid; row-gap: 0.4em; }   /* the label, then the output quote below it */
+      #prompts-slide .inv-lines dt { font-weight: 400; font-size: var(--size-small); }   /* "Target model output": informational, so small */
+      #prompts-slide .inv-lines dd { margin: 0; }   /* holds the .inv-output quote, whose height is reserved for the longest output */
+      /* Signature slide: one 3-D plot of two models' column spaces, a readout, the slider and any notes under it. */
+      #signature-slide { --panel-size: min(100%, 48svh, calc(80svh - 16.5rem - var(--footnote-space)), 38rem); }   /* 20svh + 16.5rem is the heading, slider label, slider, readout, a few lines of notes and the gaps (they grow with the window height), so the notes end above the footnote */
+      #signature-slide .demo-box canvas { cursor: grab; }
+      /* Mentions of a model in the text are highlighted with that model's plane color (set from planeColors in the script's CONFIG).
+         --highlight-alpha is the strength of the highlight. */
+      #signature-slide .model-1, #signature-slide .model-2 { --highlight-alpha: 0.35; padding: 0 0.2em; margin: 0 -0.05em; border-radius: 0.25em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+      #signature-slide .model-1 { background: rgb(var(--model-1) / var(--highlight-alpha)); }
+      #signature-slide .model-2 { background: rgb(var(--model-2) / var(--highlight-alpha)); }
+      /* Forging slide: the ellipse-fitting plot (with its point-count slider) beside the API cost calculator. */
+      #forge-slide { --panels: 2; --panel-size: min(46%, calc(100svh - 20rem - var(--footnote-space)), 38rem); }   /* width of each of the two panels; 20rem is the heading, two lines of text, the slider with its label and the gaps */
+      #forge-slide .forge-row { align-items: stretch; }   /* the calculator matches the plot's height */
+      #forge-slide .panel { display: flex; flex-direction: column; gap: var(--space-row); }
+      #forge-slide .panel .demo-box, #forge-slide .panel .sample-slider { width: 100%; }
+      /* Calculator: two sliders (model size d and price p) and the resulting sample count n and cost c, in the plot's row, on the page (no card). */
+      #forge-slide .calc-box { width: 100%; display: flex; flex-direction: column; justify-content: center; gap: clamp(0.4rem, 1.8svh, 1.2rem); font-size: var(--size-small); line-height: 1.2; }
+      /* Slider fields and result rows share a fixed value column so all four values end at the same right edge. */
+      #forge-slide .calc-box { --calc-value-width: 6.5em; --calc-gap: 0.7em; }   /* value column width; gap matches .slider-field */
+      #forge-slide .calc-box .slider-field, #forge-slide .calc-result { grid-template-columns: minmax(0, 1fr) var(--calc-value-width); }
+      #forge-slide .calc-result { display: grid; align-items: center; column-gap: var(--calc-gap); }
+      /* Ticks under a slider mark the snapping points (the models' prices); their positions come from the script's model list. */
+      #forge-slide .slider-wrap { position: relative; height: var(--slider-thumb-size, 1.25rem); }
+      #forge-slide .slider-wrap .sample-slider { display: block; }
+      #forge-slide .snap-ticks { position: absolute; inset: 0; pointer-events: none; --tick-width: 0.18rem; --tick-height: 1rem; }
+      #forge-slide .snap-tick { position: absolute; top: 50%; width: var(--tick-width); height: var(--tick-height); transform: translateY(-50%); margin-left: calc(var(--tick-width) / -2); border-radius: 99px; background: #202a3699; left: calc(var(--slider-thumb-size, 1.25rem) / 2 + (100% - var(--slider-thumb-size, 1.25rem)) * var(--pos)); }
+      #forge-slide .calc-result output { text-align: right; font-variant-numeric: tabular-nums; }
+      @media (max-aspect-ratio: 1/1) {
+        /* Single column: plot above, calculator below. */
+        #forge-slide { --panel-size: min(100%, 34rem, max(7rem, calc(82svh - 24rem - var(--footnote-space)))); }   /* 18svh + 24rem is the heading, two lines of text, the slider, the calculator and the gaps (the gaps grow with the window height) */
+        #forge-slide .calc-box { width: min(100%, 34rem); }
+        #function-slide { --demo-size: min(100%, 46svh, 42rem); grid-template-columns: minmax(0, 1fr); }
+        #function-slide > aside { grid-column: 1; justify-self: center; }   /* stacked: under the demo, at its width */
+      }
+      /* Marionette slide: one stage (js/marionette.js) under the heading and any text, filling the height left; the bird and its
+         cross-shaped control are drawn straight on the page (no card). A flex column rather than grid rows, so adding, removing or
+         reordering text above or below the figure never changes which element grows: the .figure always takes the remaining height.
+         --panel-size is the stage's width (the text column). */
+      #marionette-slide:not([hidden]) { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-row); --panel-size: min(100%, var(--text-width)); }   /* :not([hidden]) so the flex display never overrides the hidden attribute */
+      #marionette-slide > * { flex: none; }
+      #marionette-slide .figure { flex: 1 1 0; height: auto; min-height: 0; grid-template-rows: minmax(0, 1fr); align-items: stretch; }
+      #marionette-slide .marionette-stage { display: block; width: 100%; height: 100%; min-height: 0; touch-action: none; cursor: crosshair; }   /* moving the pointer turns the leg bar, dragging turns the main bar */
+      /* Activation-dynamics slide: heading and text, the layer slider, then two panels filling the height left (js/probe.js,
+         assets/probe-sphere.js, assets/probe-face.js): the input sphere as a globe and the
+         surface projected onto the span of the globe's front face; side by side (stacked in that order in portrait windows). The row is wider
+         than the text column so the squares stay large. Each canvas fills its cell; the script draws a square as large as the cell allows. */
+      #probe-slide {
+        grid-template-rows: auto auto auto minmax(0, 1fr);
+        --probe-dot: #ffffff;          /* fill of the draggable dot (its outline is the script's markColor) */
+      }
+      #probe-slide > .slider-field { width: 100%; }   /* as wide as the deck's slider cap (--slider-max-width), centered */
+      /* Each panel is a <figure class="panel"> with its canvas and a caption (see the panel captions rule above). The figure's three rows
+         (above, canvas, below) fill the height left: the canvas row takes what the captions leave. */
+      #probe-slide .figure { width: min(var(--figure-width), 100rem); height: 100%; min-height: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto minmax(0, 1fr) auto; align-items: stretch; }
+      #probe-slide .probe-canvas { display: block; width: 100%; height: 100%; min-width: 0; min-height: 0; touch-action: none; cursor: grab; }   /* both panels: drag to rotate */
+      @media (max-aspect-ratio: 1/1) { #probe-slide .figure { width: min(100%, var(--text-width)); grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(2, auto minmax(0, 1fr) auto); } }
+      /* Three-activation sphere slide (js/trisphere.js, assets/tri-sphere.js): left column the input sphere through three activations; right
+         column the sphere's image after the slide's block over the plot of the output speed along the dot's current segment (side by side;
+         stacked globe, image, plot in portrait windows); no heading. Each 3-D canvas fills its cell and the script draws a square as large as
+         the cell allows; the plot spans the image panel's square. The marks are the deck's sizes (--mark-tiny: the activations, --mark-small:
+         the moving dot and its place on the plot). */
+      #trisphere-slide {
+        grid-template-rows: minmax(0, 1fr);
+        --trisphere-max-width: 100rem;          /* widest the two columns get together */
+        --trisphere-plot-height: clamp(2.5rem, 13svh, 9rem);   /* height of the speed plot under the image (the image shrinks to make room) */
+        --trisphere-plot-gap: calc(0.5 * var(--space-row));     /* between the image and the plot */
+        --trisphere-play-gap: 0.4em;            /* between the play/pause button (at the plot's left, size --size-small) and the plot */
+        --trisphere-dot: #ffffff;               /* fill of the moving dot and the plot's marker (their outline and the x marks' colors are in the script's CONFIG) */
+        --trisphere-curve: var(--foreground);   /* the speed curve */
+        --trisphere-curve-width: 2px;           /* its line width */
+        --trisphere-curve-muted-alpha: 0.3;     /* opacity of the curve past the two activations (the path continued beyond the segment) */
+        --trisphere-axis: rgba(32, 42, 54, 0.3);   /* the plot's baseline (zero speed) */
+      }
+      #trisphere-slide .figure {
+        width: min(var(--figure-width), var(--trisphere-max-width)); height: 100%; min-height: 0; align-items: stretch;
+        grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr) var(--trisphere-plot-height);
+        grid-template-areas: "input output" "input plot"; row-gap: var(--trisphere-plot-gap);
+      }
+      #trisphere-slide #trisphere-input { grid-area: input; }
+      #trisphere-slide #trisphere-output { grid-area: output; }
+      #trisphere-slide .trisphere-plot-row { grid-area: plot; justify-self: center; display: grid; grid-template-columns: 1.2em minmax(0, 1fr) 1.2em; align-items: center; column-gap: var(--trisphere-play-gap); min-height: 0; max-width: 100%; font-size: var(--size-small); }   /* button | plot | empty column as wide as the button, so the plot is centered; the script sets the row's width so the plot spans the output panel's drawing square (1.2em: the .slider-play button's width) */
+      #trisphere-slide .trisphere-plot-row > .slider-play { grid-column: 1; }   /* the deck's play button (see .slider-play): plays/pauses the dot's motion */
+      #trisphere-slide #trisphere-plot { grid-column: 2; cursor: default; }
+      #trisphere-slide .trisphere-canvas { display: block; width: 100%; height: 100%; min-height: 0; min-width: 0; touch-action: none; cursor: grab; }   /* drag to rotate; the dot on the left one drags along the sphere */
+      @media (max-aspect-ratio: 1/1) {
+        #trisphere-slide .figure { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) var(--trisphere-plot-height); grid-template-areas: "input" "output" "plot"; }
+        #trisphere-slide .figure > * { width: 100%; }
+      }
+      /* Rubber-sheet gravity slide (js/gravity.js): the trampoline picture of gravity, one rotatable canvas filling the slide; no text.
+         The sheet's colors, physics and view are in the script's CONFIG; sizes and line styles here. Ball sizes are diameters. */
+      @property --gravity-mass-large { syntax: '<length>'; inherits: true; initial-value: 0px; }
+      @property --gravity-mass-small { syntax: '<length>'; inherits: true; initial-value: 0px; }
+      @property --gravity-planet { syntax: '<length>'; inherits: true; initial-value: 0px; }
+      #gravity-slide {
+        --gravity-max-width: 110rem;                         /* widest the figure gets */
+        --gravity-mass-large: calc(2.4 * var(--mark-small));   /* the big heavy ball (CONFIG.masses[0]; drawn only with CONFIG.drawMasses) */
+        --gravity-mass-small: calc(1.6 * var(--mark-small));   /* the smaller heavy ball (CONFIG.masses[1]; likewise) */
+        --gravity-planet: var(--mark-small);                 /* the marbles */
+        --gravity-ball-outline: #ffffff;                     /* every ball's outline (width: CONFIG.ballOutline) */
+        --gravity-grid: rgba(32, 42, 54, 0.18);              /* the sheet's grid lines */
+        --gravity-grid-width: 1px;
+        --gravity-rim: var(--foreground);                    /* the sheet's edge */
+        --gravity-rim-width: 1.5px;
+        --gravity-trail-width: 2px;                          /* the marbles' trails (colored like the marble) */
+      }
+      #gravity-slide:not([hidden]) { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-row); }   /* :not([hidden]) so the flex display never overrides the hidden attribute */
+      #gravity-slide > * { flex: none; }
+      #gravity-slide .figure { flex: 1 1 0; min-height: 0; width: min(var(--figure-width), var(--gravity-max-width)); grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); align-items: stretch; }   /* takes the height the slide's other items leave */
+      #gravity-slide .gravity-canvas { display: block; width: 100%; height: 100%; min-width: 0; min-height: 0; touch-action: none; cursor: grab; }   /* drag to turn; drag a marble to fling it */
+      /* Steering-between-basins slide: the steering-strength slider under the heading, then one speed profile per output step, stacked in a
+         single plot (js/basins.js) that fills the height left. --panel-size is the plot's width (the text column). */
+      #basins-midpoint-slide { grid-template-rows: auto auto minmax(0, 1fr); --panel-size: min(100%, var(--text-width)); }
+      #basins-midpoint-slide > .slider-field { width: 100%; }   /* as wide as the deck's slider cap (--slider-max-width), centered */
+      #basins-midpoint-slide .figure { height: 100%; min-height: 0; grid-template-rows: minmax(0, 1fr); align-items: stretch; }
+      #basins-midpoint-slide .basins-plot { display: block; width: 100%; height: 100%; min-height: 0; font-size: var(--size-small); }   /* font-size: the row and axis labels the script draws */
+      /* English-Chinese steering slide (js/enzh.js, assets/enzh-steering.js): the steering-strength slider under the heading, then a grid of
+         panels like the paper's figure (English documents first, then Chinese). Each panel is the document's tail with the token the steered
+         activation predicts appended and highlighted (with its gloss), above the speed profile along the en-zh direction. The grid fills the
+         height left; --enzh-columns panels per row (fewer in portrait windows). */
+      #enzh-slide {
+        grid-template-rows: auto auto minmax(0, 1fr);
+        --enzh-columns: 4;            /* panels per row in landscape windows (portrait: see the media rule below) */
+        --enzh-max-width: 110rem;     /* widest the panel grid gets */
+        --enzh-gap-x: calc(0.6 * var(--space-col));   /* between panels side by side */
+        --enzh-gap-y: calc(0.8 * var(--space-row));   /* between rows of panels */
+        --enzh-doc-size: var(--size-small);    /* the document text above each plot */
+        --enzh-gloss-size: var(--size-tiny);   /* the glosses under it */
+        /* Script colors, as RGB triplets (the paper's red/blue/grey): the highlight of the predicted token and the plot's bands where the model
+           predicts a token of that script. Used by the CSS below and read by the script for the plots. */
+        --enzh-latin: 203 24 29;      /* English / Latin-script tokens */
+        --enzh-chinese: 33 113 181;   /* Chinese tokens (Han characters, CJK punctuation) */
+        --enzh-other: 110 110 110;    /* neutral tokens (spaces, punctuation, digits) and other scripts (Cyrillic, kana) */
+        --enzh-mark-alpha: 0.3;       /* opacity of the predicted token's highlight */
+      }
+      #enzh-slide > .slider-field { width: 100%; }   /* as wide as the deck's slider cap (--slider-max-width), centered */
+      #enzh-slide .figure {
+        width: min(var(--figure-width), var(--enzh-max-width));
+        height: 100%; min-height: 0;
+        grid-template-columns: repeat(var(--enzh-columns), minmax(0, 1fr));
+        grid-auto-rows: minmax(0, 1fr);   /* the rows share the height left */
+        align-items: stretch;
+        column-gap: var(--enzh-gap-x); row-gap: var(--enzh-gap-y);
+      }
+      #enzh-slide .figure > .enzh-panel { width: 100%; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 0.3em; font-size: var(--enzh-doc-size); }
+      /* The y-axis label ("Density ↓", CONFIG.yLabel in js/enzh.js), once for the figure: its own row across the columns, at the left edge
+         above the first (English) document, in the plots' label size. The panel rows below keep equal shares of the height.
+         --enzh-ylabel-gap is the space between it and the first document (it replaces the rows' gap there). */
+      #enzh-slide .figure:has(> .enzh-ylabel) { grid-template-rows: auto; }
+      #enzh-slide .figure > .enzh-ylabel { --enzh-ylabel-gap: 0.25em; grid-column: 1 / -1; justify-self: start; width: auto; font-size: var(--size-small); line-height: 1.2; margin-bottom: calc(var(--enzh-ylabel-gap) - var(--enzh-gap-y)); }
+      #enzh-slide .enzh-plot { display: block; width: 100%; flex: 1 1 0; min-height: 0; font-size: var(--size-small); touch-action: none; }   /* touch-action: a finger on a plot drags its dot instead of scrolling (the cursor is set by the script: grab over a dot) */
+      /* The document: one row of units, each its text over its gloss (the paper's interlinear glosses); the gloss row is always there,
+         so every panel's plot starts at the same height. The last unit is the predicted token. */
+      #enzh-slide .enzh-doc { display: flex; align-items: start; overflow: hidden; white-space: pre; line-height: 1.25; }
+      #enzh-slide .enzh-doc-zh { column-gap: 0.35em; }   /* Chinese units are spaced apart, like the paper's interlinear glosses */
+      #enzh-slide .enzh-doc-en > .enzh-unit:first-child { margin-right: 0.25em; }   /* after the "…" */
+      #enzh-slide .enzh-unit { display: inline-grid; grid-template-rows: auto auto; flex: none; }
+      #enzh-slide .enzh-unit[hidden] { display: none; }   /* Chinese words dropped from a document's left when its panel is too narrow (js/enzh.js) */
+      #enzh-slide .enzh-gloss { font-size: var(--enzh-gloss-size); line-height: 1.3; min-height: 1.3em; opacity: 0.8; }
+      #enzh-slide .enzh-gloss.grammatical { font-variant-caps: all-small-caps; letter-spacing: 0.04em; }   /* COP, GEN, PFV, as the paper sets them */
+      /* The paper's free translation of a Chinese document, under its glosses: small and faded like them, one line (cut with "…" if the
+         panel is too narrow). English panels keep the empty line, so all plots start at the same height. */
+      #enzh-slide .enzh-translation { margin-top: -0.15em; font-size: var(--enzh-gloss-size); line-height: 1.3; min-height: 1.3em; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      /* English text that does not fit is cut on its left (the end of the document, next to the predicted token, stays visible). */
+      #enzh-slide .enzh-unit.enzh-shrink { flex: 0 1 auto; min-width: 0; overflow: hidden; direction: rtl; }
+      #enzh-slide .enzh-shrink > span { direction: ltr; unicode-bidi: isolate; }
+      /* The predicted token: every token this panel can predict is stacked in one cell, so the cell keeps the width of the widest and
+         the document does not move as the slider changes the token; only the current one is visible. */
+      #enzh-slide .enzh-next { display: grid; flex: none; }
+      #enzh-slide .enzh-next > .enzh-unit { grid-area: 1 / 1; visibility: hidden; }
+      #enzh-slide .enzh-next > .enzh-unit.current { visibility: visible; }
+      #enzh-slide .enzh-next .lead { display: inline-block; width: 0.25em; }   /* the token's leading space (outside the highlight) */
+      /* Highlight of the predicted token, in its script's color (the prompts slide's mark style). */
+      #enzh-slide .enzh-next mark { color: inherit; padding: 0 0.1em; margin: 0 -0.1em; border-radius: 0.2em; background: rgb(var(--enzh-c) / var(--enzh-mark-alpha)); }
+      #enzh-slide .enzh-next .latin { --enzh-c: var(--enzh-latin); }
+      #enzh-slide .enzh-next .chinese { --enzh-c: var(--enzh-chinese); }
+      #enzh-slide .enzh-next .other { --enzh-c: var(--enzh-other); }
+      @media (max-aspect-ratio: 1/1) {
+        #enzh-slide { --enzh-columns: 2; }
+        #enzh-slide .figure { grid-template-columns: repeat(var(--enzh-columns), minmax(0, 1fr)); }   /* overrides the deck's one-column portrait figure */
+      }
+      /* Language basins slide (js/langglobes.js, assets/lang-globes.js): the paper's language expansion maps as globes, one panel (canvas) per
+         language with its two globes and its title drawn in it. Three panels side by side; stacked in portrait windows. */
+      #langglobes-slide { grid-template-rows: auto minmax(0, 1fr); }
+      #langglobes-slide .figure { width: min(var(--figure-width), 110rem); height: 100%; min-height: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr); align-items: stretch; }
+      #langglobes-slide .langglobes-canvas { display: block; width: 100%; height: 100%; min-height: 0; min-width: 0; touch-action: none; cursor: grab; font-size: var(--size-small); }   /* font-size: the panel titles the script draws */
+      @media (max-aspect-ratio: 1/1) { #langglobes-slide .figure { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(3, minmax(0, 1fr)); } #langglobes-slide .figure > * { width: 100%; } }
+      h1 {
+        margin: 0;
+        max-width: var(--title-width);
+        font-family: var(--title-font);
+        font-size: var(--size-title);
+        font-weight: 400;
+        line-height: 1.12;
+        text-wrap: balance;
+      }
+      /* Footnote pinned to the bottom of a slide, inside the page margins; its text is filled from references.bib by js/references.js (data-cite="key ..."). */
+      .footnote {
+        position: absolute;
+        bottom: var(--footnote-offset);
+        left: max(var(--space-page), calc((100% - var(--text-width)) / 2));   /* the centered text column, never past the page margins */
+        columns: var(--footnote-column);   /* as many columns of about this width as fit in the text column */
+        column-gap: var(--space-col);
+        right: max(var(--space-page), calc((100% - var(--text-width)) / 2));
+        margin: 0;
+        font-size: var(--size-footnote);
+        opacity: 0.65;
+        overflow-wrap: anywhere;
+        line-height: 1.3;   /* used by --footnote-space */
+      }
+      /* Monospace text (model names such as gpt-6-luna, model and inverter output) is scaled to the body serif's x-height so it doesn't look larger. */
+      .model-name { font-family: var(--mono-font); }
+      .model-name, .mono-quote { font-size-adjust: var(--mono-x-height); }
+      .footnote a { color: inherit; text-underline-offset: 0.15em; }
+      .footnote .reference { display: block; break-inside: avoid; }   /* one reference per line; a reference never splits across footnote columns */
+      /* Co-authors' headshots (CONFIG.headshots in js/references.js), in author order, in a row under the reference they belong to.
+         Under, not above, so the text of every footnote column starts on the same line. The row never wraps: when a long author list
+         doesn't fit the column, the photos shrink to fit, so the row stays one --headshot-size high. */
+      .footnote .headshots { display: flex; align-items: center; height: var(--headshot-size); margin-top: var(--headshot-gap); }
+      .footnote .headshots img {
+        flex: 0 1 var(--headshot-size);
+        width: var(--headshot-size);
+        min-width: 0;   /* lets a photo shrink below its size */
+        aspect-ratio: 1;
+        height: auto;
+        box-sizing: border-box;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 0.1em solid var(--background);           /* separates overlapping photos */
+        box-shadow: 0 0 0 1px var(--diagram-border);     /* subtle outline */
+      }
+      .footnote .headshots img + img { margin-left: calc(-1 * var(--headshot-overlap)); }
+      /* A slide whose footnote has a headshot row keeps room for it. One row is enough: each footnote cites at most one of the
+         deck author's papers (set 2 on a slide whose footnote stacks two such references). */
+      .statement-slide:has(> .footnote .headshots) { --footnote-headshot-rows: 1; }
+      @media (max-width: 760px) { :root { --footnote-lines: 4; } }   /* footnotes wrap to more lines in narrow windows */
+      /* Instructions for the audience ("Drag the points"): write them as <aside>. They look like the footnotes (small, faded).
+         Directly in a slide, an aside sits in the text column; inside a figure or panel it takes that box's width. */
+      aside { margin: 0; font-size: var(--size-footnote); line-height: 1.3; opacity: 0.65; text-align: left; }
+      .statement-slide > aside { width: min(100%, var(--text-width)); }
+      aside a { color: inherit; text-underline-offset: 0.15em; }   /* links in asides look like the footnotes' links */
+      .hint {
+        position: absolute;
+        bottom: 2rem;
+        margin: 0;
+        font-size: var(--size-footnote);
+        opacity: var(--hint-opacity);
+      }
+      .blur-region {
+        position: absolute;
+        inset: var(--divider-position) 0 0;
+        backdrop-filter: blur(var(--below-line-blur));
+        -webkit-backdrop-filter: blur(var(--below-line-blur));
+        pointer-events: none;
+      }
+      #lifecycle-slide, #parameters-slide {
+        user-select: none;
+        -webkit-user-select: none;
+        /* One screen tall; the diagram scales to fit instead of scrolling. */
+        height: 100svh;
+        min-height: 0;
+        padding-block: var(--space-top);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);   /* title row, then the diagram and example */
+        column-gap: var(--space-col);
+        row-gap: var(--space-row);
+      }
+      /* Title across the top; z-index keeps it sharp if the blur line is dragged above it. */
+      #lifecycle-slide h1, #parameters-slide h1 { grid-column: 1 / -1; grid-row: 1; justify-self: center; width: min(100%, var(--text-width)); max-width: none; font-size: var(--size-heading); position: relative; z-index: 1; }
+      #lifecycle-slide .lifecycle, #parameters-slide .lifecycle { grid-column: 1; grid-row: 2; font-size: var(--size-small); }
+      /* Parameters slide: the lifecycle diagram with a fixed line through one stage's box, below its text (the <li> with data-line-below), everything
+         below the line blurred except a clear, outlined circle around another stage (the <li> with data-spotlight), small enough to
+         leave the adjoining stages blurred. No examples, no label, not draggable. js/spotlight.js covers everything below the line
+         except the circle's bounding square with blurred bands (.spotlight-blur, the same backdrop blur as the march slide's .blur-region),
+         and sets --line-y and the circle's centre --spot-x/--spot-y and radius --spot-r (in the slide). */
+      #parameters-slide { --spot-pad: 0.85; --line-at: 0.5; grid-template-columns: minmax(0, 1fr); }   /* circle radius as a fraction of the distance from the spotlit stage's centre to the nearest adjoining box; where the line crosses the Logits/Logprobs box (0 = text bottom, 1 = box bottom); one column so the stack is centred */
+      #parameters-slide .lifecycle { grid-column: 1 / -1; justify-self: center; }
+      #parameters-slide .spotlight-blur { position: absolute; backdrop-filter: blur(var(--below-line-blur)); -webkit-backdrop-filter: blur(var(--below-line-blur)); pointer-events: none; }
+      #parameters-slide .spotlight-ring { position: absolute; left: calc(var(--spot-x, 0px) - var(--spot-r, 0px)); top: calc(var(--spot-y, 0px) - var(--spot-r, 0px)); width: calc(2 * var(--spot-r, 0px)); aspect-ratio: 1; border: 1px solid #202a3670; border-radius: 50%; box-sizing: border-box; pointer-events: none; z-index: 1; }   /* the circle's border, same color as the line */
+      #parameters-slide .spotlight-line { position: absolute; top: var(--line-y, 100%); left: var(--space-page); right: var(--space-page); height: 1px; background: #202a3670; pointer-events: none; z-index: 1; }   /* same line as the march slide's divider */
+      .level-illustration {
+        grid-column: 2;
+        grid-row: 2;
+        width: var(--illustration-width);
+        max-width: 100%;
+        height: auto;
+        /* Scaled by fitIllustration() when taller or wider than the slide. */
+        transform-origin: left center;
+        /* Illustrations stay readable while the lifecycle below the boundary blurs. */
+        position: relative;
+        z-index: 1;
+      }
+      /* Narrow windows: slim diagram column, wider example column. */
+      @media (max-width: 760px) {
+        #lifecycle-slide { grid-template-columns: auto minmax(0, 1fr); }
+        #lifecycle-slide h1 { font-size: var(--size-heading-portrait); }
+      }
+      .headline-illustration {
+        display: block;
+        padding: var(--headline-padding);
+        color: var(--headline-ink);
+        background: var(--headline-paper);
+        border-top: 4px solid var(--headline-ink);
+        box-shadow: 0 1px 3px #00000014, 10px 10px 0 #202a360a;
+        text-decoration: none;
+      }
+      .headline-masthead {
+        display: block;
+        padding-bottom: 1.25rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid #0a0a0a33;
+      }
+      .headline-logo {
+        display: block;
+        width: var(--headline-logo-width);
+        max-width: 100%;
+        height: auto;
+      }
+      .headline-text {
+        display: block;
+        font-family: var(--headline-font);
+        font-weight: var(--headline-weight);
+        font-size: var(--headline-size);
+        line-height: 1.2;
+        text-wrap: balance;
+      }
+      .headline-illustration:focus-visible {
+        outline: 2px solid var(--headline-ink);
+        outline-offset: 6px;
+      }
+      /* Separate incident cards; adjust spacing and headline sizes here. */
+      .grok-example { display: grid; gap: 1.5rem; }
+      .grok-example .headline-text { font-size: clamp(1.1rem, 1.6vw, 1.5rem); }
+      .engadget-example .headline-text {
+        font-family: 'Guardian Text Sans', Arial, sans-serif;
+        font-weight: 700;
+      }
+      .verge-example .headline-text {
+        font-family: 'PolySans', Helvetica, Arial, sans-serif;
+        font-weight: 700;
+      }
+      /* Independent news and paper blocks; adjust spacing and paper typography here. */
+      .training-examples { display: grid; gap: 1.5rem; }
+      .training-examples .headline-text { font-size: clamp(1.25rem, 2vw, 1.9rem); }
+      /* Generation-level paper stack; reuse the report source and typography styles. */
+      .generation-papers { display: grid; gap: 1.5rem; }
+      .report-title {
+        display: block;
+        padding: 2rem 1.5rem;
+        background: #fff;
+        border: 1px solid var(--diagram-border);
+        box-shadow: 0 2px 5px #0000000d;
+        color: var(--headline-ink);
+        text-align: center;
+        text-decoration: none;
+      }
+      .report-name {
+        display: block;
+        font-size: clamp(1.5rem, 2.3vw, 2.1rem);
+        font-weight: 600;
+        line-height: 1.2;
+      }
+      .report-author { display: block; margin-top: 1rem; font-size: 1.1rem; }
+      .guardian-example .headline-text { font-family: 'Guardian Headline', Georgia, serif; font-weight: 500; }
+      /* arXiv source masthead, independent of the report's author attribution. */
+      .report-logo { display: block; width: 7rem; max-width: 100%; height: auto; margin: 0 0 1.25rem; }
+      .grok-example a { color: inherit; text-decoration: none; }
+      /* GitHub issue card: source, title, and reported API error; adjust type sizes here. */
+      .issue-example { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+      .issue-source { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; font-size: 0.95rem; }
+      .issue-source img { width: 2rem; height: 2rem; }
+      .issue-title { display: block; color: inherit; text-decoration: none; font-size: clamp(1.15rem, 1.8vw, 1.65rem); font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+      .issue-error { margin: 1.5rem 0 0; padding: 1rem; border: 1px solid #d1d9e0; border-radius: 0.4rem; background: #f6f8fa; font: 400 0.95rem/1.5 monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+      /* Simon Willison's source masthead and article typography. */
+      .simon-masthead { background: #205; color: #fff; padding: 1rem; margin: 0 0 1.25rem; font: 400 1.25rem/1.2 'Helvetica Neue', Helvetica, sans-serif; }
+      .mythos-example .headline-text { font-family: Georgia, serif; font-weight: 700; font-size: clamp(1.3rem, 2.1vw, 2rem); }
+      .grok-prompt {
+        margin: 1.25rem 0 0;
+        /* Diff-style quotation; colors and spacing are independently editable. */
+        padding: 1rem;
+        background: #e6ffec;
+        color: #116329;
+        border: 1px solid #11632933;
+        border-radius: 0.35rem;
+        font: 400 clamp(0.85rem, 1.2vw, 1rem)/1.5 monospace;
+        overflow-wrap: anywhere;
+        padding-left: calc(1rem + 2ch);
+        text-indent: -2ch;
+      }
+
+      .divider {
+        position: absolute;
+        top: var(--divider-position);
+        left: var(--space-page);
+        right: var(--space-page);
+        height: 28px;
+        transform: translateY(-50%);
+        cursor: ns-resize;
+        touch-action: none;
+      }
+      .divider-label {
+        position: absolute;
+        bottom: 19px;
+        left: 0;
+        font-size: var(--size-small);
+        pointer-events: none;
+      }
+      .divider::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        height: 1px;
+        background: #202a3670;
+      }
+
+      .lifecycle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      .lifecycle li {
+        display: flex;
+        align-items: center;
+        flex: 0 0 auto;
+        min-width: 0;
+      }
+
+      .lifecycle li:not(:last-child)::after {
+        content: '';
+        flex: 0 0 var(--arrow-length);
+        width: var(--arrow-length);
+        margin-inline: var(--arrow-gap);
+        height: 0.6rem;
+        background: var(--foreground);
+        opacity: 0.35;
+        clip-path: polygon(0 43%, 78% 43%, 78% 0, 100% 50%, 78% 100%, 78% 57%, 0 57%);
+      }
+
+      .lifecycle span {
+        display: block;
+        padding: 1.2em 0.7em;
+        border: 1px solid var(--diagram-border);
+        border-radius: 0.3rem;
+        background: var(--diagram-fill);
+        font-size: var(--size-small);
+      }
+
+      /* Keep lifecycle order in the markup; render its flow bottom to top. */
+      .lifecycle { flex-direction: column-reverse; }
+      .lifecycle li { flex-direction: column-reverse; flex: none; }
+      
+      .lifecycle li:not(:last-child)::after {
+        flex: none;
+        width: 0.6rem;
+        height: var(--arrow-length);
+        margin: var(--arrow-gap) 0;
+        min-width: 0;
+        clip-path: polygon(50% 0, 100% 22%, 57% 22%, 57% 100%, 43% 100%, 43% 22%, 0 22%);
+      }
+      .lifecycle span { padding: 0.55em 1.5em; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="slide statement-slide" id="marionette-slide">
+        <h1>The marionette model of steering</h1>
+        <p>Joints constrain puppet motion, producing lifelike movement under crude control. Might language model steering work similarly?</p>
+        <div class="figure">
+          <canvas class="marionette-stage" id="marionette-stage" role="img" aria-label="A flightless bird marionette hanging by strings from a two-bar control; moving the pointer moves the legs, dragging moves the head and body"></canvas>
+        </div>
+        <aside>Move your mouse to control legs. Click and drag to control head and body.</aside>
+        <p>Models constrain the activation space to keep outputs natural.</p>
+        <p class="footnote" data-cite="finlayson2026basins"></p>
+      </section>
+      <!-- The paper's 2-D sphere probe through a natural Llama 3.1 8B activation, injected at layer 15 and pushed through the later layers: the input
+           sphere as a globe and the full-D surface projected onto the span of the globe's front face, both colored by expansion (js/probe.js,
+           assets/probe-sphere.js, assets/probe-face.js). -->
+      <section class="slide statement-slide" id="probe-slide" hidden>
+        <h1>How to characterize the activation space dynamics</h1>
+        <p>Probing the activation space with low-dimensional spheres.</p>
+        <div class="slider-field slider-field-play">
+          <label for="probe-layer">Layer</label>
+          <button class="slider-play" id="probe-play" type="button" aria-label="Play"><svg class="icon-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5 13.5 8 4 13.5z"/></svg><svg class="icon-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg></button>
+          <input class="sample-slider" id="probe-layer" type="range" />
+          <output for="probe-layer" data-auto></output>
+        </div>
+        <div class="figure">
+          <!-- One <figure class="panel"> per canvas; its <figcaption> goes first for a caption above the canvas, last for one below. -->
+          <figure class="panel">
+            <canvas class="probe-canvas" id="probe-globe" role="img" aria-label="Rotatable globe: the input sphere through one activation of a language model, colored by how much the layers up to the selected one stretch or shrink the surface at each point"></canvas>
+            <figcaption>Layer 15 input sphere passing through an activation with a random tangent plane. Colored by output activation density. Front tangent plane selected.</figcaption>
+          </figure>
+          <figure class="panel">
+            <canvas class="probe-canvas" id="probe-face" role="img" aria-label="Rotatable 3-D view of the whole surface after the selected layer, projected onto the span of the output image of the globe's front face, with the line from the origin to the face's centroid; colored by the same stretch"></canvas>
+            <figcaption>Readout at layer <span data-probe-layer>15</span>, projected onto the span of the selected tangent plane.</figcaption>   <!-- js/probe.js fills data-probe-layer with the selected layer -->
+          </figure>
+        </div>
+        <p class="footnote" data-cite="finlayson2026basins"></p>
+      </section>
+      <!-- The paper's sphere probe through three OLMo 3 7B activations (figure "Sphere probe expansion maps for six randomly sampled sets of 3
+           activations", panel 3, chosen for its three separate basins): the input sphere and its image after blocks 16-21 (as in the paper's
+           figure), both rotatable 3-D and colored by expansion; a dot travels between the activations on the left (draggable) and its image
+           follows on the right, over a plot of its speed with a play/pause button (js/trisphere.js, assets/tri-sphere.js). -->
+      <section class="slide statement-slide" id="trisphere-slide" hidden>
+        <h1>Activations inhabit separate attracting basins.</h1>
+        <div class="figure">
+          <canvas class="trisphere-canvas" id="trisphere-input" role="img" aria-label="Rotatable globe: the input sphere through three activations of a language model, marked with crosses, colored by how much the middle layers stretch the surface; a dot travels from activation to activation and can be dragged"></canvas>
+          <canvas class="trisphere-canvas" id="trisphere-output" role="img" aria-label="Rotatable 3-D view of the same sphere after the middle layers, colored the same way, with the images of the three activations and of the moving dot"></canvas>
+          <div class="trisphere-plot-row">
+            <button class="slider-play" id="trisphere-play" type="button" aria-label="Pause"><svg class="icon-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5 13.5 8 4 13.5z"/></svg><svg class="icon-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg></button>
+            <canvas class="trisphere-canvas" id="trisphere-plot" role="img" aria-label="Plot: how fast the moving dot's image travels in the output space along the great circle through the dot's current two activations, the stretch between them in full and the continuation past both muted, with the dot's place on it"></canvas>
+          </div>
+        </div>
+        <p class="footnote" data-cite="finlayson2026basins"></p>
+      </section>
+      <!-- The rubber-sheet (trampoline) analogy of gravity: heavy balls sag a round sheet, colored by height with the deck's magma (dark = the
+           wells), and marbles orbit in the wells; drag to turn, drag a marble to fling it (js/gravity.js). -->
+      <section class="slide statement-slide" id="gravity-slide" hidden>
+        <h1>Language models accumulate activations in distinct basins, like gravity wells accumulating matter.</h1>
+        <p>Each layer is a timestep in a dynamical system.</p>
+        <div class="figure">
+          <canvas class="gravity-canvas" id="gravity-canvas" role="img" aria-label="Rotatable 3-D view of a round rubber sheet sagging into wells under two heavy balls, colored dark in the wells and bright on the flat; small marbles roll around inside the wells, and can be dragged and flung"></canvas>
+        </div>
+        <p class="footnote" data-cite="finlayson2026basins"></p>
+      </section>
+      <!-- The paper's language expansion maps (figure "Activation space expansion along en-zh and en-el tangent directions") as globes: the sphere
+           probe through each of two English, Greek and Chinese activations, colored by expansion; drag to rotate (js/langglobes.js, assets/lang-globes.js). -->
+      <section class="slide statement-slide" id="langglobes-slide" hidden>
+        <h1>Activations from different languages inhabit different basins</h1>
+        <div class="figure">
+          <canvas class="langglobes-canvas" data-language="en" role="img" aria-label="English: two rotatable globes, spheres through activations from English documents, colored by how much the model's middle layers stretch the surface; dark basins are where it barely stretches"></canvas>
+          <canvas class="langglobes-canvas" data-language="el" role="img" aria-label="Greek: two rotatable globes, spheres through activations from Greek documents, colored the same way"></canvas>
+          <canvas class="langglobes-canvas" data-language="zh" role="img" aria-label="Chinese: two rotatable globes, spheres through activations from Chinese documents, colored the same way"></canvas>
+        </div>
+        <p class="footnote" data-cite="finlayson2026basins"></p>
+      </section>
+      <!-- English-Chinese steering (the paper's figure "Speed profiles along the en-zh steering direction"): a token's activation in an English
+           or Chinese document, rotated toward Chinese (positive) or English (negative) by the slider's angle. js/enzh.js fills the figure
+           (one panel per document, chosen in its CONFIG) from assets/enzh-steering.js; edit the colors and sizes in the #enzh-slide CSS. -->
+      <section class="slide statement-slide" id="enzh-slide" hidden>
+        <h1>Steering between language feature basins</h1>
+        <div class="slider-field slider-field-play">
+          <label for="enzh-strength">Steer strength</label>
+          <button class="slider-play" id="enzh-play" type="button" aria-label="Play"><svg class="icon-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5 13.5 8 4 13.5z"/></svg><svg class="icon-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg></button>
+          <input class="sample-slider" id="enzh-strength" type="range" />
+          <output for="enzh-strength" data-auto></output>
+        </div>
+        <div class="figure" id="enzh-figure" role="group" aria-label="Speed profiles along the English-to-Chinese steering direction for English and Chinese documents, each under its document with the token the steered activation predicts"></div>
+        <p class="footnote" data-cite="finlayson2026basins"></p>
+      </section>
+      <!-- Step t is probed along the refusal direction through the midpoint of step t's activations in the unsteered and the 3.37-steered
+           responses, with the current activation projected onto it (js/basins.js, assets/basins-midpoint.js). -->
+      <section class="slide statement-slide" id="basins-midpoint-slide" hidden>
+        <h1>Steering toward refusal transports activations between basins.</h1>
+        <div class="slider-field slider-field-play">
+          <label for="basins-midpoint-strength">Steer strength</label>
+          <button class="slider-play" id="basins-midpoint-play" type="button" aria-label="Play"><svg class="icon-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5 13.5 8 4 13.5z"/></svg><svg class="icon-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg></button>
+          <input class="sample-slider" id="basins-midpoint-strength" type="range" />
+          <output for="basins-midpoint-strength" data-auto></output>
+        </div>
+        <div class="figure">
+          <canvas class="basins-plot" id="basins-midpoint-plot" role="img" aria-label="Speed along the refusal steering direction through a fixed midpoint, at each output step of a response to a benign request"></canvas>
+        </div>
+        <p class="footnote" data-cite="finlayson2026basins"></p>
+      </section>
+    </main>
+    <script src="assets/temml/temml.min.js"></script>   <!-- LaTeX to MathML (Temml 0.14.0, MIT: assets/temml/LICENSE) -->
+    <script src="js/math.js"></script>   <!-- converts the \( \) and \[ \] math above; must run before the slide scripts -->
+    <script src="js/references.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/marionette.js"></script>
+    <script src="assets/basins-midpoint.js"></script>   <!-- precomputed on carc; provenance in the file -->
+    <script src="js/slider-autoplay.js"></script>   <!-- sliderAutoplay(): a slider's play button (.slider-play); before the slide scripts that use it -->
+    <script src="assets/probe-sphere.js"></script>   <!-- computed on carc with the paper's code; provenance in the file -->
+    <script src="assets/probe-face.js"></script>   <!-- full-D surface as a per-layer low-rank basis, computed on carc with the paper's code; provenance in the file -->
+    <script src="js/probe.js"></script>
+    <script src="assets/tri-sphere.js"></script>   <!-- computed on carc with the paper's code; provenance in the file -->
+    <script src="js/trisphere.js"></script>
+    <script src="js/gravity.js"></script>
+    <script src="js/basins.js"></script>
+    <script src="assets/enzh-steering.js"></script>   <!-- the paper's frozen data, exported on carc; provenance in the file -->
+    <script src="js/enzh.js"></script>
+    <script src="assets/lang-globes.js"></script>   <!-- the paper's maps, extended to full spheres on carc with its code; provenance in the file -->
+    <script src="js/langglobes.js"></script>
+    <script src="js/slider-fields.js"></script>   <!-- fills every <output for="..." data-auto> with its slider's value; after the slide scripts -->
+  </body>
+</html>
