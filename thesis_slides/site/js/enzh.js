@@ -86,10 +86,17 @@
       });
       doc.append(next);
       const canvas = document.createElement('canvas'); canvas.className = 'enzh-plot';
-      // Free translation (Chinese documents); English panels keep the empty line too, so every plot starts at the same height.
-      const translation = document.createElement('div'); translation.className = 'enzh-translation';
-      translation.textContent = CONFIG.translations && data.translation ? `\u2018${data.translation}\u2019` : '';
-      el.append(doc, translation, canvas); figure.append(el);
+      // The panel is two rows of the figure's grid (CSS): its text (the document, and under a Chinese document the paper's free
+      // translation; English ones have none, so their plot sits right under the document), then its plot. The text rows of a panel row
+      // share one height and every plot row an equal share of the rest, so all plots are the same size and a row's plots line up.
+      const text = document.createElement('div'); text.className = 'enzh-text';
+      text.append(doc);
+      if (data.translation) {
+        const translation = document.createElement('div'); translation.className = 'enzh-translation';
+        translation.textContent = CONFIG.translations ? `\u2018${data.translation}\u2019` : '';
+        text.append(translation);
+      }
+      el.append(text, canvas); figure.append(el);
       return { data, canvas, ctx: canvas.getContext('2d'), doc, options, shownUnit: null, shrink, words };
     });
 

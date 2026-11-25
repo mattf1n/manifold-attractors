@@ -495,6 +495,7 @@
          the moving dot and its place on the plot). */
       #trisphere-slide {
         grid-template-rows: minmax(0, 1fr);
+        --footnote-lines: 4;                    /* room for two references (side by side; stacked in narrow windows) */
         --trisphere-max-width: 100rem;          /* widest the two columns get together */
         --trisphere-plot-height: clamp(2.5rem, 13svh, 9rem);   /* height of the speed plot under the image (the image shrinks to make room) */
         --trisphere-plot-gap: calc(0.5 * var(--space-row));     /* between the image and the plot */
@@ -567,23 +568,29 @@
         --enzh-mark-alpha: 0.3;       /* opacity of the predicted token's highlight */
       }
       #enzh-slide > .slider-field { width: 100%; }   /* as wide as the deck's slider cap (--slider-max-width), centered */
+      /* Grid: per row of panels, a text row (auto: the tallest document of the row, with its glosses and translation) and a plot row; the
+         plot rows share the height left equally, so every plot has the same height whatever its text takes. Each panel spans its two rows
+         as a subgrid, so the documents of a row start together and its plots line up. --enzh-text-gap: between a document and its plot. */
       #enzh-slide .figure {
+        --enzh-text-gap: 0.3em;
         width: min(var(--figure-width), var(--enzh-max-width));
         height: 100%; min-height: 0;
         grid-template-columns: repeat(var(--enzh-columns), minmax(0, 1fr));
-        grid-auto-rows: minmax(0, 1fr);   /* the rows share the height left */
+        grid-auto-rows: auto minmax(0, 1fr);   /* repeating: text row, plot row (after the label row, if any) */
         align-items: stretch;
         column-gap: var(--enzh-gap-x); row-gap: var(--enzh-gap-y);
       }
-      #enzh-slide .figure > .enzh-panel { width: 100%; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 0.3em; font-size: var(--enzh-doc-size); }
+      #enzh-slide .figure > .enzh-panel { width: 100%; min-width: 0; min-height: 0; grid-row: span 2; display: grid; grid-template-rows: subgrid; row-gap: var(--enzh-text-gap); font-size: var(--enzh-doc-size); }
+      #enzh-slide .enzh-text { min-width: 0; align-self: end; }   /* a short document sits right on its plot (the row's taller ones set the row's height) */
       /* The y-axis label ("Density ↓", CONFIG.yLabel in js/enzh.js), once for the figure: its own row across the columns, at the left edge
          above the first (English) document, in the plots' label size. The panel rows below keep equal shares of the height.
          --enzh-ylabel-gap is the space between it and the first document (it replaces the rows' gap there). */
       #enzh-slide .figure:has(> .enzh-ylabel) { grid-template-rows: auto; }
       #enzh-slide .figure > .enzh-ylabel { --enzh-ylabel-gap: 0.25em; grid-column: 1 / -1; justify-self: start; width: auto; font-size: var(--size-small); line-height: 1.2; margin-bottom: calc(var(--enzh-ylabel-gap) - var(--enzh-gap-y)); }
-      #enzh-slide .enzh-plot { display: block; width: 100%; flex: 1 1 0; min-height: 0; font-size: var(--size-small); touch-action: none; }   /* touch-action: a finger on a plot drags its dot instead of scrolling (the cursor is set by the script: grab over a dot) */
-      /* The document: one row of units, each its text over its gloss (the paper's interlinear glosses); the gloss row is always there,
-         so every panel's plot starts at the same height. The last unit is the predicted token. */
+      #enzh-slide .enzh-plot { display: block; width: 100%; height: 100%; min-height: 0; font-size: var(--size-small); touch-action: none; }   /* fills its plot row; touch-action: a finger on a plot drags its dot instead of scrolling (the cursor is set by the script: grab over a dot) */
+      /* The document: one row of units. In Chinese documents each unit is its text over its gloss (the paper's interlinear glosses), and
+         the gloss row is always there, so the text does not change height with the token; English documents are one line (below). The
+         last unit is the predicted token. */
       #enzh-slide .enzh-doc { display: flex; align-items: start; overflow: hidden; white-space: pre; line-height: 1.25; }
       #enzh-slide .enzh-doc-zh { column-gap: 0.35em; }   /* Chinese units are spaced apart, like the paper's interlinear glosses */
       #enzh-slide .enzh-doc-en > .enzh-unit:first-child { margin-right: 0.25em; }   /* after the "…" */
@@ -591,8 +598,13 @@
       #enzh-slide .enzh-unit[hidden] { display: none; }   /* Chinese words dropped from a document's left when its panel is too narrow (js/enzh.js) */
       #enzh-slide .enzh-gloss { font-size: var(--enzh-gloss-size); line-height: 1.3; min-height: 1.3em; opacity: 0.8; }
       #enzh-slide .enzh-gloss.grammatical { font-variant-caps: all-small-caps; letter-spacing: 0.04em; }   /* COP, GEN, PFV, as the paper sets them */
+      /* English documents are one line: no gloss row under them (their plots sit right under the text). A gloss of the predicted token
+         (e.g. 身体 body) follows the token on the same line instead; the token stack reserves the widest token with its gloss, so the
+         document still does not move as the token changes. */
+      #enzh-slide .enzh-doc-en .enzh-unit { grid-template-rows: auto; grid-auto-flow: column; justify-content: start; align-items: baseline; column-gap: 0.3em; }   /* justify-content: the gloss right after its token, not spread across the reserved width */
+      #enzh-slide .enzh-doc-en .enzh-gloss:empty { display: none; }
       /* The paper's free translation of a Chinese document, under its glosses: small and faded like them, one line (cut with "…" if the
-         panel is too narrow). English panels keep the empty line, so all plots start at the same height. */
+         panel is too narrow). English panels have no translation line, so their plots sit right under their documents (rows are of one language). */
       #enzh-slide .enzh-translation { margin-top: -0.15em; font-size: var(--enzh-gloss-size); line-height: 1.3; min-height: 1.3em; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       /* English text that does not fit is cut on its left (the end of the document, next to the predicted token, stays visible). */
       #enzh-slide .enzh-unit.enzh-shrink { flex: 0 1 auto; min-width: 0; overflow: hidden; direction: rtl; }
@@ -957,7 +969,7 @@
             <canvas class="trisphere-canvas" id="trisphere-plot" role="img" aria-label="Plot: how fast the moving dot's image travels in the output space along the great circle through the dot's current two activations, the stretch between them in full and the continuation past both muted, with the dot's place on it"></canvas>
           </div>
         </div>
-        <p class="footnote" data-cite="finlayson2026basins"></p>
+        <p class="footnote" data-cite="finlayson2026basins heimersheim2024interim"></p>
       </section>
       <!-- The rubber-sheet (trampoline) analogy of gravity: heavy balls sag a round sheet, colored by height with the deck's magma (dark = the
            wells), and marbles orbit in the wells; drag to turn, drag a marble to fling it (js/gravity.js). -->
