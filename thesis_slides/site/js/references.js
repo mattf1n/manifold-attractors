@@ -9,7 +9,7 @@
 // under the reference text; slides with such a row keep room for it (see .footnote .headshots in index.html).
 (() => {
   const CONFIG = {
-    bibFile: 'references.bib',            // path of the BibTeX file, relative to index.html
+    bibFile: 'references.bib?v=1795636993',            // path of the BibTeX file, relative to index.html
     deckAuthor: 'Matthew Finlayson',      // the deck author ("First Last"); their papers name everyone up to and including them
     // Author lists of the deck author's papers: with this many authors or more, stop after the deck author and add "et al."
     // ("A, Matthew Finlayson, et al."; "Matthew Finlayson et al." when first). Shorter lists, or the deck author last, list everyone.

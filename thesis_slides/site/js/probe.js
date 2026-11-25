@@ -49,10 +49,10 @@
     pointSize: 1.8,           // dot diameter in CSS pixels
     pointBackAlpha: 0.3,      // opacity of the farthest dots (the nearest are fully opaque), so the near side reads in front of the far side
     dragSpeed: 0.01,          // radians of rotation per CSS pixel dragged
-    // Front-face panel: its own starting rotation (radians; at 0, 0 the origin-to-centroid segment points right, the image of the
-    // globe's screen-up points up), and the line widths of the segment and of the face outline (also drawn on the globe), as multiples of
-    // the marks' line width.
-    faceView: { yaw: -0.5, pitch: 0.3 },
+    // Front-face panel: its own rotation on top of the axes matched to the globe (radians; 0, 0 = the globe's view, so at layer 15 the two
+    // panels look the same), and whether it marks the origin with a +.
+    faceView: { yaw: 0, pitch: 0 },
+    faceOrigin: false,
     faceLine: 0, faceOutline: 0.6,   // front-face panel line widths (fractions of the mark stroke): origin-to-face-centroid line (0 = hidden), the face outline
     faceScale: 'fit',         // front-face panel: 'fit' scales each projection to fill the panel; 'fixed' keeps one scale for every face and layer (see the panel code)
     // The draggable dot (both panels): its start on the input sphere, in lattice coordinates (e1, e2, xhat; normalized): (0, 0, 1) is the
@@ -303,15 +303,43 @@
     return best;
   }
 
-  // Smallest sphere around a point set (n points, 3 per point): Badoiu-Clarkson, starting at the centroid and stepping toward the farthest
-  // point by 1/(i+1). Starting at the centroid makes it turn with the points, so the same set in two orientations gets the same radius:
-  // at layer 15 the front-face panel's points are the input sphere turned, and both panels then draw it at exactly the same size.
+  // Smallest sphere around a point set (n points, 3 per point), exactly: the incremental (Welzl-style) algorithm, points taken in a fixed
+  // shuffled order (expected linear time). The smallest sphere is unique, so the same set in two orientations gets the same sphere, turned:
+  // at layer 15 the front-face panel's points are the input sphere turned, so both panels draw it the same size at the same place.
+  const ORDER = (() => { const o = Uint32Array.from({ length: n }, (_, k) => k); let s = 12345; for (let k = n - 1; k > 0; k--) { s = (s * 1103515245 + 12345) >>> 0; const j = s % (k + 1); [o[k], o[j]] = [o[j], o[k]]; } return o; })();
   function enclosing(p) {
-    const mid = [0, 0, 0];
-    for (let k = 0; k < n; k++) for (let i = 0; i < 3; i++) mid[i] += p[3 * k + i] / n;
-    const farthest = () => { let far = 0, best = -1; for (let k = 0; k < n; k++) { const d = (p[3 * k] - mid[0]) ** 2 + (p[3 * k + 1] - mid[1]) ** 2 + (p[3 * k + 2] - mid[2]) ** 2; if (d > best) { best = d; far = k; } } return [far, Math.sqrt(best)]; };
-    for (let it = 1; it <= 60; it++) { const [far] = farthest(); for (let i = 0; i < 3; i++) mid[i] += (p[3 * far + i] - mid[i]) / (it + 1); }
-    return { mid, radius: farthest()[1] };
+    const P = k => [p[3 * k], p[3 * k + 1], p[3 * k + 2]];
+    const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], d3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    const crs = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+    const two = (a, b) => { const c = a.map((v, i) => (v + b[i]) / 2); return [c, d3(sub(a, c), sub(a, c))]; };
+    const three = (a, b, c) => {   // circumcircle of a triangle, in its plane
+      const ab = sub(b, a), ac = sub(c, a), nn = crs(ab, ac), q = d3(nn, nn);
+      if (q < 1e-18) { const s = [two(a, b), two(a, c), two(b, c)]; return s.reduce((x, y) => (y[1] > x[1] ? y : x)); }   // collinear: widest pair
+      const t = crs(nn, ab).map((v, i) => v * d3(ac, ac)), u = crs(ac, nn).map((v, i) => v * d3(ab, ab));
+      const o = a.map((v, i) => v + (t[i] + u[i]) / (2 * q)); return [o, d3(sub(a, o), sub(a, o))];
+    };
+    const four = (a, b, c, e) => {   // circumsphere of a tetrahedron
+      const u = sub(b, a), v = sub(c, a), w = sub(e, a), det = 2 * d3(u, crs(v, w));
+      if (Math.abs(det) < 1e-18) return three(a, b, c);
+      const x = crs(v, w).map(t => t * d3(u, u)), y = crs(w, u).map(t => t * d3(v, v)), z = crs(u, v).map(t => t * d3(w, w));
+      const o = a.map((t, i) => t + (x[i] + y[i] + z[i]) / det); return [o, d3(sub(a, o), sub(a, o))];
+    };
+    const out = (q, [c, r2]) => d3(sub(q, c), sub(q, c)) > r2 * (1 + 1e-10) + 1e-14;
+    let ball = [P(ORDER[0]), 0];
+    for (let i = 1; i < n; i++) {
+      const a = P(ORDER[i]); if (!out(a, ball)) continue;
+      ball = [a, 0];
+      for (let j = 0; j < i; j++) {
+        const b = P(ORDER[j]); if (!out(b, ball)) continue;
+        ball = two(a, b);
+        for (let k = 0; k < j; k++) {
+          const c = P(ORDER[k]); if (!out(c, ball)) continue;
+          ball = three(a, b, c);
+          for (let l = 0; l < k; l++) { const e = P(ORDER[l]); if (out(e, ball)) ball = four(a, b, c, e); }
+        }
+      }
+    }
+    return { mid: ball[0], radius: Math.sqrt(ball[1]) };
   }
 
   // Globe: lattice axes (e1, e2, xhat) -> screen (xhat right, e2 up, e1 toward the viewer), scaled by the same rule as the front-face
@@ -334,10 +362,12 @@
 
   // Front-face panel (window.PROBE_FACE, assets/probe-face.js): the whole output surface at the layer, in full D, projected orthogonally onto the 3-D span
   // of the front face's three output points (the span includes the origin), with the segment from the origin to the face's output
-  // centroid and the face itself outlined. Axes of that span: u1 = the centroid direction; u2, u3 = the images of the globe's screen-right
-  // and screen-up directions across the face (the linear map taking the face's input corners on screen to its output corners), made
-  // orthonormal. The panel opens with u1 to the right, u3 up and u2 toward the viewer, turned by CONFIG.faceView; it has its own rotation
-  // (dragging it does not move the front face; turning the globe changes the face, and so the span).
+  // centroid and the face itself outlined. Axes inside that span: chosen to match the globe's view. Each layer's map gets a linear fit,
+  // L = the least-squares linear map from input-sphere directions to output points (exact at layer 15, where the map is the identity);
+  // the globe's screen axes (right, up, toward the viewer) sent through L and projected into the span give three vectors, and the panel's
+  // axes are the rotation nearest to them (polar decomposition). So at layer 15 the panel shows the sphere exactly as the globe does (same
+  // dots, x and dot at the same places), and later its view follows the globe's as closely as the face's span allows. It has its own
+  // rotation on top (CONFIG.faceView, 0 = matched); dragging it does not move the front face; turning the globe changes the face and axes.
   let facePanel = null;
   if (FACE && faceCanvas) {
     const coords = layers.map((l, i) => {   // per layer: rank r and the point coordinates (n x r) in the layer's orthonormal basis
@@ -353,25 +383,42 @@
       let m = 0; for (let k = 0; k < n; k++) { let t = 0; for (let j = 0; j < r; j++) t += c[k * r + j] ** 2; m = Math.max(m, t); } return Math.sqrt(m);
     }));
     const pts = new Float32Array(3 * n), cache = { key: '', corners: null, origin: [0, 0, 0], centroid: [0, 0, 0], fit: 1 };
-    const unitv = v => { const l = Math.hypot(...v) || 1; return v.map(x => x / l); };
     const dot = (a, b) => a.reduce((t, x, j) => t + x * b[j], 0);
-    function project() {   // recompute the projection when the layer or the front face changed
-      const f = frontFace(), key = current + ':' + f + ':' + CONFIG.faceScale;
+    // Linear fit per layer: L (r x 3) = (sum_k C_k fib_k^T) (sum_k fib_k fib_k^T)^-1.
+    const inv3 = m => { const [a, b, c, d, e, f, g, h, i] = m, A = e * i - f * h, B = f * g - d * i, Cc = d * h - e * g, det = a * A + b * B + c * Cc;
+      return [A, c * h - b * i, b * f - c * e, B, a * i - c * g, c * d - a * f, Cc, b * g - a * h, a * e - b * d].map(v => v / det); };
+    const G = new Array(9).fill(0);
+    for (let k = 0; k < n; k++) for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) G[3 * a + b] += fib[3 * k + a] * fib[3 * k + b];
+    const Gi = inv3(G);
+    const fits = coords.map(({ r, c }) => {
+      const T = new Float64Array(3 * r), L = new Float64Array(3 * r);
+      for (let k = 0; k < n; k++) for (let j = 0; j < r; j++) for (let a = 0; a < 3; a++) T[3 * j + a] += c[k * r + j] * fib[3 * k + a];
+      for (let j = 0; j < r; j++) for (let a = 0; a < 3; a++) L[3 * j + a] = T[3 * j] * Gi[a] + T[3 * j + 1] * Gi[3 + a] + T[3 * j + 2] * Gi[6 + a];
+      return L;
+    });
+    function project() {   // recompute the projection when the layer, the front face or the globe's rotation changed
+      const f = frontFace(), key = current + ':' + f + ':' + CONFIG.faceScale + ':' + rotation.join(',');
       if (key === cache.key) return;
       cache.key = key;
-      const { r, c } = coords[current], row = v => Array.from(c.subarray(v * r, v * r + r));
+      const { r, c } = coords[current], L = fits[current], row = v => Array.from(c.subarray(v * r, v * r + r));
       const [A, B, C] = [0, 1, 2].map(j => row(faces[3 * f + j]));
-      const M = mul(rotation, GLOBE_BASE), scr = v => [0, 1].map(i => M[3 * i] * fib[3 * v] + M[3 * i + 1] * fib[3 * v + 1] + M[3 * i + 2] * fib[3 * v + 2]);
-      const [sa, sb, sc] = [0, 1, 2].map(j => scr(faces[3 * f + j]));
-      const db = B.map((x, j) => x - A[j]), dc = C.map((x, j) => x - A[j]);
-      const bx = sb[0] - sa[0], by = sb[1] - sa[1], cx = sc[0] - sa[0], cy = sc[1] - sa[1], det = bx * cy - cx * by || 1e-12;
-      const right = db.map((x, j) => (x * cy - dc[j] * by) / det), up = db.map((x, j) => (dc[j] * bx - x * cx) / det);
-      const centroid = A.map((x, j) => (x + B[j] + C[j]) / 3), u1 = unitv(centroid);
-      const u2 = unitv(right.map((x, j) => x - dot(right, u1) * u1[j]));
-      const u3 = unitv(up.map((x, j) => x - dot(up, u1) * u1[j] - dot(up, u2) * u2[j]));
+      // An orthonormal basis of the face's span (Gram-Schmidt of its three output points).
+      const Q = [];
+      for (const v of [A, B, C]) { let w = v.slice(); for (const q of Q) { const t = dot(w, q); w = w.map((x, j) => x - t * q[j]); } const l = Math.hypot(...w) || 1; Q.push(w.map(x => x / l)); }
+      // The globe's screen axes (rows of its view matrix, in lattice coordinates) through L, in span coordinates: S (3 x 3, column = axis).
+      const M = mul(rotation, GLOBE_BASE), S = new Array(9);
+      for (let a = 0; a < 3; a++) {
+        const t = new Array(r);
+        for (let j = 0; j < r; j++) t[j] = L[3 * j] * M[3 * a] + L[3 * j + 1] * M[3 * a + 1] + L[3 * j + 2] * M[3 * a + 2];
+        for (let i = 0; i < 3; i++) S[3 * i + a] = dot(Q[i], t);
+      }
+      // Nearest rotation to S (polar decomposition by Newton's iteration R <- (R + R^-T) / 2).
+      let R = S.slice();
+      for (let it = 0; it < 20; it++) { const I = inv3(R); R = R.map((v, idx) => (v + I[3 * (idx % 3) + Math.floor(idx / 3)]) / 2); }
+      const axes = [0, 1, 2].map(a => Q[0].map((_, j) => Q[0][j] * R[a] + Q[1][j] * R[3 + a] + Q[2][j] * R[6 + a]));   // panel x, y, z in output coordinates
       for (let k = 0; k < n; k++) {
         let p1 = 0, p2 = 0, p3 = 0;
-        for (let j = 0; j < r; j++) { const v = c[k * r + j]; p1 += v * u1[j]; p2 += v * u2[j]; p3 += v * u3[j]; }
+        for (let j = 0; j < r; j++) { const v = c[k * r + j]; p1 += v * axes[0][j]; p2 += v * axes[1][j]; p3 += v * axes[2][j]; }
         pts[3 * k] = p1; pts[3 * k + 1] = p2; pts[3 * k + 2] = p3;
       }
       // Centre ('fit'): the centre of the smallest sphere around the projected surface (enclosing), so any rotation fits and the surface
@@ -379,12 +426,13 @@
       const fit = CONFIG.faceScale === 'fixed' ? { mid: [0, 0, 0], radius: 0 } : enclosing(pts), mid = fit.mid;
       let m = 0;
       for (let k = 0; k < n; k++) { for (let i = 0; i < 3; i++) pts[3 * k + i] -= mid[i]; m = Math.max(m, Math.hypot(pts[3 * k], pts[3 * k + 1], pts[3 * k + 2])); }
+      const centroid = A.map((x, j) => (x + B[j] + C[j]) / 3);
       cache.corners = [0, 1, 2].map(j => { const v = faces[3 * f + j]; return [pts[3 * v], pts[3 * v + 1], pts[3 * v + 2]]; });
       cache.origin = mid.map(v => -v);
-      cache.centroid = [dot(centroid, u1) - mid[0], -mid[1], -mid[2]];
+      cache.centroid = axes.map((a, i) => dot(centroid, a) - mid[i]);
       cache.fit = CONFIG.extentMargin * m;
     }
-    facePanel = panel(faceCanvas, [1, 0, 0, 0, 0, 1, 0, 1, 0], {
+    facePanel = panel(faceCanvas, [1, 0, 0, 0, 1, 0, 0, 0, 1], {
       extent: () => (CONFIG.faceScale === 'fixed' ? fixedExtent : cache.fit), view: CONFIG.faceView,
       pointBins: pointsFor('face'),
       points: () => { project(); return pts; },
@@ -392,7 +440,7 @@
         const w = mark * CONFIG.markStroke, o = apply(M, cache.origin), g = apply(M, cache.centroid);
         if (CONFIG.faceLine > 0) strokeMark(ctx, [[X(o), Y(o)], [X(g), Y(g)]], w * CONFIG.faceLine, false);       // origin -> face centroid
         strokeMark(ctx, cache.corners.map(v => { const p = apply(M, v); return [X(p), Y(p)]; }), w * CONFIG.faceOutline, true);   // the face
-        cross(ctx, X(o), Y(o), mark / 2, w, true);                                                                 // origin
+        if (CONFIG.faceOrigin) cross(ctx, X(o), Y(o), mark / 2, w, true);                                          // origin (off by default)
         const a = [0, 1, 2].reduce((s, j) => { const v = faces[3 * activationSpot.f + j], wt = activationSpot.w[j]; return s.map((x, i) => x + wt * pts[3 * v + i]); }, [0, 0, 0]);
         const pa = apply(M, a); cross(ctx, X(pa), Y(pa), mark / 2, w, false);                                    // the activation's image (x, under the dot)
       }
