@@ -91,16 +91,17 @@ const savedSlide = Number(sessionStorage.getItem(slideStorageKey));
 let currentSlide = Number.isInteger(savedSlide)
   ? Math.max(0, Math.min(slides.length - 1, savedSlide))
   : 0;
-// Optional on-page control: any element with data-next-slide advances one slide on click and hides on the last slide
-// (publish.sh adds one to the published demo; the talk itself has none).
-const nextControls = [...document.querySelectorAll('[data-next-slide]')];
+// Optional on-page controls: an element with data-next-slide / data-prev-slide moves one slide on click, and hides on the last /
+// first slide (publish.sh adds them to the published demo; the talk itself has none).
+const stepControls = [...document.querySelectorAll('[data-next-slide], [data-prev-slide]')];
 const showCurrentSlide = () => {
   slides.forEach((slide, index) => { slide.hidden = index !== currentSlide; });
   sessionStorage.setItem(slideStorageKey, String(currentSlide));
-  nextControls.forEach(el => { el.hidden = currentSlide >= slides.length - 1; });
+  stepControls.forEach(el => { el.hidden = el.hasAttribute('data-next-slide') ? currentSlide >= slides.length - 1 : currentSlide <= 0; });
 };
-nextControls.forEach(el => el.addEventListener('click', () => {
-  currentSlide = Math.min(slides.length - 1, currentSlide + 1);
+stepControls.forEach(el => el.addEventListener('click', event => {
+  event.preventDefault();
+  currentSlide = Math.max(0, Math.min(slides.length - 1, currentSlide + (el.hasAttribute('data-next-slide') ? 1 : -1)));
   showCurrentSlide();
   positionBoundary();
   el.blur();   // so the arrow keys keep changing slides
