@@ -672,6 +672,12 @@
       aside { margin: 0; font-size: var(--size-footnote); line-height: 1.3; opacity: 0.65; text-align: left; }
       .statement-slide > aside { width: min(100%, var(--text-width)); }
       aside a { color: inherit; text-underline-offset: 0.15em; }   /* links in asides look like the footnotes' links */
+      /* "Next slide" control (any element with data-next-slide; js/navigation.js advances on click and hides it on the last slide).
+         Pinned to the bottom-right corner, in the footnote's size and opacity, like a link. publish.sh adds one to the published demo. */
+      .next-slide { position: fixed; right: var(--space-page); bottom: var(--footnote-offset); z-index: 2; padding: 0; border: 0; background: none; color: inherit; font: inherit; font-size: var(--size-small); opacity: 0.65; cursor: pointer; text-decoration: underline; text-underline-offset: 0.15em; }
+      .next-slide:hover { opacity: 1; }
+      .next-slide[hidden] { display: none; }
+      @media (max-aspect-ratio: 1/1), (max-width: 60rem) { .next-slide { right: 0.5rem; bottom: 0.3rem; } }   /* narrow or portrait: the footnote reaches the right side, so tuck into the corner below/beside it */
       .hint {
         position: absolute;
         bottom: 2rem;
@@ -1003,6 +1009,7 @@
         <p class="footnote" data-cite="finlayson2026basins"></p>
       </section>
     </main>
+    <button type="button" class="next-slide" data-next-slide>Next slide →</button>
     <script src="assets/temml/temml.min.js"></script>   <!-- LaTeX to MathML (Temml 0.14.0, MIT: assets/temml/LICENSE) -->
     <script src="js/math.js"></script>   <!-- converts the \( \) and \[ \] math above; must run before the slide scripts -->
     <script src="js/references.js"></script>

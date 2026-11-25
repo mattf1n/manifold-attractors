@@ -91,10 +91,20 @@ const savedSlide = Number(sessionStorage.getItem(slideStorageKey));
 let currentSlide = Number.isInteger(savedSlide)
   ? Math.max(0, Math.min(slides.length - 1, savedSlide))
   : 0;
+// Optional on-page control: any element with data-next-slide advances one slide on click and hides on the last slide
+// (publish.sh adds one to the published demo; the talk itself has none).
+const nextControls = [...document.querySelectorAll('[data-next-slide]')];
 const showCurrentSlide = () => {
   slides.forEach((slide, index) => { slide.hidden = index !== currentSlide; });
   sessionStorage.setItem(slideStorageKey, String(currentSlide));
+  nextControls.forEach(el => { el.hidden = currentSlide >= slides.length - 1; });
 };
+nextControls.forEach(el => el.addEventListener('click', () => {
+  currentSlide = Math.min(slides.length - 1, currentSlide + 1);
+  showCurrentSlide();
+  positionBoundary();
+  el.blur();   // so the arrow keys keep changing slides
+}));
 function positionBoundary() {
   if (!diagram || diagram.hidden) return;
   if (manualBoundary !== null) {
